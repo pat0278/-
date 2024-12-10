@@ -42,7 +42,7 @@ public class MemController {
 		memVO.setSex(1);
 		memVO.setMemType(1);
 		model.addAttribute("memVO", memVO);
-		return "frontend/mem/register";
+		return "front-end/mem/register";
 	}
 
 	@PostMapping("/register")
