@@ -158,20 +158,4 @@ public class PlanThymeleafController {
         return "redirect:/plans";
     }
 
-//    @GetMapping("/add")
-//    public String addPlanForm(Model model) {
-//        model.addAttribute("plan", new Plan());
-//        return "plans/add";
-//    }
-
-//    @PostMapping("/add")
-//    public String addPlan(@ModelAttribute Plan plan, Model model) {
-//        try {
-//            planService.savePlan(plan);
-//        } catch (Exception e) {
-//            model.addAttribute("error", "新增行程失敗，請檢查輸入的資料是否正確。");
-//            return "plans/add"; // 返回到新增表單頁面
-//        }
-//        return "redirect:/plans";
-//    }
 }

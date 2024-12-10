@@ -20,6 +20,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -81,11 +83,12 @@ public class PlanController {
     @GetMapping("/planfront")
     public String frontlistall(Model model) {
         List<Plan> plans = planService.getAllPlans();
-        model.addAttribute("plans", plans);
+        List<Plan> filterPlans = plans.stream()
+                .filter(plan -> plan.getAttMax()>0)
+                .collect(Collectors.toList());
+        model.addAttribute("plans", filterPlans);
         return "plan/planfront/planfrontlist";
     }
-
-
 
 
 
