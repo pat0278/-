@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>訂單管理 allPdtOrder.html</title>
+    <title>後台-訂單管理 allPdtOrder.html</title>
     
     <!-- 使用included-fragment.html網頁的全部 -->
     <head th:insert="~{/included-fragment}"></head>
@@ -163,75 +163,7 @@
         </table>
     </div>
 
-    <!------------------------------- footer ------------------------------->
-    <footer>
-      <sup>&copy;</sup>本網站僅供tibame專題展示用，並無進行任何商業行為
-    </footer>
-    
-    
-    <script
-      src="https://code.jquery.com/jquery-3.7.1.min.js"
-      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-      crossorigin="anonymous"
-    ></script>
-    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
 
-    <script>
-      const ham_list = document.querySelector(".ham_list");
-      const nav = document.querySelector("nav");
-
-      //漢堡選單控制
-      document
-        .querySelector(".hamburger")
-        .addEventListener("click", function () {
-          this.classList.toggle("is-active");
-        });
-
-      ham_list.addEventListener("click", function (e) {
-        e.stopPropagation();
-      });
-
-      $(".hamburger").on("click", function () {
-        $(".ham_list").toggleClass("showList");
-      });
-
-      // 監控滾輪事件，讓導覽列變透明
-      window.addEventListener("scroll", (e) => {
-        if (this.scrollY !== 0) {
-          nav.style.backgroundColor = "rgba(173, 216, 230, 0.8)";
-          nav.style.boxShadow = "0px 8px 10px lightgray";
-        } else {
-          nav.style.backgroundColor = "lightblue";
-          nav.style.boxShadow = "none";
-        }
-      });
-
-      // DataTable 初始化
-      try {
-          $(".myTable").DataTable({
-              paging: true,
-              ordering: true,
-              pageLength: 10,
-              lengthMenu: [10, 15, 20],
-              searching: true,
-              language: {
-                  info: "顯示第 _START_ 至 _END_ 筆資料，共 _TOTAL_ 筆",
-                  infoEmpty: "無資料可顯示",
-                  infoFiltered: "",
-                  zeroRecords: "請確認查詢條件",
-                  lengthMenu: "每頁顯示 _MENU_ 筆資料",
-                  paginate: {
-                      first: "第一頁",
-                      previous: "上一頁",
-                      next: "下一頁",
-                      last: "最後一頁"
-                  }
-              }
-          });
-      } catch (error) {
-          console.error("DataTable 初始化錯誤:", error);
-      };
-    </script>
 </body>
 
 </html>
