@@ -145,6 +145,7 @@ public class TestApplication implements CommandLineRunner{
             System.out.println("訂單項目: orderId=" + item.getPdtOrderId() + ", pdtId=" + item.getPdtId());
             System.out.println("訂單項目: orderId=" + item.getPdtOrderId() + ", pdtId=" + item.getPdtId());
             System.out.println("訂單項目: orderId=" + item.getPdtOrderId() + ", pdtId=" + item.getPdtId());
+            System.out.println("訂單項目: orderId=" + item.getPdtOrderId() + ", pdtId=" + item.getPdtId());
         }
 
 
