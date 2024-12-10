@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>鄰星嗨嗨會員認證信</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif">
+	<div style="max-width: 600px; margin: 0 auto; padding: 20px">
+		<h2 style="color: #dc3545">會員註冊信</h2>
+
+		<div
+			style="background-color: #fff3cd; border-radius: 10px; padding: 20px; margin: 20px 0;">
+			<p>感謝您註冊鄰星嗨嗨會員，以下是您的驗證碼</p>
+			<p th:text=${code}></p>
+
+			<br />
+			<p>如有任何問題，請隨時與我們聯絡。</p>
+			<p>如需即時協助，請撥打客服專線：(02)2911-5643</p>
+		</div>
+		<p style="color: #666">謝謝您的理解與配合。</p>
+		<div></div>
+	</div>
+</body>
+</html>

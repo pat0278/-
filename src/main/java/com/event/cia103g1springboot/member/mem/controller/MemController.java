@@ -42,7 +42,8 @@ public class MemController {
 		memVO.setSex(1);
 		memVO.setMemType(1);
 		model.addAttribute("memVO", memVO);
-		return "frontend/mem/register";
+		System.out.println("test");
+		return "front-end/mem/register";
 	}
 
 	@PostMapping("/register")
