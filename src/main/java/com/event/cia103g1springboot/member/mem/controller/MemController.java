@@ -42,7 +42,6 @@ public class MemController {
 		memVO.setSex(1);
 		memVO.setMemType(1);
 		model.addAttribute("memVO", memVO);
-		System.out.println("test");
 		return "front-end/mem/register";
 	}
 
@@ -74,12 +73,12 @@ public class MemController {
 		}
 
 		if (result.hasErrors()) { // 如果result內有任何錯，或part圖片本身是空的就回去原頁面
-			return "frontend/mem/register";
+			return "front-end/mem/register";
 		}
 
 		if (!reg_code.equals(code)) {
 			model.addAttribute("reg_code_error", "信箱驗證碼輸入錯誤，請再次確認");
-			return "frontend/mem/register";
+			return "front-end/mem/register";
 		} else {
 			session.removeAttribute("code");
 		}
@@ -90,7 +89,7 @@ public class MemController {
 
 		/*************************** 3.新增完成,準備轉交 **************/
 		model.addAttribute("success", "帳號註冊成功");
-		return "frontend/mem/login";
+		return "front-end/mem/login";
 	}
 
 	@GetMapping("/login")
