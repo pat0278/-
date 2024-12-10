@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>商品修改 - update_pdt_input.html</title>
+    
+    <!-- 引入Bootstrap & Font Awesome -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    />
+    <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        rel="stylesheet"
+    />
+    <link rel="stylesheet" th:href="@{/css/bb.css}" />
+    <link rel="stylesheet" th:href="@{/css/elm.css}" />
+
+    <style>
+        /* 調整頁面主樣式 */
+    .btn {
+            background-color: #007bff;
+            color: white;
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn .inner {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+            border-radius: 30px;
+        }
+
+        .btn i {
+            margin-right: 5px;
+        }
+
+        .form-control, textarea {
+            border-radius: 0.5rem;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.85rem;
+        }
+
+        .pdt-img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        #pdtImg th, #pdtImg td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table thead {
+            background-color: #60b3f0;
+            color: white;
+        }
+
+        .table td img {
+            border: 1px solid #ddd;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div id="header"><i class="fa-solid fa-box"></i> 商品管理</div>
+    <div id="sub-header"><i class="fa-solid fa-pen-to-square"></i> 商品修改</div>
+    
+    <div class="container">
+        <form class="cus_form mb-5" th:action="@{updatePdt}" method="post" th:object="${pdtVO}">
+            <div class="mb-3">
+                <label for="pdtid-text" class="form-label">商品編號:</label>
+                <input class="form-control" id="pdtid-text" type="text" th:field="*{pdtId}" readonly />
+            </div>
+            
+            <div class="mb-3">
+                <label for="pdttp-sel" class="form-label">商品類別:</label>
+                <select th:field="*{pdtTypeVO.pdtTypeId}" class="form-select">
+                    <option th:each="pdtTypeVO : ${pdtTypeListData}" th:value="${pdtTypeVO.pdtTypeId}" th:text="${pdtTypeVO.pdtTypeName}"></option>
+                </select>
+                <span th:if="${#fields.hasErrors('pdtTypeVO.pdtTypeId')}" th:errors="*{pdtTypeVO.pdtTypeId}" class="error"></span>
+            </div>
+        
+            <div class="mb-3">
+                <label>選擇上架狀態:</label>
+                <div class="form-check">
+                    <input class="form-check-input" id="pdtstat-radio-0" type="radio" th:field="*{pdtStat}" th:value="0">
+                    <label class="form-check-label" for="pdtstat-radio-0">未上架</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" id="pdtstat-radio-1" type="radio" th:field="*{pdtStat}" th:value="1">
+                    <label class="form-check-label" for="pdtstat-radio-1">已上架</label>
+                </div>
+            </div>
+        
+            <div class="mb-3">
+                <label for="pdtname-text" class="form-label">商品名稱:</label>
+                <input class="form-control" id="pdtname-text" type="text" th:field="*{pdtName}" />
+                <span th:if="${#fields.hasErrors('pdtName')}" th:errors="*{pdtName}" class="error"></span>
+            </div>
+            
+            <div class="mb-3">
+                <label for="pdtdesc-text" class="form-label">商品描述:</label>
+                <textarea id="pdtdesc-text" class="form-control" th:field="*{pdtDesc}" rows="4"></textarea>
+                <span th:if="${#fields.hasErrors('pdtDesc')}" th:errors="*{pdtDesc}" class="error"></span>
+            </div>
+            
+            <div class="mb-3">
+                <label for="PdtPrice" class="form-label">商品售價:</label>
+                <input class="form-control" id="PdtPrice" type="text" th:field="*{pdtPrice}" />
+                <span th:if="${#fields.hasErrors('pdtPrice')}" th:errors="*{pdtPrice}" class="error"></span>
+            </div>
+  
+            <div>
+        		<button type="submit" class="btn">
+			        <i class="fa-solid fa-pen"></i> 修改商品
+			        <span class="inner">
+			          <span class="blob"></span>
+			          <span class="blob"></span>
+			          <span class="blob"></span>
+			          <span class="blob"></span>
+			        </span>
+		      </button>
+        	</div>
+        </form>
+        <div class="d-flex justify-content-start align-items-center mb-3">
+		    <!-- 新增圖片按鈕 (左側對齊) -->
+		    <form method="get" th:action="@{/pdtImg/addPdtImg}" class="me-3">
+		        <input type="hidden" name="pdtId" th:value="${pdtVO.pdtId}">
+		        <button type="submit" class="btn btn-success">
+		            <i class="fa-solid fa-file-image"></i> 新增圖片
+		            <span class="inner">
+		                <span class="blob"></span>
+		                <span class="blob"></span>
+		                <span class="blob"></span>
+		                <span class="blob"></span>
+		            </span>
+		        </button>
+		    </form>
+		    <!-- 商品圖片列表標題 (水平置中) -->
+		    <h2 class="text-center flex-grow-1">
+		        <i class="fa-solid fa-images"></i> 商品圖片列表
+		    </h2>
+		</div>
+		  
+        <table id="pdtImg" class="table table-striped" th:fragment="pdtImg-table">
+            <thead>
+                <tr>
+                    <th>序號</th>
+                    <th>圖片編號</th>
+                    <th>圖片名稱</th>
+                    <th>商品名稱</th>
+                    <th>商品圖片</th>
+                    <th>修改</th>
+                    <th>刪除</th>
+                </tr>
+            </thead>
+            <tbody>
+                <th:block th:each="pdtImgVO : ${pdtImgListByPdtId}">
+                    <tr>
+                        <td th:text="${pdtImgVOStat.count}"></td>
+                        <td th:text="${pdtImgVO.pdtImgId}"></td>
+                        <td th:text="${pdtImgVO.pdtImgName}"></td>
+                        <td th:text="${pdtImgVO.pdtVO.pdtId} + '[' + ${pdtImgVO.pdtVO.pdtName} + ']'"></td>
+                        <td><img class="pdt-img" th:src="@{/pdtImg/DBGifReader} + '?pdtImgId=' + ${pdtImgVO.pdtImgId}" /></td>
+                        <td>
+                            <form method="post" th:action="@{/pdtImg/getOnePdtImg_For_Update}">
+                                <input type="hidden" name="pdtImgId" th:value="${pdtImgVO.pdtImgId}" />
+                                <button class="btn btn-warning btn-sm"><i class="fa-solid fa-edit"></i> 編輯</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="post" th:action="@{/pdtImg/deletePdtImg}" onsubmit="return confirm('確定刪除?');">
+                                <input type="hidden" name="pdtImgId" th:value="${pdtImgVO.pdtImgId}" />
+                                <button class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i> 刪除</button>
+                            </form>
+                        </td>
+                    </tr>
+                </th:block>
+            </tbody>
+        </table>
+    </div>
+
+     <div class="button-container">
+        		
+	        	<div>
+		    		<a th:href="@{/product/select_page_pdt}" class="btn">
+		    			<span class="inner">
+				        <span class="blob"></span>
+				        <span class="blob"></span>
+				        <span class="blob"></span>
+				        <span class="blob"></span>
+				      </span>
+				      <i class="fa fa-search"></i> 商品查詢
+		    		</a>
+		    	</div>
+			    <div>
+		    		<a th:href="@{/product/listAllPdt}" class="btn">
+		    			<span class="inner">
+				        <span class="blob"></span>
+				        <span class="blob"></span>
+				        <span class="blob"></span>
+				        <span class="blob"></span>
+				      </span>
+				      <i class="fa-solid fa-clipboard-list"></i> 商品列表
+		    		</a>
+		    	</div>
+	    </div>
+
+    <div th:insert="~{/back-end/footer :: footer}"></div>
+
+    <!-- 引入Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+		function confirmDelete() {
+		       return confirm("是否確定刪除此圖片？");
+		   }
+	</script>
+</body>
+</html>

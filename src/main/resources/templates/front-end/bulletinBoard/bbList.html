@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>公告列表 - BBlist.html</title>
+	
+	<!-- 引入外部資源 -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/hamburgers/1.1.3/hamburgers.min.css"
+    />
+    <link rel="stylesheet" th:href="@{/css/bb.css}" />
+    <style>
+        /* 自訂公告樣式 */
+        .main-container {
+            padding: 20px;
+            background-color: #f9f9f9;
+            min-height: 100vh;
+        }
+        
+        .announcement-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #ffffff;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .announcement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .announcement-card .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .announcement-card .header .type-badge {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .announcement-card h5 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .announcement-card p {
+            margin-bottom: 0;
+            line-height: 1.6;
+        }
+
+        /* 顯示區分釘選公告 */
+        .announcement-card.pinned {
+            border: 2px solid #ff0000;
+            background-color: #fff5f5;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div th:insert="~{/back-end/elm/nav :: nav}"></div>
+    <div class="main-container">
+        <h1 class="text-center mb-4">
+            <i class="fa-solid fa-bullhorn text-primary"></i> 佈告欄
+        </h1>
+
+        <!-- 搜尋區 -->
+         <div class="search-box">
+            <form class="cus_form" method="post" th:action="@{listPostMsg_ByCompositeQuery}">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="msgtype" class="form-label">公告類別</label>
+                        <select id="msgtype" name="msgtype" class="form-select">
+                            <option value="">請選擇類別</option>
+                            <option value="0">行程公告</option>
+                            <option value="1">活動公告</option>
+                            <option value="2">商城公告</option>
+                            <option value="3">其他公告</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="msgtitle" class="form-label">公告標題</label>
+                        <input type="text" id="msgtitle" name="msgtitle" class="form-control" placeholder="請輸入關鍵字">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="posttime" class="form-label">發佈時間</label>
+                        <div class="input-group">
+                            <input type="datetime-local" id="startPosttime" name="startPosttime" class="form-control">
+                            <span class="input-group-text">~</span>
+                            <input type="datetime-local" id="endPosttime" name="endPosttime" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+			        <i class="fa-solid fa-magnifying-glass"></i> 查詢公告
+			        <span class="inner">
+			          <span class="blob"></span>
+			          <span class="blob"></span>
+			          <span class="blob"></span>
+			          <span class="blob"></span>
+			        </span>
+			      </button>
+         
+            </form>
+        </div>
+
+        <!-- 釘選公告 -->
+        <div>
+            <h3><i class="fa-solid fa-thumbtack text-danger"></i> 釘選公告</h3>
+            <div class="row">
+                <div class="col-md-6 mb-3" th:each="bbVO : ${bbPostList}" th:if="${bbVO.isPinned}">
+                    <div class="announcement-card pinned">
+                        <div class="header">
+                            <span class="type-badge badge bg-warning" th:text="${bbVO.msgtype == 0 ? '行程公告' : (bbVO.msgtype == 1 ? '活動公告' : (bbVO.msgtype == 2 ? '商城公告' : '其他公告'))}"></span>
+                            <small th:text="'發佈時間: ' + ${#dates.format(bbVO.posttime, 'yyyy-MM-dd HH:mm')}"></small>
+                        </div>
+                        <h5 th:text="${bbVO.msgtitle}"></h5>
+                        <p th:text="${bbVO.msgcon}"></p>
+                        <button class="btn btn-outline-primary" 
+					            th:data-msgid="${bbVO.msgid}" 
+					            onclick="saveToSession(this)">
+					        <i class="fa-solid fa-bookmark"></i> 收藏
+					    </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 一般公告 -->
+        <div>
+            <h3><i class="fa-solid fa-list text-secondary"></i> 一般公告</h3>
+            <div class="row">
+                <div class="col-md-6 mb-3" th:each="bbVO : ${bbPostList}" th:if="${!bbVO.isPinned}">
+                    <div class="announcement-card">
+                        <div class="header">
+                            <span class="type-badge badge bg-info" th:text="${bbVO.msgtype == 0 ? '行程公告' : (bbVO.msgtype == 1 ? '活動公告' : (bbVO.msgtype == 2 ? '商城公告' : '其他公告'))}"></span>
+                            <small th:text="'發佈時間: ' + ${#dates.format(bbVO.posttime, 'yyyy-MM-dd HH:mm')}"></small>
+                        </div>
+                        <h5 th:text="${bbVO.msgtitle}"></h5>
+                        <p th:text="${bbVO.msgcon}"></p>
+                        <button class="btn btn-outline-primary" 
+					            th:data-msgid="${bbVO.msgid}" 
+					            onclick="saveToSession(this)">
+					        <i class="fa-solid fa-bookmark"></i> 收藏
+					    </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	<div th:insert="~{/back-end/elm/footer :: footer}"></div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 動態處理釘選狀態
+        function togglePin(msgId, isPinned) {
+            const url = isPinned ? `/bulletinBoard/unpinMsg?msgid=${msgid}` : `/bulletinBoard/pinMsg?msgid=${msgid}`;
+            fetch(url, { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                });
+        }
+        function saveToSession(button) {
+            const msgid = button.getAttribute('data-msgid');
+            fetch(`/bulletinBoard/saveToSession?msgId=${msgid}`, { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        alert('收藏成功!');
+                        button.classList.replace('btn-outline-primary', 'btn-success');
+                        button.innerHTML = '<i class="fa-solid fa-check"></i> 已收藏';
+                        button.disabled = true; // 禁止再次点击
+                    } else {
+                        alert('收藏失敗，請稍後再試。');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+    </script>
+</body>
+</html>

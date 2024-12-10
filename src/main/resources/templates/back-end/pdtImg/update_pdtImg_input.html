@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>商品圖片變更 - update_pdtImg_input.html</title>
+	<link rel="stylesheet" th:href="@{/css/bb.css}" />
+	<link rel="stylesheet" th:href="@{/css/elm.css}" />
+	
+</head>
+<body>
+	<div th:insert="~{/back-end/elm/nav :: nav}"></div>
+	<div id="header"><i class="fa-solid fa-box"></i> 商品管理</div>
+    <div id="sub-header"><i class="fa-solid fa-pen-to-square"></i> 商品圖片變更</div>
+    
+    <div th:fragment="updatePdtImg-div">
+        <form class="cus_form" th:action="@{updatePdtImg}" method="post" th:object="${pdtImgVO}" enctype="multipart/form-data">
+        	<div>
+				<label for="pdtImgid-text" >圖片編號:</label>
+				<input class="form-control" id="pdtImgid-text" type="text" th:field="*{pdtImgId}" readonly /><br/>
+			</div>
+			<div>
+				<label for="pdtImgName-text" >圖片名稱:</label>
+				<input class="form-control" id="pdtImgName-text" type="text" th:field="*{pdtImgName}" readonly/><br/>
+			</div>
+			<div>
+                <label for="pdtId-text">商品編號:</label>
+                <input class="form-control" id="pdtId-text" type="text" th:field="*{pdtVO.pdtId}" onclick="hideContent('pdtVO.errors');" readonly/><br/>
+                <span th:if="${#fields.hasErrors('pdtVO.pdtId')}" th:errors="*{pdtVO.pdtId}" class="error" id="pdtVO.errors"></span>
+            </div>
+            <div class="form-group">
+		        <label>商品圖片</label>
+		        <label class="upload_el" for="uploadImg">
+		          <i class="fa-regular fa-image"></i> 上傳圖片
+		        </label>
+		        <input
+		          style="display: none"
+		          type="file"
+		          id="uploadImg"
+		          accept="image/*"
+		          multiple
+		          aria-describedby="imgBlock"
+		          th:field="*{pdtImg}"
+		          onclick="previewImage()"
+		          onchange="hideContent('pdtImg.errors');"
+		          name="pdtImg"
+		        />
+	      </div>
+	      <span class="error" th:utext="${errorMessage}" id="pdtImg.errors">${errorMessage}</span>
+	      <div class="img_prev">
+	        <ul class="prev_ul_el">
+	        	<img th:src="@{/pdtImg/DBGifReader} + '?pdtImgId='+${pdtImgVO.pdtImgId}" width=500px>
+	        </ul>
+	      </div>
+	
+	      <button type="submit" class="btn">
+	        <i class="fa-solid fa-pen-to-square"></i> 修改圖片
+	        <span class="inner">
+	          <span class="blob"></span>
+	          <span class="blob"></span>
+	          <span class="blob"></span>
+	          <span class="blob"></span>
+	        </span>
+	      </button>
+		</form>
+	</div>
+	
+	<div class="button-container">
+       	<div>
+    		<a th:href=@{/product/select_page_pdt} class="btn">
+    			<span class="inner">
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		      </span>
+		      <i class="fa fa-search"></i> 商品查詢
+    		</a>
+    	</div>
+    	<div>
+    		<a th:href=@{/product/listAllPdt} class="btn">
+    			<span class="inner">
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		      </span>
+		      <i class="fa-solid fa-clipboard-list"></i> 商品列表
+    		</a>
+    	</div>
+    </div>
+	<div th:insert="~{/back-end/footer :: footer}"></div>
+	
+	 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+
+    <script>
+
+    // 清除提示信息
+    function hideContent(d) {
+        document.getElementById(d).style.display = "none";
+    }
+      const upload_el = document.querySelector("#uploadImg");
+      const upload_label = document.querySelector(".upload_el");
+
+      upload_el.addEventListener("change", function (e) {
+        const prev_ul_el = document.querySelector(".prev_ul_el");
+        prev_ul_el.innerHTML = "";
+
+        if (this.files.length === 1) {
+          prev_ul_el.style.justifyContent = "center";
+        } else prev_ul_el.style.justifyContent = "start";
+
+        if (this.files.length > 0) {
+          upload_label.innerHTML = `<i class="fa-solid fa-circle-check"></i> done`;
+        } else {
+          upload_label.innerHTML = `<i class="fa-regular fa-image"></i> choose photo`;
+        }
+
+        for (let i = 0; i < this.files.length; i++) {
+          let fileReader = new FileReader();
+          fileReader.readAsDataURL(this.files[i]);
+          fileReader.addEventListener("load", () => {
+            let li_str = `
+              <li>
+                <img src="${fileReader.result}">
+                <div>${this.files[i].name}</div>
+              </li>
+              `;
+
+            prev_ul_el.insertAdjacentHTML("beforeend", li_str);
+          });
+        }
+      });
+    </script>
+
+</body>
+</html>

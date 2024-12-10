@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>新增房型圖片 - addRImg.html</title>
+    <link rel="stylesheet" th:href="@{/css/bb.css}" />
+    <link rel="stylesheet" th:href="@{/css/elm.css}" />
+</head>
+<body>
+	<div id="header">房型管理</div>
+    <div id="sub-header">新增房型圖片</div>
+    <div>
+    	<form class="cus_form" th:action="@{insertRImg}" th:object="${rImgVO}" method="POST" enctype="multipart/form-data">
+	      <div>
+              <label for="rtId-text">房型編號:</label>
+              <input class="form-control" id="rtId-text" name="roomTypeId" type="text"  th:value="${rtVO.roomTypeId}" onclick="hideContent('rtVO.roomTypeId.errors');" readonly/><br/>
+              <span th:if="${#fields.hasErrors('rtVO.roomTypeId')}" th:errors="*{rtVO.roomTypeId}" class="error" id="rtVO.roomTypeId.errors"></span>
+          </div>
+          <div class="form-group">
+	        <label>房型圖片</label>
+	        <label class="upload_el" for="uploadImg">
+	          <i class="fa-regular fa-image"></i> 上傳圖片
+	        </label>
+	        <input
+	          style="display: none"
+	          type="file"
+	          id="uploadImg"
+	          accept="image/*"
+	          multiple
+	          name="roomImgFiles"
+	          aria-describedby="imgBlock"
+	          onclick="previewImage()"
+	          onchange="hideContent('roomImg.errors');"
+	        />
+	      </div>
+	      <span class="error" th:utext="${errorMessage}" id="roomImg.errors">${errorMessage}</span>
+	      <div class="img_prev">
+	        <ul class="prev_ul_el"></ul>
+	      </div>
+	
+	      <button type="submit" class="btn">
+	        Submit
+	        <span class="inner">
+	          <span class="blob"></span>
+	          <span class="blob"></span>
+	          <span class="blob"></span>
+	          <span class="blob"></span>
+	        </span>
+	      </button>
+    	</form>
+    </div>
+    <div class="button-container">
+	        <div>
+	    		<a th:href=@{/rt/select_page_RT} class="btn">
+	    			<span class="inner">
+			        <span class="blob"></span>
+			        <span class="blob"></span>
+			        <span class="blob"></span>
+			        <span class="blob"></span>
+			      </span>
+			      <i class="fa fa-search"></i> 房型查詢
+	    		</a>
+	    	</div>
+		    <div>
+	    		<a th:href=@{/rt/listAllRT} class="btn">
+	    			<span class="inner">
+			        <span class="blob"></span>
+			        <span class="blob"></span>
+			        <span class="blob"></span>
+			        <span class="blob"></span>
+			      </span>
+			      <i class="fa-solid fa-clipboard-list"></i> 房型列表
+	    		</a>
+	    	</div>
+	    </div>
+    
+    <div th:insert="~{/back-end/footer :: footer}"></div>
+   
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+
+    <script>
+
+    // 清除提示信息
+    function hideContent(d) {
+        document.getElementById(d).style.display = "none";
+    }
+      const upload_el = document.querySelector("#uploadImg");
+      const upload_label = document.querySelector(".upload_el");
+
+      upload_el.addEventListener("change", function (e) {
+        const prev_ul_el = document.querySelector(".prev_ul_el");
+        prev_ul_el.innerHTML = "";
+
+        if (this.files.length === 1) {
+          prev_ul_el.style.justifyContent = "center";
+        } else prev_ul_el.style.justifyContent = "start";
+
+        if (this.files.length > 0) {
+          upload_label.innerHTML = `<i class="fa-solid fa-circle-check"></i> done`;
+        } else {
+          upload_label.innerHTML = `<i class="fa-regular fa-image"></i> choose photo`;
+        }
+
+        for (let i = 0; i < this.files.length; i++) {
+          let fileReader = new FileReader();
+          fileReader.readAsDataURL(this.files[i]);
+          fileReader.addEventListener("load", () => {
+            let li_str = `
+              <li>
+                <img src="${fileReader.result}">
+                <div>${this.files[i].name}</div>
+              </li>
+              `;
+
+            prev_ul_el.insertAdjacentHTML("beforeend", li_str);
+          });
+        }
+      });
+    </script>
+		
+</body>
+</html>

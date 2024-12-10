@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>查詢商品類別-select_page_pdtType.html</title>
+	<link rel="stylesheet" th:href="@{/css/bb.css}" />
+	<link rel="stylesheet" th:href="@{/css/elm.css}" />
+	
+</head>
+<body>
+	<div id="header">商品類別管理</div>
+	<div id="sub-header">類別查詢</div>
+	
+	
+	
+    <div class="errorblock" th:utext="${errorMsg}">${errorMsg}</div><br>
+
+    <div class="search-div"> 
+      <form class="cus_form" method="post" th:action="@{getPdtType_For_Display}">
+      	<div>
+      		<label for="pdtTypeName_sel">選擇商品類別名稱 :</label>
+			<select size="1" name="pdtTypeId" id="pdtTypeName_sel">
+				 <option th:each="pdtTypeVO : ${pdtTypeListData}" th:value="${pdtTypeVO.pdtTypeId}" th:text="${pdtTypeVO.pdtTypeName}"/>
+			</select>
+          	<button type="submit" class="btn">
+			        送出查詢
+			        <span class="inner">
+			          <span class="blob"></span>
+			          <span class="blob"></span>
+			          <span class="blob"></span>
+			          <span class="blob"></span>
+			        </span>
+		      </button>
+      	</div>
+		</form>
+		
+      <div th:if="${validationErrors}" class="error-block">
+	    <ul>
+	        <li th:each="error : ${validationErrors}" th:text="${error.defaultMessage}"></li>
+	    </ul>
+		</div>
+
+	</div>
+	
+	<div class="result" th:if="${getPdtType_For_Display}">
+		<div th:insert="~{/back-end/productType/listOnePdtType :: ListOnePdtType-div}"></div>
+	</div>
+
+    <div class="button-container">
+    	<div>
+	   		<a th:href="@{/}" class="btn">
+	   			<span class="inner">
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		      </span>
+		      功能總覽
+	   		</a>
+	   	</div>
+        <div>
+	   		<a th:href="@{/productType/listAllPdtType}" class="btn">
+	   			<span class="inner">
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		      </span>
+		      類別列表
+	   		</a>
+	   	</div>
+        <div>
+	   		<a th:href='addPdtType' class="btn">
+	   			<span class="inner">
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		      </span>
+		      新增類別
+	   		</a>
+	   	</div>
+    </div>
+	<div th:insert="~{/back-end/footer :: footer}"></div>
+</body>
+</html>
