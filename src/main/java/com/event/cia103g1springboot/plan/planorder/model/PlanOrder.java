@@ -99,6 +99,4 @@
                         ", cardLast4='" + cardLast4 + '\'' +
                         '}';
             }
-
-
         }
