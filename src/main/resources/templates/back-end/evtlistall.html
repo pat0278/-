@@ -106,40 +106,40 @@
     }
 
     .button-container .btn {
-        min-width: 50px;  /* 減少最小寬度 */
-        padding: 4px 8px;  /* 減少內邊距 */
-        margin: 0 2px;    /* 減少外邊距 */
-        font-size: 0.85em;  /* 稍微縮小字體 */
+        min-width: 50px;
+        padding: 4px 8px;
+        margin: 0 2px;
+        font-size: 0.85em;
     }
 
-    /* 確保表格容器可以水平捲動 */
+
     .table-container {
         overflow-x: auto;
         min-width: 100%;
         padding: 10px;
     }
 
-    /* 調整表格本身 */
+
     table {
         min-width: 80%;
         width: fit-content;
-        margin: 0 auto;/* 允許表格根據內容擴展 */
+        margin: 0 auto;
     }
 
-    /* 調整日期時間顯示 */
+
     .datetime {
         min-width: 90px;
         padding: 4px;
     }
 
-    /* 調整圖片容器 */
+
     .event-images {
         min-width: 120px;
         gap: 2px;
         padding: 2px;
     }
 
-    /* 狀態標籤 */
+
     .status-active, .status-inactive, .status-ended, .status-full {
         padding: 5px 15px;
         border-radius: 20px;
@@ -150,23 +150,23 @@
         white-space: nowrap;
     }
 
-    /* 報名中 - 綠色 */
+
     .status-active {
-        background-color: #28a745;  /* 深綠色背景 */
+        background-color: #28a745;
         color: white;
         border-color: #1e7e34;
         box-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
     }
 
-    /* 未開始 - 黃色 */
+
     .status-inactive {
-        background-color: #ffc107;  /* 黃色背景 */
-        color: #000;   /* 黑色文字，增加可讀性 */
+        background-color: #ffc107;
+        color: #000;
         border-color: #d39e00;
         box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
     }
 
-    /* 已結束 - 紅色 */
+
     .status-ended {
         background-color: #dc3545;  /* 紅色背景 */
         color: white;
@@ -181,7 +181,7 @@
         box-shadow: 0 0 10px rgba(253, 126, 20, 0.3);
     }
 
-    /* 懸停效果 */
+
     .status-active:hover {
         background-color: #218838;
         box-shadow: 0 0 15px rgba(40, 167, 69, 0.4);
@@ -202,7 +202,7 @@
         box-shadow: 0 0 15px rgba(232, 89, 12, 0.4);
     }
 
-    /* 按鈕組 */
+
     .button-container {
         display: flex;
         gap: 4px;
@@ -219,7 +219,7 @@
         transition: all 0.3s;
     }
 
-    /* 上架按鈕 - 綠色 */
+
     .publish-btn {
         background-color: transparent;
         border-color: #28a745;
@@ -233,7 +233,7 @@
         transform: translateY(-2px);
     }
 
-    /* 下架按鈕 - 黃色 */
+
     .unpublish-btn {
         background-color: transparent;
         border-color: #ffc107;
@@ -247,7 +247,7 @@
         transform: translateY(-2px);
     }
 
-    /* 修改按鈕 - 藍色 */
+
     .btn-primary {
         background-color: transparent;
         border-color: #0080ff;
@@ -267,8 +267,7 @@
         margin: 2rem 0;
     }
 
-    /* 分頁樣式 */
-    /* 分頁容器 - 確保不超出父容器 */
+
     .pagination-container {
         display: flex;
         justify-content: center;
@@ -383,7 +382,7 @@
     .image-container {
         position: relative;
         width: 100%;
-        padding-top: 100%; /* 保持正方形比例 */
+        padding-top: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -394,8 +393,8 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 85%; /* 縮小圖片大小 */
-        height: 85%; /* 縮小圖片大小 */
+        width: 85%;
+        height: 85%;
         object-fit: cover;
         border-radius: 4px;
         transition: transform 0.3s;
@@ -405,7 +404,7 @@
         transform: translate(-50%, -50%) scale(1.05); /* 修改 hover 效果以配合新的定位 */
     }
 
-    /* 描述文字 */
+
     .description {
         display: -webkit-box;
         -webkit-line-clamp: 3;

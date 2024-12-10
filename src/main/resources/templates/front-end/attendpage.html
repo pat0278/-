@@ -262,15 +262,16 @@
                 </small>
             </div>
             <!-- 驗證碼,渲染時生成的 -->
-            <div class="form-group">
-                <label>驗證碼：</label>
+        <div class="form-group">
+            <label>驗證碼：</label>
+            <div style="margin-bottom: 10px; text-align: left;">
                 <img id="captchaImage"
                      th:src="@{/captcha/generate(key=${captchaKey})}"
                      onclick="refreshCaptcha()"
-                     style="cursor:pointer">
-                <input type="text" id="captcha" name="captcha" class="form-control basic_input" required>
-                <small class="form-text text-muted">點擊圖片可重新產生驗證碼</small>
+                     style="cursor:pointer; margin-left: 11px;">
+                <small class="form-text text-muted" style="margin-left: 10px;">點擊圖片可重新產生驗證碼</small>
             </div>
+            <input type="text" id="captcha" name="captcha" class="form-control basic_input" required>
         </div>
 
 
