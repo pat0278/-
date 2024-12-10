@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>新增房型 - addRT.html</title>
+    <link rel="stylesheet" th:href="@{/css/bb.css}" />
+    <link rel="stylesheet" th:href="@{/css/elm.css}" />
+</head>
+<body>
+	<div id="header"><i class="fa-solid fa-hotel"></i> 房型管理</div>
+    <div id="sub-header"><i class="fa fa-plus"></i> 新增房型</div>
+    
+    <div>
+        <h3>以下欄位皆為必填</h3>
+        <form class="cus_form" th:action="@{/rt/addRTAndRImgs}" method="post" th:object="${rtVO}" enctype="multipart/form-data">
+        	<div class="form-group">
+                <label for="rtname-text">房型名稱:</label>
+                <input class="form-control" id="rtname-text" type="text" th:field="*{roomTypeName}" onclick="hideContent('roomTypeName.errors');" placeholder="請輸入房型名稱"/><br/>
+                <span th:if="${#fields.hasErrors('roomTypeName')}" th:errors="*{roomTypeName}" class="error" id="roomTypeName.errors"></span>
+            </div>
+            <div class="form-group">
+                <label for="rtdesc-text">房型描述:</label>
+                <textarea id="rtdesc-text" class="form-control" th:field="*{roomTypeDesc}" rows="4" cols="50" onclick="hideContent('roomTypeDesc.errors');" placeholder="請輸入房型描述"></textarea><br/>
+                <span th:if="${#fields.hasErrors('roomTypeDesc')}" th:errors="*{roomTypeDesc}" class="error" id="roomTypeDesc.errors"></span>
+            </div>
+        	<div class="form-group">
+                <label for="rtqty-text">房型數量:</label>
+                <input class="form-control" id="rtqty-text" type="text" th:field="*{roomQty}" onclick="hideContent('roomQty.errors');" placeholder="請輸入房型總數"/><br/>
+                <span th:if="${#fields.hasErrors('roomQty')}" th:errors="*{roomQty}" class="error" id="roomQty.errors"></span>
+            </div>
+        	<div class="form-group">
+                <label for="rtprice-text">房型定價:</label>
+                <input class="form-control" id="rtprice-text" type="text" th:field="*{roomPrice}" onclick="hideContent('roomPrice.errors');" placeholder="請輸入房型定價"/><br/>
+                <span th:if="${#fields.hasErrors('roomPrice')}" th:errors="*{roomPrice}" class="error" id="roomPrice.errors"></span>
+            </div>
+            <div class="form-group">
+                <label for="rtocp-text">容納人數:</label>
+                <input class="form-control" id="rtocp-text" type="text" th:field="*{occupancy}" onclick="hideContent('occupancy.errors');" placeholder="請輸入可容納人數"/><br/>
+                <span th:if="${#fields.hasErrors('occupancy')}" th:errors="*{occupancy}" class="error" id="occupancy.errors"></span>
+            </div>
+            <div class="form-group">
+		        <label>房型圖片</label>
+		        <label class="upload_el" for="uploadImg">
+		          <i class="fa-regular fa-image"></i> 上傳圖片
+		        </label>
+		        <input
+		          style="display: none"
+		          type="file"
+		          id="uploadImg"
+		          accept="image/*"
+		          multiple
+		          name="rImg"
+		          aria-describedby="imgBlock"
+		          th:field="*{rImg}"
+		          onclick="previewImage()"
+		          onchange="hideContent('rImg.errors');"
+		        />
+	      </div>
+	      	<span class="error" th:utext="${errorMessage}" id="rImg.errors">${errorMessage}</span>
+	      <div class="img_prev">
+	        <ul class="prev_ul_el"></ul>
+	      </div>
+            <div>
+            	<button type="submit" class="btn">
+			        <i class="fa fa-plus"></i> 新增房型
+			        <span class="inner">
+			          <span class="blob"></span>
+			          <span class="blob"></span>
+			          <span class="blob"></span>
+			          <span class="blob"></span>
+			        </span>
+			    </button>
+            </div>
+        </form>
+	</div>
+	<div class="button-container">
+	        <div>
+	    		<a th:href="@{/rt/select_page_RT}" class="btn">
+	    			<span class="inner">
+			        <span class="blob"></span>
+			        <span class="blob"></span>
+			        <span class="blob"></span>
+			        <span class="blob"></span>
+			      </span>
+			      <i class="fa fa-search"></i> 房型查詢
+	    		</a>
+	    	</div>
+		    <div>
+	    		<a th:href="@{/rt/listAllRT}" class="btn">
+	    			<span class="inner">
+			        <span class="blob"></span>
+			        <span class="blob"></span>
+			        <span class="blob"></span>
+			        <span class="blob"></span>
+			      </span>
+			      <i class="fa-solid fa-clipboard-list"></i> 房型列表
+	    		</a>
+	    	</div>
+	    </div>
+	<div th:insert="~{/back-end/footer :: footer}"></div>
+   
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+
+    <script>
+	    function hideContent(d) {
+	        document.getElementById(d).style.display = "none";
+	    }
+    </script>
+</body>
+</html>

@@ -38,6 +38,12 @@ public class RImgController<rImgVO> {
 	@Autowired
 	RTService rtSvc;
 	
+	@ModelAttribute("rImgListData")
+	protected List<RImgVO> referenceListData_RImg(Model model) {
+		List<RImgVO> list = rImgSvc.getAllRImg();
+		return list;
+	}
+	
 	@GetMapping("addRImg")
 	public String addRImg(@RequestParam("roomTypeId") String roomTypeId, Model model) {
 		RImgVO rImgVO = new RImgVO();

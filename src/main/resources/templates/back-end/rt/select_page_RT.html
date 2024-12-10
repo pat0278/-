@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>查詢房型-select_page_RT.html</title>
+    <link rel="stylesheet" th:href="@{/css/bb.css}" />
+    <link rel="stylesheet" th:href="@{/css/elm.css}" />
+</head>    
+<body>
+    <!-- 導航欄 -->
+    
+    <!-- 頁面標題 -->
+    <div id="header"><i class="fa-solid fa-hotel"></i> 房型管理</div>
+    <div id="sub-header"><i class="fa fa-search"></i> 房型查詢</div>
+    
+    <!-- 錯誤區塊 -->
+    <div class="errorblock" th:utext="${errorMsg}">${errorMsg}</div><br>
+    <div th:if="${validationErrors}" class="error-block">
+        <ul>
+            <li th:each="error : ${validationErrors}" th:text="${error.defaultMessage}"></li>
+        </ul>
+    </div>
+
+    <!-- 查詢表單 -->
+    <div>
+        <form class="cus_form" method="post" th:action="@{listRT_ByCompositeQuery}">
+            <!-- 房型編號 -->
+            <div>
+                <label for="rtid-text">房型編號:</label>
+                <input class="form-control" id="rtid-text" type="text" name="roomTypeId" placeholder="輸入房型編號(如:1)"><br>
+            </div>
+
+            <!-- 房型名稱 -->
+            <div>
+                <label for="rtname-text">房型名稱:</label>
+                <input class="form-control" id="rtname-text" type="text" name="roomTypeName" placeholder="輸入關鍵字"><br>
+            </div>
+
+            <!-- 房型描述 -->
+            <div>
+                <label for="rtdesc-text">房型描述:</label>
+                <input class="form-control" id="rtdesc-text" type="text" name="roomTypeDesc" placeholder="輸入關鍵字"><br>
+            </div>
+
+            <!-- 房型售價 -->
+            <div>
+                <label for="rtprice-text">房型售價:</label>
+                <input class="form-control" id="startRoomPrice" type="text" name="startRoomPrice" placeholder="輸入售價">
+                <span>~</span>
+                <input class="form-control" id="endRoomPrice" type="text" name="endRoomPrice" placeholder="輸入售價"><br>
+            </div>
+
+            <!-- 容納人數 -->
+            <div>
+                <label for="rtocp-text">容納人數:</label>
+                <input class="form-control" id="startOccupancy" type="text" name="startOccupancy" placeholder="輸入容納人數">
+                <span>~</span>
+                <input class="form-control" id="endOccupancy" type="text" name="endOccupancy" placeholder="輸入容納人數"><br>
+            </div>
+
+            <!-- 提交按鈕 -->
+            <div>
+                <button type="submit" class="btn">
+                    <i class="fa fa-search"></i> 房型查詢
+                    <span class="inner">
+                        <span class="blob"></span>
+                        <span class="blob"></span>
+                        <span class="blob"></span>
+                        <span class="blob"></span>
+                    </span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 查詢結果 -->
+    <div class="result" th:if="${getRT_For_Display}">
+        <div th:insert="~{/back-end/rt/listOneRT :: listOneRT-div}"></div>
+    </div>
+
+    <!-- 底部按鈕 -->
+    <div class="button-container">
+        <div>
+            <a th:href="@{/}" class="btn">
+                <span class="inner">
+                    <span class="blob"></span>
+                    <span class="blob"></span>
+                    <span class="blob"></span>
+                    <span class="blob"></span>
+                </span>
+                <i class="fa fa-home"></i> 功能總覽
+            </a>
+        </div>
+        <div>
+            <a th:href="@{/rt/addRT}" class="btn">
+                <span class="inner">
+                    <span class="blob"></span>
+                    <span class="blob"></span>
+                    <span class="blob"></span>
+                    <span class="blob"></span>
+                </span>
+                <i class="fa fa-plus"></i> 新增房型
+            </a>
+        </div>
+    </div>
+
+    <!-- 頁腳 -->
+    <div th:insert="~{/back-end/footer :: footer}"></div>
+</body>
+</html>

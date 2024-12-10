@@ -37,6 +37,22 @@ public class RTController {
 	@Autowired
 	RImgService rImgSvc;
 	
+	@GetMapping("/select_page_RT")
+	public String select_page_RT(Model model) {
+		return "back-end/rt/select_page_RT";
+	}
+	
+	@GetMapping("/listAllRT")
+	public String listAllRT(Model model) {
+		return "back-end/rt/listAllRT";
+	}
+	
+	@ModelAttribute("rtListData")
+	protected List<RTVO> referenceListData_RT(Model model) {
+		List<RTVO> list = rtSvc.getAllRT();
+		return list;
+	}
+	
 	@PostMapping("addRTAndRImgs")
 	public String addRTAndRImgs(@Valid RTVO rtVO, BindingResult result,
 								@RequestParam("rImg") MultipartFile[] parts,
