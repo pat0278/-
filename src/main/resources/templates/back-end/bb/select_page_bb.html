@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>查詢公告-select_page_bb.html</title>
+	<link rel="stylesheet" th:href="@{/css/bb.css}" />
+	
+</head>
+<body>
+	<div th:insert="~{/back-end/elm/nav :: nav}"></div>
+    <div id="header">佈告欄管理</div>
+    <div id="sub-header">公告查詢</div>
+
+    <div class="errorblock" th:utext="${errorMsg}">${errorMsg}</div><br>
+
+    <div class="search-div">
+        <ul>
+			<div th:if="${validationErrors}" class="error-block">
+			    <ul>
+			        <li th:each="error : ${validationErrors}" th:text="${error.defaultMessage}"></li>
+			    </ul>
+			</div>
+			
+            <li>
+                <form class="cus_form" method="post" th:action="@{listMsg_ByCompositeQuery}">
+                    <div>
+                    	<label for="msgtype-sel">公告類別:</label>
+	                    <select id="msgtype-sel" name="msgtype">
+	                        <option value=""/>請選擇類別</option>
+	                        <option value="0">行程公告</option>
+	                        <option value="1">活動公告</option>
+	                        <option value="2">商城公告</option>
+	                        <option value="3">其他公告</option>
+	                    </select>
+                    </div>
+                    
+					<div class="form-group">
+	                    <label for="msgtitle-text">公告標題:</label>
+	                    <input  class="form-control" id="msgtitle-text" type="text" name="msgtitle" placeholder="請輸入關鍵字"><br>
+					</div>
+
+					 <div>
+	                    <label for="msgcon-text">公告內容:</label>
+	                    <input id="msgcon-text" type="text" name="msgcon" placeholder="請輸入關鍵字"><br>
+					</div>
+
+					<div class="form-group radio_el">
+	                    <label>選擇發佈狀態:</label>
+	                    <div class="form-check">
+						    <input class="form-check-input" id="msgstat-radio-0" type="radio" name="poststat" value="0">
+						    <label class="form-check-label" for="msgstat-radio-0" style="margin-right: 20px;">未發佈</label>
+						</div>
+						<div class="form-check">
+						    <input class="form-check-input" id="msgstat-radio-1" type="radio" name="poststat" value="1">
+						    <label class="form-check-label" for="msgstat-radio-1">已發佈</label>
+						</div>
+					</div>
+					
+					<div>
+	                    <label for="startPosttime">發佈時間:</label>
+	                    <input id="startPosttime" type="datetime-local" name="startPosttime">
+	                    <span>~</span>
+	                    <input id="endPosttime" type="datetime-local" name="endPosttime"><br>
+					</div>
+                    <button type="submit" class="btn">
+				        查詢公告
+				        <span class="inner">
+				          <span class="blob"></span>
+				          <span class="blob"></span>
+				          <span class="blob"></span>
+				          <span class="blob"></span>
+				        </span>
+				      </button>
+                </form>
+            </li>
+        </ul>
+    </div>
+
+	<div class="result" th:if="${getOne_For_Display}">
+		<div th:insert="~{/back-end/bb/listOneMsg :: ListOneMsg-div}"></div>
+	</div>
+
+    <div class="button-container">
+    	<div>
+    		<a th:href='@{/}' class="btn">
+    			<span class="inner">
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		      </span>
+		      功能總覽
+    		</a>
+    	</div>
+        
+        <div>
+    		<a th:href='addMsg' class="btn">
+    			<span class="inner">
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		      </span>
+		      新增公告
+    		</a>
+    	</div>
+    </div>
+    <div th:insert="~{/back-end/elm/footer :: footer}"></div>
+</body>
+</html>
