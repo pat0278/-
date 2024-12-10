@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>新增商品類別 - addPdtType.html</title>
+    <link rel="stylesheet" th:href="@{/css/bb.css}" />
+    <link rel="stylesheet" th:href="@{/css/elm.css}" />
+
+</head>
+<body>
+	<div id="header">商品類別管理</div>
+	<div id="sub-header">類別新增</div>
+	
+	<div>
+		<h3>以下欄位皆為必填</h3>
+		<form class="cus_form" th:action="insertPdtType" th:object="${pdtTypeVO}" method="post" name=form1>
+			<div>
+				<lable for="pdttpname-index">類別名稱:</lable>
+				<input class="form-control" id="pdttpname-index" type="text" th:field="*{pdtTypeName}" onclick="hideContent('pdtTypeName.errors');"/>
+				<span th:if="${#fields.hasErrors('pdtTypeName')}" th:errors="*{pdtTypeName}" class="error" id="pdtTypeName.errors"></span>
+			</div>
+			
+			<div>
+				<lable for="pdttpdesc-index">類別描述:</lable>
+				<input class="form-control" id="pdttpdesc-index" type="text" th:field="*{pdtTypeDesc}" onclick="hideContent('pdtTypeDesc.errors');"/>
+				<span th:if="${#fields.hasErrors('pdtTypeDesc')}" th:errors="*{pdtTypeDesc}" class="error" id="pdtTypeDesc.errors"></span>
+			</div>
+		<br>
+		<div class="button-container">
+			<button type="submit" class="btn">
+			        送出新增
+			        <span class="inner">
+			          <span class="blob"></span>
+			          <span class="blob"></span>
+			          <span class="blob"></span>
+			          <span class="blob"></span>
+			        </span>
+		      </button>
+	      	<div>
+	    		<a th:href='select_page_pdtType' class="btn">
+	    			<span class="inner">
+			        <span class="blob"></span>
+			        <span class="blob"></span>
+			        <span class="blob"></span>
+			        <span class="blob"></span>
+			      </span>
+			      類別查詢
+	    		</a>
+	    	</div>
+		</div>
+		
+	</form>
+	</div>
+	<div th:insert="~{/back-end/footer :: footer}"></div>
+	<script type="text/javascript">
+        // 清除提示信息
+        function hideContent(d) {
+            document.getElementById(d).style.display = "none";
+        }
+    </script>
+	
+</body>
+</html>

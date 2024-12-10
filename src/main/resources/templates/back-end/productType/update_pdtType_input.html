@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>商品類別修改 - update_pdtType_input.html</title>
+	<link rel="stylesheet" th:href="@{/css/bb.css}" />
+	<link rel="stylesheet" th:href="@{/css/elm.css}" />
+</head>
+<body>
+	<div id="header">商品類別管理</div>
+    <div id="sub-header">編輯類別資料</div>
+    
+    <form class="cus_form" th:action="@{updatePdtType}" method="post" th:object="${pdtTypeVO}" >
+<!-- 	enctype="multipart/form-data"> -->
+		<div>
+			<label for="msgid-text" >類別編號:</label>
+			<input class="form-control" id="msgid-text" type="text" th:field="*{pdtTypeId}" readonly /><br/>
+		</div>
+		 <div>
+              <label for="msgtitle-text">類別名稱:</label>
+              <input class="form-control" id="msgtitle-text" type="text" th:field="*{pdtTypeName}" onclick="hideContent('pdtTypeName.errors');" /><br/>
+              <span th:if="${#fields.hasErrors('pdtTypeName')}" th:errors="*{pdtTypeName}" class="error" id="pdtTypeName.errors"></span>
+          </div>
+
+          <div>
+              <label for="msgcon-text">類別描述:</label>
+              <textarea id="msgcon-text" th:field="*{pdtTypeDesc}" rows="4" cols="50" onclick="hideContent('pdtTypeDesc.errors');"></textarea><br/>
+              <span th:if="${#fields.hasErrors('pdtTypeDesc')}" th:errors="*{pdtTypeDesc}" class="error" id="pdtTypeDesc.errors"></span>
+          </div>
+          <div>
+                <button type="submit" class="btn">
+			        送出修改
+			        <span class="inner">
+			          <span class="blob"></span>
+			          <span class="blob"></span>
+			          <span class="blob"></span>
+			          <span class="blob"></span>
+			        </span>
+		      </button>
+          </div>
+     </form>
+     
+     <div class="button-container">
+     	<div>
+    		<a th:href="@{/productType/select_page_pdtType}" class="btn">
+    			<span class="inner">
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		      </span>
+		      類別查詢
+    		</a>
+    	</div>
+        <div>
+    		<a th:href="@{/productType/listAllPdtType}" class="btn">
+    			<span class="inner">
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		      </span>
+		      類別列表
+    		</a>
+    	</div>
+    </div>
+	<div th:insert="~{/back-end/footer :: footer}"></div>
+    <script type="text/javascript">
+        // 清除提示信息
+        function hideContent(d) {
+            document.getElementById(d).style.display = "none";
+        }
+    </script>
+    
+</body>
+</html>

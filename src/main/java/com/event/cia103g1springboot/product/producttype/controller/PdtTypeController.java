@@ -29,6 +29,22 @@ public class PdtTypeController {
 	@Autowired
 	PdtTypeService pdtTypeSvc;
 	
+	@GetMapping("/select_page_pdtType")
+	public String select_page_pdtType(Model model) {
+		return "back-end/productType/select_page_pdtType";
+	}
+	
+	@GetMapping("/listAllPdtType")
+	public String listAllPdtType(Model model) {
+		return "back-end/productType/listAllPdtType";
+	}
+	
+	@ModelAttribute("pdtTypeListData")
+	protected List<PdtTypeVO> referenceListData_pdtType(Model model) {
+		List<PdtTypeVO> list = pdtTypeSvc.getAll();
+		return list;
+	}
+	
 	@GetMapping("addPdtType")
 	public String  addPdtType (ModelMap model) {
 		PdtTypeVO pdtTypeVO = new PdtTypeVO();
