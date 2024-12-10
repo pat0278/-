@@ -1,14 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>修改行程</title>
-  <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/elm.css" />
-  <link rel="stylesheet" href="/css/plan.css" />
-
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -18,19 +16,28 @@
 </nav>
 
 <div class="container mt-5">
-  <h2>修改行程</h2>
+  <h2 class="text-center">修改行程</h2>
+
+  <!-- 錯誤或成功訊息顯示 -->
+  <div th:if="${error != null}" class="alert alert-danger" role="alert">
+    <p th:text="${error}"></p>
+  </div>
+  <div th:if="${message != null}" class="alert alert-success" role="alert">
+    <p th:text="${message}"></p>
+  </div>
+
   <form th:action="@{/api/plan/edit}" method="post">
-    <!-- Hidden Input for Plan ID -->
+    <!-- 隱藏的 Plan ID -->
     <input type="hidden" th:value="${plan.planId}" name="planId">
 
-    <!-- 行程類型 -->
+    <!-- 行程類別 -->
     <div class="mb-3">
-      <label for="planTypeId" class="form-label">行程類型</label>
+      <label for="planTypeId" class="form-label">行程類別</label>
       <select class="form-control" id="planTypeId" name="planTypeId" required>
-        <option value="" disabled selected>請選擇行程類型</option>
+        <option value="" disabled>請選擇行程類別</option>
         <th:block th:each="planType : ${planTypes}">
           <option th:value="${planType.planTypeId}"
-                  th:selected="${plan.planType.planTypeId == planType.planTypeId}"
+                  th:selected="${plan.planType != null and plan.planType.planTypeId == planType.planTypeId}"
                   th:text="${planType.planTypeId} + ' : ' + ${planType.planName} + ' (' + ${planType.planDay} + ' 天)'">
           </option>
         </th:block>
@@ -61,7 +68,7 @@
       <input type="number" class="form-control" id="attMax" name="attMax" th:value="${plan.attMax}" required>
     </div>
 
-    <!-- 目前人數 -->
+    <!-- 目前參加人數 -->
     <div class="mb-3">
       <label for="attEnd" class="form-label">目前參加人數</label>
       <input type="number" class="form-control" id="attEnd" name="attEnd" th:value="${plan.attEnd}" required>
@@ -70,17 +77,16 @@
     <!-- 提交按鈕 -->
     <button type="submit" class="btn btn-primary w-100">保存修改</button>
   </form>
-  <form th:action="@{/plans/query}" method="get">
-    <button type="submit" class="btn btn-secondary">取消修改</button>
+  <form th:action="@{/plans/query}" method="get" class="mt-2">
+    <button type="submit" class="btn btn-secondary w-100">取消修改</button>
   </form>
 </div>
 
-<footer>
+<footer class="mt-5 text-center">
   &copy; 2024 Travel Planner
 </footer>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/js/plan.js"></script>
 </body>
 </html>
+

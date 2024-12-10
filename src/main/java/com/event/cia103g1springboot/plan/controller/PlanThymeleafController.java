@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/plans")
@@ -27,14 +29,14 @@ public class PlanThymeleafController {
     private PlanTypeService planTypeService;
     @Autowired
     private PlanInfoService planInfoService;
-//測試
+
 
     // 行程all 跳轉
     @GetMapping("/query")
     public String getAllPlans(Model model) {
         List<Plan> plans = planService.getAllPlans();
         model.addAttribute("plans", plans);
-        return "footer";
+        return "plan/footer";
     }
 
     // 行程類別all 跳轉
@@ -85,27 +87,39 @@ public class PlanThymeleafController {
     public String showPlanInfoByPlanTypeId(@PathVariable String planTypeId, Model model) {
         // 根據 planTypeId 查詢行程類型資訊
         PlanType planType = planTypeService.findPlanTypeById(planTypeId);
-        // 根據 planTypeId 查詢 typeinfo 表中的內容
-        List<PlanInfo> typeInfoList = planInfoService.findByPlanTypeId(planTypeId);
 
         if (planType == null) {
             model.addAttribute("error", "找不到行程類型 ID 為 " + planTypeId + " 的行程資訊！");
             return "redirect:/plans/plantype/query"; // 返回到行程類型查詢頁面
         }
 
-        // 動態生成天數列表
+        // 查詢 typeinfo 表中的內容
+        List<PlanInfo> typeInfoList = planInfoService.findByPlanTypeId(planTypeId);
+
+        // 獲取行程類型的天數
         int days = planType.getPlanDay();
-        List<Integer> dayList = new ArrayList<>();
+        Map<Integer, String> planContentMap = new HashMap<>();
+
+        // 將已存在的行程內容放入 Map，以便後端補全空白天數
+        for (PlanInfo info : typeInfoList) {
+            planContentMap.put(info.getPlanDay(), info.getPlanCon());
+        }
+
+        // 動態生成完整天數表，補全缺少的天數
+        List<PlanInfo> completeTypeInfoList = new ArrayList<>();
         for (int i = 1; i <= days; i++) {
-            dayList.add(i);
+            PlanInfo info = new PlanInfo();
+            info.setPlanDay(i);
+            info.setPlanCon(planContentMap.getOrDefault(i, "")); // 如果該天無內容，則填空
+            completeTypeInfoList.add(info);
         }
 
         // 將資料傳遞到前端
         model.addAttribute("planTypeId", planTypeId); // 行程類型 ID
         model.addAttribute("planTypeName", planType.getPlanName()); // 行程名稱
         model.addAttribute("planDay", days); // 行程天數
-        model.addAttribute("dayList", dayList); // 天數列表
-        model.addAttribute("typeInfoList", typeInfoList); // typeinfo 表的內容
+        model.addAttribute("typeInfoList", completeTypeInfoList); // 補全後的 typeinfo 表內容
+
         return "plantype/planinfo"; // 跳轉到 planinfo.html 頁面
     }
 
