@@ -9,6 +9,10 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.event.cia103g1springboot.hibernate.util.CompositeQuery.HibernateUtil_CompositeQuery_PdtImg;
+
+
+
 //複合查詢要記得自己加入
 //import hibernate.util.CompositeQuery.HibernateUtil_CompositeQuery_PdtImg;
 
@@ -17,7 +21,10 @@ public class PdtImgService {
 
 	@Autowired
 	PdtImgRepository repository;
-
+	
+	@Autowired
+	private SessionFactory sessionFactory;
+	
 	public void addPdtImg(PdtImgVO pdtImgVO) {
 		repository.save(pdtImgVO);
 	}
@@ -44,11 +51,10 @@ public class PdtImgService {
 	 public List<PdtImgVO> getByPdtId(Integer pdtId){
 		 return repository.getByPdtId(pdtId);
 	 }
-
-	 //複合查詢再打開
-//	 public List<PdtImgVO> getAllPdtImg(Map<String, String[]> map){
-//		 return HibernateUtil_CompositeQuery_PdtImg.getAllC(map,sessionFactory.openSession());
-//	 }
+	 
+	 public List<PdtImgVO> getAllPdtImg(Map<String, String[]> map){
+		 return HibernateUtil_CompositeQuery_PdtImg.getAllC(map,sessionFactory.openSession());
+	 }
 	 
 	 public List<PdtImgVO> addPdtImgs(List<PdtImgVO> pdtImgVOs) {
 		 List<PdtImgVO> newPdtImgs = new ArrayList<>();   
@@ -58,6 +64,4 @@ public class PdtImgService {
 		    }
 		    return newPdtImgs;
 		}
-
-	
 }

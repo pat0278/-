@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>新增商品 - addPdt.html</title>
+    <link rel="stylesheet" th:href="@{/css/bb.css}" />
+    <link rel="stylesheet" th:href="@{/css/elm.css}" />
+</head>
+<body>
+	<div th:insert="~{/back-end/nav :: nav}"></div>
+	<div id="header"><i class="fa-solid fa-box"></i> 商品管理</div>
+    <div id="sub-header"><i class="fa fa-plus"></i> 新增商品</div>
+    
+    <div>
+        <h3>以下欄位皆為必填</h3>
+        <form class="cus_form" th:action="@{/product/addPdtAndImgs}" method="post" th:object="${pdtVO}" enctype="multipart/form-data">
+        	
+        	<div>
+                <label for="pdttp-sel">商品類別:</label>
+                <select th:field="*{pdtTypeVO.pdtTypeId}">
+                	<option th:each="pdtTypeVO : ${pdtTypeListData}" th:value="${pdtTypeVO.pdtTypeId}" th:text="${pdtTypeVO.pdtTypeName}"></option>
+                </select><br/>
+                <span th:if="${#fields.hasErrors('pdtTypeVO.pdtTypeId')}" th:errors="*{pdtTypeVO.pdtTypeId}" class="error" id="pdtTypeVO.pdtTypeId.errors"></span>
+            </div>
+        
+        	 <div class="form-group radio_el">
+        		<label>選擇上架狀態:</label>
+                <div class="form-check">
+				    <input class="form-check-input" id="pdtstat-radio-0" type="radio" th:field="*{pdtStat}" th:value="0" checked>
+				    <label class="form-check-label" for="pdtstat-radio-0" style="margin-right: 20px;">未上架</label>
+				</div>
+				<div class="form-check">
+				    <input class="form-check-input" id="pdtstat-radio-1" type="radio" th:field="*{pdtStat}" th:value="1">
+				    <label class="form-check-label" for="pdtstat-radio-1">已上架</label>
+				</div>
+			</div>
+        
+        	<div>
+                <label for="pdtname-text">商品名稱:</label>
+                <input class="form-control" id="pdtname-text" type="text" th:field="*{pdtName}" onclick="hideContent('pdtName.errors');" placeholder="請輸入商品名稱"/><br/>
+                <span th:if="${#fields.hasErrors('pdtName')}" th:errors="*{pdtName}" class="error" id="pdtName.errors"></span>
+            </div>
+            
+            <div>
+                <label for="pdtdesc-text">商品描述:</label>
+                <textarea id="pdtdesc-text" th:field="*{pdtDesc}" rows="4" cols="50" onclick="hideContent('pdtDesc.errors');" placeholder="請輸入商品描述"></textarea><br/>
+                <span th:if="${#fields.hasErrors('pdtDesc')}" th:errors="*{pdtDesc}" class="error" id="pdtDesc.errors"></span>
+            </div>
+            
+            <div>
+                <label for="PdtPrice">商品售價:</label>
+                <input class="form-control" id="PdtPrice" type="text" th:field="*{pdtPrice}" onclick="hideContent('pdtPrice.errors');" placeholder="請輸入商品售價"/><br/>
+                <span th:if="${#fields.hasErrors('pdtPrice')}" th:errors="*{pdtPrice}" class="error" id="pdtPrice.errors"></span>
+            </div>
+			<div class="form-group">
+	        <label>商品圖片</label>
+	        <label class="upload_el" for="uploadImg">
+	          <i class="fa-regular fa-image"></i> 上傳圖片
+	        </label>
+	        <input
+	          style="display: none"
+	          type="file"
+	          id="uploadImg"
+	          accept="image/*"
+	          multiple
+	          name="pdtImg"
+	          aria-describedby="imgBlock"
+	          th:field="*{pdtImg}"
+	          onclick="previewImage()"
+	          onchange="hideContent('pdtImg.errors');"
+	        />
+	      </div>
+	      <span class="error" th:utext="${errorMessage}" id="pdtImg.errors">${errorMessage}</span>
+	      <div class="img_prev">
+	        <ul class="prev_ul_el"></ul>
+	      </div>
+	      <button type="submit" class="btn">
+	        <i class="fa fa-plus"></i> 新增商品
+	        <span class="inner">
+	          <span class="blob"></span>
+	          <span class="blob"></span>
+	          <span class="blob"></span>
+	          <span class="blob"></span>
+	        </span>
+	      </button>
+    </form>       
+       </div>
+	        <div class="button-container">
+		        <div>
+		    		<a th:href="@{/product/select_page_pdt}" class="btn">
+		    			<span class="inner">
+				        <span class="blob"></span>
+				        <span class="blob"></span>
+				        <span class="blob"></span>
+				        <span class="blob"></span>
+				      </span>
+				      <i class="fa fa-search"></i> 商品查詢
+		    		</a>
+		    	</div>
+			    <div>
+		    		<a th:href="@{/product/listAllPdt}" class="btn">
+		    			<span class="inner">
+				        <span class="blob"></span>
+				        <span class="blob"></span>
+				        <span class="blob"></span>
+				        <span class="blob"></span>
+				      </span>
+				      <i class="fa-solid fa-clipboard-list"></i> 商品列表
+		    		</a>
+		    	</div>
+	    </div>
+	<div th:insert="~{/back-end/footer :: footer}"></div>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+
+    <script>
+
+    // 清除提示信息
+    function hideContent(d) {
+        document.getElementById(d).style.display = "none";
+    }
+      const upload_el = document.querySelector("#uploadImg");
+      const upload_label = document.querySelector(".upload_el");
+
+      upload_el.addEventListener("change", function (e) {
+        const prev_ul_el = document.querySelector(".prev_ul_el");
+        prev_ul_el.innerHTML = "";
+
+        if (this.files.length === 1) {
+          prev_ul_el.style.justifyContent = "center";
+        } else prev_ul_el.style.justifyContent = "start";
+
+        if (this.files.length > 0) {
+          upload_label.innerHTML = `<i class="fa-solid fa-circle-check"></i> done`;
+        } else {
+          upload_label.innerHTML = `<i class="fa-regular fa-image"></i> choose photo`;
+        }
+
+        for (let i = 0; i < this.files.length; i++) {
+          let fileReader = new FileReader();
+          fileReader.readAsDataURL(this.files[i]);
+          fileReader.addEventListener("load", () => {
+            let li_str = `
+              <li>
+                <img src="${fileReader.result}">
+                <div>${this.files[i].name}</div>
+              </li>
+              `;
+
+            prev_ul_el.insertAdjacentHTML("beforeend", li_str);
+          });
+        }
+      });
+      function hideContent(d) {
+          document.getElementById(d).style.display = "none";
+      }
+    </script>
+
+</body>
+</html>

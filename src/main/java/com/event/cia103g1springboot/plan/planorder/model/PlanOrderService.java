@@ -1,6 +1,7 @@
 package com.event.cia103g1springboot.plan.planorder.model;
 
 import com.event.cia103g1springboot.plan.plan.model.PlanService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -38,6 +39,11 @@ public class PlanOrderService {
             Optional<PlanOrder> planOrder = planOrderRepository.findById(id);
             return planOrder.orElse(new PlanOrder());
         };
+        
+        public PlanOrder getOnePlanOrder(Integer planOrderId) {
+    		Optional<PlanOrder> optional = planOrderRepository.findById(planOrderId);
+    		return optional.orElse(null);
+    	}
 
         public void sendPlanOrdMail(PlanOrder order, Map<Object, Object> roomData) throws MessagingException {
         Integer roomPrice = Integer.parseInt(roomData.get("roomPrice").toString());

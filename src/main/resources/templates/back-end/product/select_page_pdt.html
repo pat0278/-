@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>查詢商品-select_page_pdt.html</title>
+	<link rel="stylesheet" th:href="@{/css/bb.css}" />
+	<link rel="stylesheet" th:href="@{/css/elm.css}" />
+</head>	
+<body>
+	<div th:insert="~{/back-end/nav :: nav}"></div>
+	<div id="header"><i class="fa-solid fa-box"></i> 商品管理</div>
+    <div id="sub-header"><i class="fa fa-search"></i> 商品查詢</div>
+
+    <div class="errorblock" th:utext="${errorMsg}">${errorMsg}</div><br>
+
+    <div>
+    	<div th:if="${validationErrors}" class="error-block">
+			    <ul>
+			        <li th:each="error : ${validationErrors}" th:text="${error.defaultMessage}"></li>
+			    </ul>
+		</div>
+		<ul>
+			<li>
+				<form class="cus_form" method="post" th:action="@{listPdt_ByCompositeQuery}">
+					<div>
+						<label for="pdtid-text">商品編號:</label>
+	                	<input class="form-control" id="pdtid-text" type="text" name="pdtId" placeholder="輸入商品編號(如:1001)"><br>
+					</div>
+					
+					<div>
+						<label for="pdttp-sel">商品類別:</label>
+						<select id="pdttp-sel" name="pdtTypeId">
+							<option value=""></option>
+							<option th:each="pdtTypeVO : ${pdtTypeListData}" th:value="${pdtTypeVO.pdtTypeId}" th:text="${pdtTypeVO.pdtTypeName}"></option>
+						</select><br>
+					</div>
+					
+					<div class="form-group radio_el">
+					 <label>選擇上架狀態:</label>
+	                    <div class="form-check">
+						    <input class="form-check-input" id="pdtstat-radio-0" type="radio" name="pdtStat" value="0">
+						    <label class="form-check-label" for="pdtstat-radio-0" style="margin-right: 20px;">未上架</label>
+						</div>
+						<div class="form-check">
+						    <input class="form-check-input" id="pdtstat-radio-1" type="radio" name="pdtStat" value="1">
+						    <label class="form-check-label" for="pdtstat-radio-1">已上架</label>
+						</div>
+					</div>
+					
+					<div>
+						<label for="pdtname-text">商品名稱:</label>
+		                <input class="form-control" id="pdtname-text" type="text" name="pdtName" placeholder="輸入關鍵字"><br>
+					</div>
+					<label for="pdtdesc-text">商品描述:</label>
+	                <input class="form-control" id="pdtdesc-text" type="text" name="pdtDesc" placeholder="輸入關鍵字"><br>
+					
+					<label for="startPdtPrice">商品售價:</label>
+	                    <input class="form-control" id="startPdtPrice" type="text" name="startPdtPrice" placeholder="輸入售價">
+	                    <span>~</span>
+	                    <input class="form-control" id="endPdtPrice" type="text" name="endPdtPrice" placeholder="輸入售價"><br>
+	
+	                <div>
+		        		<button type="submit" class="btn">
+					        <i class="fa fa-search"></i> 商品查詢
+					        <span class="inner">
+					          <span class="blob"></span>
+					          <span class="blob"></span>
+					          <span class="blob"></span>
+					          <span class="blob"></span>
+					        </span>
+				      </button>
+		        	</div>
+				
+				</form>
+			</li>
+		</ul>
+    </div>
+    <div class="result" th:if="${getPdt_For_Display}">
+		<div th:insert="~{/back-end/product/listOnePdt :: listOnePdt-div}"></div>
+	</div>
+
+    <div class="button-container">
+    	<div class="button-container">
+	        	<div>
+		    		<a th:href="@{/}" class="btn">
+		    			<span class="inner">
+				        <span class="blob"></span>
+				        <span class="blob"></span>
+				        <span class="blob"></span>
+				        <span class="blob"></span>
+				      </span>
+				      <i class="fa fa-home"></i> 功能總覽
+		    		</a>
+		    	</div>
+		    	
+
+        		<div>
+		    		<a th:href=@{/product/addPdt} class="btn">
+		    			<span class="inner">
+				        <span class="blob"></span>
+				        <span class="blob"></span>
+				        <span class="blob"></span>
+				        <span class="blob"></span>
+				      </span>
+				      <i class="fa fa-plus"></i> 新增商品
+		    		</a>
+	    		</div>
+	    </div>
+    </div>
+    <div th:insert="~{/back-end/footer :: footer}"></div>
+</body>
+</html>
