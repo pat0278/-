@@ -88,7 +88,7 @@ div.below_block  span {
 				th:field="*{memAcct}" />
 		</div>
 		<div class="form-group">
-			<label for="name">密碼</label> <input type="text" class="form-control"
+			<label for="name">密碼</label> <input type="password" class="form-control"
 				th:field="*{memPwd}" /> <i class="fa-solid fa-eye eye"></i> <i
 				class="fa-solid fa-eye-slash eye"></i>
 		</div>
@@ -103,7 +103,8 @@ div.below_block  span {
 			<a href="forgetpwd">忘記密碼</a> <span>|</span> <a th:href="@{/mem/register}">會員註冊</a>
 		</div>
 	</form>
-
+	
+    <div th:replace="~{back-end/footer :: f}"></div>
 
 
 	<div class="progress" th:if=${success}>

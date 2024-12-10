@@ -96,7 +96,7 @@ public class MemController {
 	public String loginPage(ModelMap model) {
 		MemVO memVO = new MemVO();
 		model.addAttribute("memVO", memVO);
-		return "frontend/mem/login";
+		return "front-end/mem/login";
 	}
 
 	@PostMapping("/login")
@@ -108,7 +108,7 @@ public class MemController {
 		if (result.hasErrors()) {
 			result.getFieldErrors().forEach(err -> errorMsgs.add(err.getDefaultMessage()));
 			model.addAttribute("errorMsgs", errorMsgs);
-			return "frontend/mem/login";
+			return "front-end/mem/login";
 		}
 
 		String checkRes = memSvc.checkUser(acct, pwd);
@@ -118,7 +118,7 @@ public class MemController {
 
 		if (!errorMsgs.isEmpty()) {
 			model.addAttribute("errorMsgs", errorMsgs);
-			return "frontend/mem/login";
+			return "front-end/mem/login";
 		}
 
 		// 驗證無誤重導向，找出會員資料及設定auth
@@ -132,7 +132,7 @@ public class MemController {
 			return "redirect:" + location;
 		}
 
-		return "frontend/mem/profile";
+		return "front-end/mem/profile";
 	}
 
 	@GetMapping("/profile")
