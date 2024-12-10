@@ -27,7 +27,7 @@ public class PlanThymeleafController {
     private PlanTypeService planTypeService;
     @Autowired
     private PlanInfoService planInfoService;
-
+//測試
 
     // 行程all 跳轉
     @GetMapping("/query")
