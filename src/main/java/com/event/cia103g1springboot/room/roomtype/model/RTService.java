@@ -6,17 +6,22 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-//import hibernate.util.CompositeQuery.HibernateUtil_CompositeQuery_RT;
+import com.event.cia103g1springboot.hibernate.util.CompositeQuery.HibernateUtil_CompositeQuery_RT;
+
 
 @Service("roomType")
 public class RTService {
 
 	@Autowired
 	RTRepository reponsitory;
-
+	
+	@Autowired
+	private SessionFactory sessionFactory;
+	
 	public void addRT (RTVO rtVO) {
 		reponsitory.save(rtVO);
 	}
@@ -28,27 +33,25 @@ public class RTService {
 	
 	public void deleteRT (Integer roomTypeId) {
 		if( reponsitory.existsById(roomTypeId)) {
-			reponsitory.deleteById(roomTypeId);
+			reponsitory.deleteByRoomTypeId(roomTypeId);
 		}
 	}
-
-	@Transactional
-	public void updateRoomQty(Integer roomTypeId, Integer qty) {
-		reponsitory.updateRoomQty(roomTypeId, qty);
-	}
-
+	
+	 @Transactional
+	 public void updateRoomQty(Integer roomTypeId, Integer qty) {
+	  reponsitory.updateRoomQty(roomTypeId, qty);
+	 }
+	
 	public RTVO getOneRT(Integer rooomTypeId) {
 		Optional<RTVO> optional = reponsitory.findById(rooomTypeId);
 		return optional.orElse(null);
 	}
 	
 	public List<RTVO> getAllRT(){
-		return reponsitory.findAll();
+		return reponsitory.getAllRT();
 	}
-
-
-//	記得加回來
-//	public List<RTVO>getAllRT(Map<String,String[]> map){
-//		return HibernateUtil_CompositeQuery_RT.getAllC(map,sessionFactory.openSession());
-//	}
+	
+	public List<RTVO>getAllRT(Map<String,String[]> map){
+		return HibernateUtil_CompositeQuery_RT.getAllC(map,sessionFactory.openSession());
+	}
 }

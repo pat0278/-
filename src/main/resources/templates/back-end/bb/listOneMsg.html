@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>公告詳情 - listOneMsg.html</title>
+
+    <!-- 引入外部資源 -->
+    <link rel="stylesheet" th:href="@{/css/bb.css}" />
+</head>
+<body >
+	<div th:insert="~{/back-end/elm/nav :: nav}"></div>
+    <div id="header">佈告欄管理</div>
+    <div id="sub-header">公告詳情</div>
+
+    <div class="detail-container" th:fragment="ListOneMsg-div">
+        <h3>查詢結果</h3>
+        <div class="detail-row">
+            <span>公告編號: </span><span th:text="${bbVO.msgid}"></span>
+        </div>
+        <div class="detail-row">
+            <span>公告類型: </span><span th:text="${bbVO.msgtype == 0 ? '行程公告' : (bbVO.msgtype == 1 ? '活動公告' : (bbVO.msgtype == 2 ? '商城公告' : '其他公告'))}"></span>
+        </div>
+        <div class="detail-row">
+            <span>公告內容: </span><span th:text="${bbVO.msgcon}"></span>
+        </div>
+        <div class="detail-row">
+            <span>發佈狀態: </span><span th:text="${bbVO.poststat == 1 ? '已發佈' : '未發佈'}"></span>
+        </div>
+        <div class="detail-row">
+            <span>發佈時間: </span><span th:text="${#dates.format(bbVO.posttime, 'yyyy-MM-dd HH:mm')}"></span>
+        </div>
+    </div>
+
+    <div class="button-container">
+    	<div>
+    		<a th:href="@{/bb/listAllMsg}" class="btn">
+    			<span class="inner">
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		      </span>
+		      返回公告列表
+    		</a>
+    	</div>
+        
+        <div>
+    		<a th:href="@{/bb/addMsg}" class="btn">
+    			<span class="inner">
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		      </span>
+		      新增公告
+    		</a>
+    	</div>
+    </div>
+    <div th:insert="~{/back-end/elm/footer :: footer}"></div>
+</body>
+</html>

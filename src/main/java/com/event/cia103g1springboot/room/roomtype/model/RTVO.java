@@ -51,6 +51,16 @@ public class RTVO implements java.io.Serializable{
     @Min(value = 1, message = "容納人數:不可小於{value}")
     private Integer occupancy;
 
+    @Transient
+	private byte[] rImg;
+    
+    public byte[] getrImg() {
+		return rImg;
+	}
+
+	public void setrImg(byte[] rImg) {
+		this.rImg = rImg;
+	}
 
     @OneToMany(mappedBy = "rtvo",cascade = CascadeType.ALL)
     private Set<PlanRoom> planRoom;

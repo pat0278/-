@@ -12,7 +12,10 @@ public class ROService {
 
 	@Autowired
 	RORepository repository;
-
+	
+	@Autowired
+	private SessionFactory sessionFactory;
+	
 	public void addRO (ROVO roVO) {
 		repository.save(roVO);
 	}
@@ -36,7 +39,7 @@ public class ROService {
 		 return repository.findAll();
 	 }
 	 
-	 public List<ROVO> getByPlan(){
-		 return repository.getByPlan();
+	 public List<ROVO> getByPlan(Integer planOrderId){
+		 return repository.getByPlan(planOrderId);
 	 }
 }
