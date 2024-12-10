@@ -10,6 +10,7 @@
         import lombok.NoArgsConstructor;
 
         import javax.persistence.*;
+        import javax.validation.constraints.AssertTrue;
         import javax.validation.constraints.NotNull;
         import javax.validation.constraints.Pattern;
 
@@ -51,11 +52,9 @@
             @Column(name = "payMethod", nullable = false)
             private Integer payMethod;
 
-            @Pattern(regexp = ".{4,}", message = "匯款帳號至少需要4碼")
             @Column(name = "remAcct", length = 20)
             private String remAcct;
 
-            @Pattern(regexp = "\\d{4}", message = "請輸入4位數字")
             @Column(name = "cardLast4", length = 4)
             private String cardLast4;
 
@@ -72,6 +71,19 @@
 
             @OneToMany(mappedBy = "planOrder", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
             private Set<ROVO> roomOrders;
+
+
+
+            @AssertTrue(message = "請檢查付款資訊")
+            public boolean isValidPaymentInfo() {
+                if (payMethod == 0) {  // 信用卡
+                    return cardLast4 != null && cardLast4.matches("\\d{4}");
+                } else if (payMethod == 1) {  // 匯款
+                    return remAcct != null && remAcct.length() >= 4;
+                }
+                return false;
+            }
+
 
             @Override
             public String toString() {

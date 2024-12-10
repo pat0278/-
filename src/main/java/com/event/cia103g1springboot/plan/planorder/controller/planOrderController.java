@@ -108,7 +108,7 @@ public class planOrderController {
                 // 計算房間總價和最終總價
                 int totalRoomPrice = roomPrice * roomQty;
                 int totalPrice = plan.getPlanPrice() + totalRoomPrice;
-
+                System.out.println(totalRoomPrice);
                 // 添加到 model
                 model.addAttribute("selectedRoom", roomData);
                 model.addAttribute("totalRoomPrice", totalRoomPrice);
@@ -132,13 +132,20 @@ public class planOrderController {
         MemVO memVO = memService.findOneMem("benson000");
         Plan plan = planService.findPlanById(id);
         plan.setAttEnd(plan.getAttEnd()+1);
+
+
+        if (planOrder.getPayMethod() == 0) {  // 信用卡
+            planOrder.setRemAcct(null);  // 清空匯款帳號
+        } else if (planOrder.getPayMethod() == 1) {  // 匯款
+            planOrder.setCardLast4(null);  // 清空信用卡資訊
+        }
+
         //這是人寫的???超醜超髒
         String key = "plan:room:" + id;
         Map<Object, Object> roomData = stringRedisTemplate.opsForHash().entries(key);
         if (!roomData.isEmpty()) {
             try {
-                model.addAttribute("roomData", roomData);
-                planOrder.setRoomPrice(Integer.parseInt(roomData.get("roomPrice").toString()));
+                model.addAttribute("roomData", roomData);;
 
                 // 直接使用 Redis 中的數量來更新房間庫存
                 Integer roomTypeId = Integer.parseInt(roomData.get("roomTypeId").toString());
@@ -149,6 +156,7 @@ public class planOrderController {
                 int roomPrice = Integer.parseInt(roomData.get("roomPrice").toString());
                 int roomQty = Integer.parseInt(roomData.get("roomQty").toString());
                 int totalRoomPrice = roomPrice * roomQty;
+                planOrder.setRoomPrice(totalRoomPrice);
                 model.addAttribute("totalRoomPrice", totalRoomPrice);
 
                 //拿ROOM因為是複合主鍵.....

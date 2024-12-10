@@ -227,29 +227,71 @@
     //驗證喔喔喔喔
     document.getElementById('orderForm').addEventListener('submit', function(e) {
       const payMethod = document.querySelector('input[name="payMethod"]:checked');
+
+      // 先清除之前可能存在的錯誤提示
+      clearErrors();
+
       if (!payMethod) {
         e.preventDefault();
-        alert('請選擇付款方式');
+        showError('請選擇付款方式');
         return;
       }
 
-      if (payMethod.value === '0') {
-        const cardLast4 = document.querySelector('input[name="cardLast4"]').value;
+      if (payMethod.value === '0') {  // 信用卡
+        const cardLast4 = document.querySelector('input[name="cardLast4"]').value.trim();
         if (!cardLast4 || !/^\d{4}$/.test(cardLast4)) {
           e.preventDefault();
-          alert('請輸入正確的信用卡後四碼');
+          showError('請輸入正確的信用卡後四碼');
           return;
         }
+        // 清空匯款帳號欄位
+        document.querySelector('input[name="remAcct"]').value = '';
       }
 
-      if (payMethod.value === '1') {
-        const remAcct = document.querySelector('input[name="remAcct"]').value;
+      if (payMethod.value === '1') {  // 匯款
+        const remAcct = document.querySelector('input[name="remAcct"]').value.trim();
         if (!remAcct || remAcct.length < 4) {
           e.preventDefault();
-          alert('請輸入匯款帳號');
+          showError('匯款帳號至少需要4碼');
           return;
         }
+        // 清空信用卡欄位
+        document.querySelector('input[name="cardLast4"]').value = '';
       }
+    });
+
+    // 顯示錯誤訊息的函數
+    function showError(message) {
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'alert alert-danger mt-2';
+      errorDiv.textContent = message;
+      document.querySelector('.payment-methods').insertAdjacentElement('afterend', errorDiv);
+    }
+
+    // 清除錯誤訊息的函數
+    function clearErrors() {
+      const existingErrors = document.querySelectorAll('.alert-danger');
+      existingErrors.forEach(error => error.remove());
+    }
+
+    // 付款方式切換時的處理
+    document.querySelectorAll('input[name="payMethod"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        clearErrors(); // 清除錯誤訊息
+
+        const creditCardFields = document.getElementById('creditCardFields');
+        const remittanceFields = document.getElementById('remittanceFields');
+
+        if (this.value === '0') {
+          creditCardFields.style.display = 'block';
+          remittanceFields.style.display = 'none';
+          document.querySelector('input[name="remAcct"]').value = '';
+        } else {
+          creditCardFields.style.display = 'none';
+          remittanceFields.style.display = 'block';
+          document.querySelector('input[name="cardLast4"]').value = '';
+        }
+      });
     });
 
       // 導覽列相關
