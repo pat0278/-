@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>活動日曆</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/elm.css}"/>
+</head>
+<body>
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        padding: 20px;
+        background-color: #f5f5f5;
+    }
+
+    .calendar-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .calendar-header {
+        padding: 20px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: 80px repeat(7, 1fr);
+        overflow-x: auto;
+    }
+
+    .time-column {
+        border-right: 1px solid #dee2e6;
+        background: #f8f9fa;
+    }
+
+    .time-slot {
+        height: 60px;
+        padding: 8px;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        color: #666;
+    }
+
+    .day-column {
+        border-right: 1px solid #dee2e6;
+        min-width: 150px;
+    }
+
+    .day-header {
+        padding: 10px;
+        text-align: center;
+        border-bottom: 1px solid #dee2e6;
+        background: #f8f9fa;
+        font-weight: bold;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .day-slot {
+        height: 60px;
+        border-bottom: 1px solid #dee2e6;
+        padding: 4px;
+        position: relative;
+        background: white;
+    }
+
+    .day-slot:nth-child(even) {
+        background: #fcfcfc;
+    }
+
+    .event {
+        background: #0d6efd;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        position: absolute;
+        width: calc(100% - 8px);
+        overflow: hidden;
+        cursor: pointer;
+        z-index: 1;
+        left: 4px;
+        transition: all 0.2s ease;
+    }
+
+    .event:hover {
+        background: #0b5ed7;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        transform: translateY(-1px);
+    }
+
+    .event-title {
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .event-time {
+        font-size: 11px;
+        opacity: 0.9;
+    }
+
+    .popup-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+    }
+
+    .event-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        z-index: 1001;
+        min-width: 320px;
+    }
+
+    .popup-close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    .popup-close:hover {
+        background: #f0f0f0;
+    }
+
+    .popup-header {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        padding-right: 30px;
+        color: #333;
+    }
+
+    .popup-content {
+        font-size: 14px;
+        color: #666;
+    }
+
+    .popup-row {
+        display: flex;
+        margin: 12px 0;
+        align-items: flex-start;
+    }
+
+    .popup-label {
+        width: 80px;
+        font-weight: 500;
+        color: #333;
+        flex-shrink: 0;
+    }
+
+    .popup-value {
+        flex: 1;
+    }
+
+    .attendance-info {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 12px;
+        margin-top: 15px;
+    }
+
+    .attendance-header {
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .attendance-stats {
+        display: flex;
+        gap: 20px;
+    }
+
+    .attendance-item {
+        flex: 1;
+    }
+
+    .attendance-label {
+        font-size: 12px;
+        color: #666;
+    }
+
+    .attendance-number {
+        font-size: 18px;
+        font-weight: bold;
+        color: #0d6efd;
+        margin-top: 4px;
+    }
+    .back-btn {
+        position: fixed!important;
+        top: 40px;
+        left:130px;
+        z-index: 10;
+        min-width: 120px !important;
+        padding:10px 15px !important;
+    }
+    .full {
+        color: #ff4d4f;
+    }
+</style>
+<a th:href="@{/front/list}" class="back-btn btn">
+    <div class="inner">
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+    </div>
+    回首頁
+</a>
+
+<div class="calendar-container">
+    <div class="calendar-header">
+        <div class="header-content">
+            <a th:href="@{/event/calendar(date=${prevWeek})}"
+               class="btn btn-outline-primary">&lt; 上一週</a>
+            <h4 class="mb-0">
+                <span th:text="${#temporals.format(currentDate, 'yyyy年MM月')}"></span>
+                <span th:if="${#temporals.format(currentDate, 'MM') != #temporals.format(currentDate.plusDays(6), 'MM')}">
+                   - <span th:text="${#temporals.format(currentDate.plusDays(6), 'MM月')}"></span>
+               </span>
+            </h4>
+            <a th:href="@{/event/calendar(date=${nextWeek})}"
+               class="btn btn-outline-primary">下一週 &gt;</a>
+        </div>
+    </div>
+
+    <div class="calendar-grid">
+        <div class="time-column">
+            <div class="day-header"></div>
+            <div th:each="hour : ${#numbers.sequence(8, 23)}" class="time-slot">
+                <span th:text="${#numbers.formatInteger(hour, 2) + ':00'}"></span>
+            </div>
+        </div>
+
+        <div th:each="dayOffset : ${#numbers.sequence(0, 6)}" class="day-column">
+            <div class="day-header">
+                <span th:text="${#temporals.format(currentDate.plusDays(dayOffset), 'E M/d')}"></span>
+            </div>
+
+            <div th:each="hour : ${#numbers.sequence(8, 23)}" class="day-slot">
+                <th:block th:each="event : ${events}">
+                    <div th:if="${
+                       event != null and
+                       event.evtDate != null and
+                       #temporals.format(event.evtDate, 'yyyy-MM-dd').equals(#temporals.format(currentDate.plusDays(dayOffset), 'yyyy-MM-dd')) and
+                       #temporals.format(event.evtDate, 'HH').equals(#numbers.formatInteger(hour, 2)) and
+                       event.evtStat != 0
+                   }"
+                         class="event"
+                         th:data-event-id="${event.evtId}"
+                         th:data-event-name="${event.evtName}"
+                         th:data-event-desc="${event.evtDesc}"
+                         th:data-event-date="${#temporals.format(event.evtDate, 'yyyy-MM-dd')}"
+                         th:data-event-time="${#temporals.format(event.evtDate, 'HH:mm')}"
+                         th:data-event-max="${event.evtMax}"
+                         th:data-event-attend="${event.evtAttend}"
+                         th:style="${'top: ' + (#temporals.format(event.evtDate, 'mm').equals('30') ? '30' : '0') + 'px;' +
+                                 'height: 56px;'}">
+                        <div class="event-title" th:text="${event.evtName}"></div>
+                        <div class="event-time" th:text="${#temporals.format(event.evtDate, 'HH:mm')}"></div>
+                    </div>
+                </th:block>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{back-end/footer :: f}"></div>
+
+<script th:src="@{/js/calendar.js}"></script>
+
+</body>
+</html>

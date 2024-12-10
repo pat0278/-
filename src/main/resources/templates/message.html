@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>提示信息</title>
+    <meta http-equiv="refresh" content="3;url='[[${message.redirectUrl}]]'" />
+    <style>
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+    </style>
+    <script>
+        // 倒计时功能
+        let countdown = 3;
+        function updateCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            countdown -= 1;
+            if (countdown <= 0) {
+                window.location.href = "[[${message.redirectUrl}]]";
+            } else {
+                countdownElement.textContent = countdown;
+                setTimeout(updateCountdown, 1000);
+            }
+        }
+        document.addEventListener("DOMContentLoaded", updateCountdown);
+    </script>
+</head>
+<body>
+<div>
+    <h2 th:class="${message.text.startsWith('新增成功') ? 'success' : 'error'}"
+        th:text="${message.text}"></h2>
+    <p>系統將在 <span id="countdown">3</span> 秒後自動跳轉。</p>
+    <p>如果未跳轉，請 <a th:href="${message.redirectUrl}">點擊這裡</a>。</p>
+</div>
+</body>
+</html>

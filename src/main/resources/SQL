@@ -1,0 +1,600 @@
+CREATE DATABASE IF NOT EXISTS hihiDatabase;
+USE hihiDatabase;
+
+DROP TABLE IF EXISTS Company;
+DROP TABLE IF EXISTS MemberNotify;
+DROP TABLE IF EXISTS EmployeeJob;
+DROP TABLE IF EXISTS SystemFunction;
+DROP TABLE IF EXISTS ProductImg;
+DROP TABLE IF EXISTS ProductOrderItem;
+DROP TABLE IF EXISTS Product;
+DROP TABLE IF EXISTS ProductType;
+DROP TABLE IF EXISTS ProductOrder;
+DROP TABLE IF EXISTS ArticleReport;
+DROP TABLE IF EXISTS CommentReport;
+DROP TABLE IF EXISTS ArticleComment;
+DROP TABLE IF EXISTS Article;
+DROP TABLE IF EXISTS Employee;
+DROP TABLE IF EXISTS RoomImg;
+DROP TABLE IF EXISTS PlanInfo;
+DROP TABLE IF EXISTS PlanRoom;
+DROP TABLE IF EXISTS RoomOrder;
+DROP TABLE IF EXISTS RoomType;
+DROP TABLE IF EXISTS EventOrder;
+DROP TABLE IF EXISTS Eventimg;
+DROP TABLE IF EXISTS Event;
+DROP TABLE IF EXISTS PlanOrder;
+DROP TABLE IF EXISTS Plan;
+DROP TABLE IF EXISTS PlanType;
+DROP TABLE IF EXISTS Member;
+DROP TABLE IF EXISTS BulletinBoard;
+DROP TABLE IF EXISTS OnlineCustomerService;
+
+set auto_increment_offset = 1;
+set auto_increment_increment = 1;
+
+-- 會員
+CREATE TABLE Member (
+	memId 		INT NOT NULL AUTO_INCREMENT,
+    name		VARCHAR(30) NOT NULL,
+    birth		DATE NOT NULL,
+    sex 		TINYINT NOT NULL CHECK (sex IN (1,2,3)) COMMENT '1:男生、2:女生、3:其他',
+    memAcct 	VARCHAR(20) NOT NULL,
+    memPwd  	VARCHAR(30) NOT NULL,
+    email 		VARCHAR(100) NOT NULL,
+    tel 		VARCHAR(10) NOT NULL,
+    addr 		VARCHAR(300),
+    regDate 	DATETIME DEFAULT CURRENT_TIMESTAMP() NOT NULL,
+    memType 	TINYINT NOT NULL CHECK (memType IN (1,2)) COMMENT '1:一般會員、2: 公司團體',
+    memImg 		MEDIUMBLOB,
+    memStat		TINYINT NOT NULL DEFAULT 1 CHECK (memStat IN (0,1)) COMMENT '1: 啟用中 0 : 停權',
+    CONSTRAINT mem_pk  PRIMARY KEY (memId)
+);
+
+INSERT INTO Member (name, birth, sex, memAcct, memPwd, email, tel, addr, memType)
+VALUES ('小治','1998-08-15',1, 'benson000','aa123','a123@gmail.com','0989159280','桃園市復興路46號9樓',1),
+	   ('小吳','2000-10-24',2, 'Wu000','aa123','a456@gmail.com','0912345678','桃園市復興路46號9樓',1),
+	   ('王老闆','1990-05-01',1, 'Wang000','wang123','wang@gmail.com','0905201314','台北市信義區松高路66號',2);
+
+
+-- 公司
+CREATE TABLE Company (
+	comId  		VARCHAR(10) NOT NULL,
+	memId  		INT NOT NULL,
+	rep    		VARCHAR(30) NOT NULL,
+	repTel 		VARCHAR(30) NOT NULL,
+    CONSTRAINT com_pk PRIMARY KEY (comId),
+	FOREIGN KEY (memId) REFERENCES Member (memId)
+);
+
+INSERT INTO Company (comId, memId, rep, repTel) VALUES ('24708053',3,'MANAGER_Wang','2987-6543');
+
+
+-- 會員通知
+
+DROP TABLE IF EXISTS `membernotify`;
+CREATE TABLE `membernotify`  (
+  `notifyId` int(11) NOT NULL AUTO_INCREMENT,
+  `memId` int(11) NOT NULL,
+  `notifyType` tinyint(4) NOT NULL COMMENT '1:活動通知、2:活動訂單通知、3:商品訂單通知、4:商品通知、5:佈告欄通知、6:行程訂單通知',
+  `notifyCon` varchar(1500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `isRead` tinyint(1) NOT NULL DEFAULT 0,
+  `notifyTime` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+  `parentId` int(11) NULL DEFAULT NULL COMMENT '父級通知ID，NULL表示這是主通知',
+  `businessKey` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '業務關聯鍵',
+  PRIMARY KEY (`notifyId`) USING BTREE,
+  INDEX `mem_notify_fk1`(`memId`) USING BTREE,
+  INDEX `mem_notify_fk2`(`parentId`) USING BTREE,
+  CONSTRAINT `mem_notify_fk1` FOREIGN KEY (`memId`) REFERENCES `member` (`memId`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `mem_notify_fk2` FOREIGN KEY (`parentId`) REFERENCES `membernotify` (`notifyId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of membernotify
+-- ----------------------------
+INSERT INTO `membernotify` VALUES (1, 1, 2, '新訂單創建：春季旅遊團', 1, '2024-12-06 11:15:20', NULL, 'ORDER_2024001');
+INSERT INTO `membernotify` VALUES (2, 1, 2, '新訂單創建：春季旅遊團', 1, '2024-01-10 10:00:00', NULL, 'ORDER_2024001');
+INSERT INTO `membernotify` VALUES (3, 1, 2, '訂單狀態更新：已確認', 0, '2024-01-10 10:30:00', 2, 'ORDER_2024001');
+INSERT INTO `membernotify` VALUES (4, 1, 2, '訂單支付成功', 0, '2024-01-10 11:00:00', 2, 'ORDER_2024001');
+INSERT INTO `membernotify` VALUES (5, 1, 2, '新訂單創建：夏季露營活動', 1, '2024-01-11 09:00:00', NULL, 'ORDER_2024002');
+INSERT INTO `membernotify` VALUES (6, 1, 2, '訂單狀態更新：等待確認', 0, '2024-01-11 09:30:00', 5, 'ORDER_2024002');
+INSERT INTO `membernotify` VALUES (7, 1, 3, '商品訂單創建：運動裝備套裝', 1, '2024-01-12 14:00:00', NULL, 'PRODUCT_ORDER_001');
+INSERT INTO `membernotify` VALUES (8, 1, 3, '訂單已發貨', 0, '2024-01-12 16:00:00', 7, 'PRODUCT_ORDER_001');
+INSERT INTO `membernotify` VALUES (9, 1, 3, '訂單已送達', 0, '2024-01-13 10:00:00', 7, 'PRODUCT_ORDER_001');
+INSERT INTO `membernotify` VALUES (10, 1, 1, '新年特別活動：登山挑戰賽', 1, '2024-01-14 09:00:00', NULL, 'ACTIVITY_2024001');
+INSERT INTO `membernotify` VALUES (11, 1, 1, '活動更新：已達到最少參與人數', 0, '2024-01-14 15:00:00', 10, 'ACTIVITY_2024001');
+INSERT INTO `membernotify` VALUES (12, 1, 4, '您關注的商品"專業登山杖"已到貨', 1, '2024-01-15 10:00:00', NULL, 'PRODUCT_001');
+INSERT INTO `membernotify` VALUES (13, 1, 4, '價格更新：限時9折優惠', 0, '2024-01-15 14:00:00', 12, 'PRODUCT_001');
+INSERT INTO `membernotify` VALUES (14, 1, 5, '系統維護通知：將於本週日進行例行維護', 1, '2024-01-16 09:00:00', NULL, 'BULLETIN_2024001');
+INSERT INTO `membernotify` VALUES (15, 1, 6, '新行程預訂：東京3日遊', 1, '2024-01-17 10:00:00', NULL, 'TRIP_2024001');
+INSERT INTO `membernotify` VALUES (16, 1, 6, '行程確認：導遊已分配', 0, '2024-01-17 11:00:00', 15, 'TRIP_2024001');
+INSERT INTO `membernotify` VALUES (17, 1, 6, '行程提醒：請準備好護照等證件', 0, '2024-01-17 14:00:00', 15, 'TRIP_2024001');
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+-- 員工
+CREATE TABLE Employee (
+	empId		INT NOT NULL AUTO_INCREMENT,
+    empName 	VARCHAR(30) NOT NULL,
+    empAcct 	VARCHAR(50) NOT NULL,
+    empPwd 		VARCHAR(100) NOT NULL,
+    empJobTitle VARCHAR(50) NOT NULL,
+    hireDate	DATE,
+    empStat		TINYINT NOT NULL CHECK (empStat IN (0,1)) COMMENT '1:在職、0: 離職',
+    empImg		MEDIUMBLOB,
+    CONSTRAINT emp_pk PRIMARY KEY (empId)
+) 	AUTO_INCREMENT = 7001;
+
+INSERT INTO Employee (empName, empAcct, empPwd, hireDate, empJobTitle, empStat)
+VALUES ('管理員1','G1_user7001','biguser7001','2000-08-01','系統管理員',1),
+	   ('吳小治','G1_user7002','user7002','2005-12-01','活動管理員',1);
+
+
+-- 系統功能
+CREATE TABLE SystemFunction (
+	funId		INT NOT NULL AUTO_INCREMENT,
+    funName 	VARCHAR(60) NOT NULL,
+    funDesc		VARCHAR(500) NOT NULL,
+    CONSTRAINT sys_fun_pk PRIMARY KEY (funId)
+) 	AUTO_INCREMENT = 101;
+
+INSERT INTO SystemFunction (funName, funDesc)
+VALUES ('員工權限調整','幫每位員工開啟或停用各項船上業務的權限'),
+	   ('活動權限','可以於系統中新增或排程即將上架的活動及開放人數，需給定活動名稱、日期、名額等資訊'),
+	   ('商城管理權限','商品上下架、調整商品價格');
+
+
+-- 員工權限
+CREATE TABLE EmployeeJob (
+	empId		INT NOT NULL,
+    funId 		INT NOT NULL,
+    CONSTRAINT emp_job_pk PRIMARY KEY (empId, funId),
+    FOREIGN KEY (empId) REFERENCES Employee (empId),
+	FOREIGN KEY (funId) REFERENCES SystemFunction (funId)
+);
+
+INSERT INTO EmployeeJob (empId, funId)
+VALUES  (7001,101),
+		(7001,102),
+		(7001,103),
+		(7002,102),
+        (7002,103);
+
+
+-- 商品類別
+SET auto_increment_increment = 1;
+CREATE TABLE ProductType (
+    pdtTypeId INT NOT NULL AUTO_INCREMENT,
+    pdtTypeName VARCHAR(600) NOT NULL,
+    pdtTypeDesc VARCHAR(1300) NOT NULL,
+    CONSTRAINT pdt_type_pk PRIMARY KEY (pdtTypeId)
+)	AUTO_INCREMENT = 1;
+
+INSERT INTO ProductType(pdtTypeName, pdtTypeDesc)
+VALUES ('沐浴香氛','經典香氛及沐浴系列商品'),
+	   ('生活用品','各種精緻的生活所需備品'),
+	   ('伴手禮','跟著郵輪去旅行的各地精緻伴手禮'),
+       ('美食伴手禮','跟著郵輪去旅行的各地美食伴手禮');
+
+
+-- 商品Product
+SET auto_increment_increment = 1;
+CREATE TABLE Product (
+	pdtId		INT NOT NULL AUTO_INCREMENT,
+	pdtTypeId	INT NOT NULL,
+	pdtStat		TINYINT NOT NULL DEFAULT 0 CHECK (pdtStat IN (0,1,2)) COMMENT '0:未上架(預設)、1:上架、2:刪除',
+	pdtName		VARCHAR(600) NOT NULL,
+	pdtDesc		VARCHAR(1500) NOT NULL,
+	pdtPrice	INT NOT NULL,
+    CONSTRAINT pdt_pk PRIMARY KEY (pdtId),
+    FOREIGN KEY (pdtTypeId) REFERENCES ProductType (pdtTypeId)
+) 	AUTO_INCREMENT = 1001;
+
+INSERT INTO Product (pdtTypeId, pdtStat, pdtName, pdtDesc, pdtPrice)
+VALUES (1,0,'沐浴香氛組','沐浴香氛用品組',1600),
+	   (1,0,'髮品香氛組','髮品香氛用品組',1600),
+	   (2,0,'寢具組','寢具用品組',6000);
+
+
+-- 商品圖片ProductImg
+CREATE TABLE ProductImg (
+    pdtImgId 	INT NOT NULL AUTO_INCREMENT,
+    pdtId 		INT NOT NULL,
+    pdtImgName  VARCHAR(600) NOT NULL,
+    pdtImg 		MEDIUMBLOB,
+    CONSTRAINT pdt_img_pk PRIMARY KEY (pdtImgId),
+	FOREIGN KEY (pdtId) REFERENCES Product (pdtId)
+) 	AUTO_INCREMENT = 1;
+
+INSERT INTO ProductImg (pdtId, pdtImgName)
+VALUES (1001,'shower01'),
+	   (1001,'shower02'),
+	   (1001,'shower03');
+
+
+-- 商品訂單
+CREATE TABLE ProductOrder (
+	pdtOrderId		INT NOT NULL AUTO_INCREMENT,
+	memId			INT NOT NULL,
+	orderDate		DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	orderAmt		INT NOT NULL,
+	orderStat		TINYINT NOT NULL CHECK (orderStat IN (0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
+					COMMENT '0:未付款 1:已付款 2:訂單成立 3:配送中 4:商品已到達
+								 5:訂單完成 6:訂單取消 7:未出貨  8:退款中 9:退款完成',
+	payMethod		TINYINT NOT NULL CHECK (payMethod IN (0, 1, 2)) COMMENT '0:轉帳 1:信用卡 2:貨到付款',
+	delMethod		TINYINT NOT NULL CHECK (delMethod IN (0, 1)) COMMENT '0:宅配 1:船上取貨',
+	recName			VARCHAR(30) NOT NULL,
+	recAddr			VARCHAR(300) NOT NULL,
+	recTel			VARCHAR(10) NOT NULL,
+    CONSTRAINT product_order_id_pk PRIMARY KEY (pdtOrderId),
+	FOREIGN KEY (memId) REFERENCES Member (memId)
+);
+
+INSERT INTO ProductOrder (memId, orderAmt, orderStat, payMethod, delMethod, recName, recAddr, recTel)
+VALUES (1, 3000, 0, 0, 0, '皮卡丘', '桃園市中壢區復興路46號9樓','0912345678'),
+	   (2, 4000, 1, 1, 1, '小火龍', '台北市中山區南京東路三段219號4F','0927120589'),
+       (2, 4000, 2, 2, 1, '傑尼龜', '台北市中山區南京東路三段219號4F','0927120589');
+
+
+-- 商品訂單明細
+CREATE TABLE ProductOrderItem (
+	pdtOrderId		INT NOT NULL,
+	pdtId			INT NOT NULL,
+	pdtPrice		INT NOT NULL,
+	pdtName			VARCHAR(30) NOT NULL,
+	orderQty		INT NOT NULL,
+    CONSTRAINT product_order_item_id_pk PRIMARY KEY (pdtOrderId, pdtId),
+	FOREIGN KEY (pdtOrderId) REFERENCES ProductOrder (pdtOrderId),
+	FOREIGN KEY (pdtId) REFERENCES Product (pdtId)
+);
+
+INSERT INTO ProductOrderItem(pdtOrderId, pdtId, pdtPrice, pdtName, orderQty)
+VALUES (1, 1001, 1600, '沐浴香氛組', 1),
+	   (2, 1001, 1600, '沐浴香氛組', 1), -- 不同訂單同商品
+	   (2, 1002, 1600, '髮品香氛組', 2); -- 同訂單不同商品
+
+
+-- 文章
+CREATE TABLE Article(
+	acId 		INT NOT NULL AUTO_INCREMENT,
+	memId		INT NOT NULL,
+	acTitle		VARCHAR(90) NOT NULL,
+	acCon       varchar(1200) NOT NULL,
+	postDate    DATETIME NOT NULL,
+	acStat 		TINYINT NOT NULL DEFAULT 0 CHECK (acStat IN (0, 1)) COMMENT '0:已下架 1:已發佈',
+    CONSTRAINT ac_pk PRIMARY KEY (acId),
+	CONSTRAINT fk_memId FOREIGN KEY (memId) REFERENCES Member (memId)
+);
+
+INSERT INTO Article (memId, acTitle, acCon, postDate, acStat)
+VALUES (1, '新文章標題', '這是文章的內容', NOW(), 1),
+	   (2, '第二篇新文章標題', '這是第二篇文章的內容', NOW(), 1);
+
+
+-- 文章檢舉
+CREATE TABLE ArticleReport (
+    acRpId 			INT NOT NULL AUTO_INCREMENT,
+    memId 			INT NOT NULL,
+    acId 		 	INT NOT NULL,
+    acRpReason 	 	TINYINT NOT NULL CHECK (acRpReason IN (1, 2, 3, 4, 5, 6, 7))
+					COMMENT '1:不實資訊 2:廣告或業配 3:詐騙訊息 4:惡意攻擊或包含不雅字眼
+						  5:霸凌或騷擾言語 6:含有裸露或性 7:其他',
+    rpReasonDesc 	VARCHAR(300),
+    rpTime 		 	DATETIME NOT NULL,
+    empId 		 	INT NOT NULL,
+    rpDoneTime   	DATETIME,
+    acRpStat 	 	TINYINT NOT NULL DEFAULT 0 CHECK (acRpStat IN (0, 1, 2)) COMMENT '0:未處理 1:處理中 2:已處理',
+    rpNote   	 	VARCHAR(150),
+    CONSTRAINT acrp_pk PRIMARY KEY (acRpId),
+    CONSTRAINT fk_acrp_memId FOREIGN KEY (memId) REFERENCES Member (memId),
+    CONSTRAINT fk_acrp_acId FOREIGN KEY (acId) REFERENCES Article (acId),
+    CONSTRAINT fk_acrp_empId FOREIGN KEY (empId) REFERENCES Employee (empId)
+);
+
+INSERT INTO ArticleReport (memId, acId, acRpReason, rpReasonDesc, rpTime, empId, rpNote)
+VALUES (1, 1, 3, '詐騙訊息', NOW(), 7001, '正在處理中'),
+	   (2, 1, 2, '衝浪鯊魚業配', NOW(), 7001, '正在處理中');
+
+
+-- 文章留言
+CREATE TABLE ArticleComment (
+    comId 		INT NOT NULL AUTO_INCREMENT,
+    acId 		INT NOT NULL,
+    memId 		INT NOT NULL,
+    comCon 		VARCHAR(300) NOT NULL,
+    comTime 	DATETIME NOT NULL,
+    comStat 	TINYINT NOT NULL DEFAULT 1 CHECK (comStat IN (0, 1)) COMMENT '0:已下架 1:已發布',
+    CONSTRAINT com_pk PRIMARY KEY (comId),
+    CONSTRAINT fk_com_acId FOREIGN KEY (acId) REFERENCES Article (acId),
+    CONSTRAINT fk_com_memId FOREIGN KEY (memId) REFERENCES Member (memId)
+);
+
+INSERT INTO ArticleComment (acId, memId, comCon, comTime, comStat)
+VALUES (1,1,'這是一則留言的內容', NOW(), 1),
+       (1,1,'這是小治的第二則留言', NOW(), 1);
+
+
+-- 文章留言檢舉
+CREATE TABLE CommentReport (
+    comRpId 		INT NOT NULL AUTO_INCREMENT,
+    comId 			INT NOT NULL,
+    memId 			INT NOT NULL,
+    reportedMemId   INT NOT NULL,
+    comRpReason 	TINYINT NOT NULL CHECK (comRpReason IN (1, 2, 3, 4, 5, 6, 7))
+					COMMENT '1:不實資訊 2:廣告或業配 3:詐騙訊息 4:惡意攻擊或包含不雅字眼 5:霸凌或騷擾言語 6:含有裸露或性 7:其他',
+    rpReasonDesc 	VARCHAR(300),
+    rpTime 			DATETIME NOT NULL,
+    empId 			INT NOT NULL,
+    rpDoneTime 		DATETIME,
+    comRpStat 		TINYINT NOT NULL DEFAULT 0 CHECK (comRpStat IN (0, 1, 2)) COMMENT '0:未處理 1:處理中 2:已審核',
+    rpNote 			VARCHAR(150),
+    CONSTRAINT comRp_pk PRIMARY KEY (comRpId),
+    CONSTRAINT fk_comrp_comId FOREIGN KEY (comId) REFERENCES ArticleComment (comId),
+    CONSTRAINT fk_comrp_memId FOREIGN KEY (memId) REFERENCES Member (memId),
+    CONSTRAINT fk_comrp_reportedMemId FOREIGN KEY (reportedMemId) REFERENCES Member (memId),
+    CONSTRAINT fk_comrp_empId FOREIGN KEY (empId) REFERENCES Employee (empId)
+);
+
+INSERT INTO CommentReport (comId, memId, reportedMemId, comRpReason, rpReasonDesc, rpTime, empId, comRpStat, rpNote)
+VALUES (2, 1, 2, 4, '惡意攻擊留言', NOW(), 7001, 1, '正在處理中');
+INSERT INTO CommentReport (comId, memId, reportedMemId, comRpReason, rpReasonDesc, rpTime, empId, rpDoneTime, comRpStat, rpNote)
+VALUES (2, 1, 2, 1, '不實資訊', NOW(), 7002, '2024-10-31 16:16:16', 2, '已審核，檢舉成功，系統將對留言者進行停權');
+
+
+-- 房間類型
+SET auto_increment_increment = 1;
+CREATE TABLE RoomType (
+    roomTypeId 		INT NOT NULL AUTO_INCREMENT,
+    roomTypeName 	VARCHAR(600) NOT NULL,
+    roomTypeDesc 	VARCHAR(1900) NOT NULL,
+    roomQty 		INT NOT NULL,
+    roomPrice 		INT NOT NULL,
+    occupancy 		INT NOT NULL,
+    CONSTRAINT room_type_pk PRIMARY KEY (roomTypeId)
+)	AUTO_INCREMENT = 1;
+
+INSERT INTO RoomType (roomTypeName, roomTypeDesc, roomQty, roomPrice, occupancy)
+VALUES ('經典單人房','一張單人床',100,3000,1),
+	   ('豪華單人房','一張加大單人床',100,3500,1),
+       ('經典雙人房','一張雙人床',300,4000,2),
+       ('豪華雙人房','一張加大雙人床',400,4500,2),
+       ('經典四人房','兩張雙人床',300,5000,4),
+       ('豪華四人房','兩張加大雙人床',200,5500,4);
+
+
+-- 房間圖片
+SET auto_increment_increment = 1;
+CREATE TABLE RoomImg (
+    roomImgId 		INT NOT NULL AUTO_INCREMENT,
+    roomTypeId 		INT NOT NULL,
+    roomImgName 	VARCHAR(1500) NOT NULL,
+    roomImg 		MEDIUMBLOB,
+    CONSTRAINT room_img_pk PRIMARY KEY (roomImgId),
+	FOREIGN KEY (roomTypeId) REFERENCES RoomType (roomTypeId)
+)	AUTO_INCREMENT = 1;
+
+INSERT INTO RoomImg (roomTypeId, roomImgName)
+VALUES (1,'nmsg01'),
+	   (1,'nmsg02'),
+       (1,'nmsg03');
+
+
+-- 行程種類
+CREATE TABLE PlanType (
+	planTypeId 	VARCHAR(10) NOT NULL,
+	planName 	VARCHAR(255),
+	planDay 	INT,
+	CONSTRAINT plan_type_pk PRIMARY KEY (planTypeId)
+);
+
+INSERT INTO planType (planTypeID, planName, planDay)
+VALUES ('A','日本三日遊','3'),
+	   ('B','歐洲十日遊','10');
+
+
+-- 行程
+SET auto_increment_increment = 1;
+CREATE TABLE Plan (
+	planId 		INT NOT NULL AUTO_INCREMENT,
+    planTypeId 	VARCHAR(10) NOT NULL,
+    startDate 	DATETIME NOT NULL,
+    endDate 	DATETIME NOT NULL,
+    planPrice 	INT NOT NULL,
+    attMax 		INT NOT NULL,
+    attEnd 		INT NOT NULL DEFAULT 0,
+    CONSTRAINT plan_pk PRIMARY KEY (planId),
+    FOREIGN KEY (planTypeId) REFERENCES PlanType (planTypeId)
+) 	AUTO_INCREMENT = 1001;
+
+INSERT INTO Plan (planTypeId, startDate, endDate, planPrice, attMax)
+VALUES	('A', '2024-11-01 08:00:00', '2024-11-03 20:00:00', 30000, 20),
+		('B', '2024-12-01 08:00:00', '2024-12-10 20:00:00', 100000, 30);
+
+
+-- 行程房型
+CREATE TABLE PlanRoom (
+	planId 			INT NOT NULL,
+    roomTypeId 		INT NOT NULL,
+    roomTypeName	VARCHAR(60) NOT NULL,
+    roomPrice 		INT NOT NULL,
+    roomQty 		INT,
+    reservedRoom 	INT DEFAULT 0,
+    CONSTRAINT plan_room_pk PRIMARY KEY (planId, roomTypeId),
+	FOREIGN KEY (planId) REFERENCES Plan (planId),
+    FOREIGN KEY (roomTypeId) REFERENCES RoomType (roomTypeId)
+);
+
+INSERT INTO PlanRoom (planId, roomTypeId, roomTypeName, roomPrice, roomQty)
+VALUES   (1001, 1, '經典單人房', 2800, 7),
+		(1001, 2, '豪華單人房', 3300, 6),
+		(1001, 3, '經典雙人房', 3800, 5),
+		(1001, 4, '豪華雙人房', 4300, 2),
+		(1001, 5, '經典四人房', 4800, 5),
+		(1001, 6, '豪華四人房', 5300, 5);
+
+
+
+-- 行程資訊
+CREATE TABLE PlanInfo (
+	planTypeId 		VARCHAR(10) NOT NULL,
+    planDay 		INT NOT NULL,
+    planCon			VARCHAR(1500),
+    CONSTRAINT plan_info_pk PRIMARY KEY (planTypeId, planDay),
+    FOREIGN KEY (planTypeId) REFERENCES PlanType (planTypeId)
+);
+
+INSERT INTO PlanInfo (planTypeId, planDay, planCon)
+VALUES  ('A', 1, '抵達東京，參觀淺草寺和東京塔'),
+		('A', 2, '前往富士山，欣賞山景並體驗溫泉'),
+		('A', 3, '前往秋葉原購物，返回飯店準備返程'),
+		('B', 1, '抵達巴黎，參觀艾菲爾鐵塔和羅浮宮'),
+		('B', 2, '遊覽巴黎塞納河及聖母院'),
+		('B', 3, '前往法國南部，參觀蔚藍海岸'),
+		('B', 4, '抵達義大利羅馬，參觀鬥獸場和梵蒂岡'),
+		('B', 5, '遊覽佛羅倫斯，欣賞大衛雕像'),
+		('B', 6, '前往威尼斯，乘坐貢多拉'),
+		('B', 7, '抵達瑞士，遊覽少女峰'),
+		('B', 8, '前往德國慕尼黑，參觀啤酒節'),
+		('B', 9, '參觀柏林牆和博物館島'),
+		('B', 10, '返回法蘭克福，結束行程');
+
+
+-- 行程訂單
+CREATE TABLE PlanOrder (
+    planOrderId 	INT NOT NULL AUTO_INCREMENT,
+    memId 			INT NOT NULL,
+    planId 			INT NOT NULL,
+    planPrice 		INT NOT NULL,
+    roomPrice 		INT NOT NULL,
+    totalPrice 		INT GENERATED ALWAYS AS (planPrice + roomPrice) STORED,
+    orderDate 		DATETIME DEFAULT CURRENT_TIMESTAMP,
+    orderStat 		TINYINT NOT NULL DEFAULT 0 CHECK (orderStat IN (0, 1, 2, 3, 4, 5, 6))
+					COMMENT '0:未付款 1:已付款 2:訂單成立 3:訂單完成 4:訂單取消 5:退款中 6:退款完成 ',
+    payMethod 		TINYINT NOT NULL CHECK (payMethod IN (0, 1)) COMMENT '0:轉帳 1:信用卡',
+    remAcct  		VARCHAR(20) DEFAULT NULL,
+    cardLast4 		VARCHAR(4) DEFAULT NULL,
+    CONSTRAINT plan_order_pk PRIMARY KEY (planOrderId),
+    FOREIGN KEY (memId) REFERENCES Member(memId),
+	FOREIGN KEY (planId) REFERENCES Plan (planId)
+)	AUTO_INCREMENT = 1;
+
+INSERT INTO PlanOrder (memId, planId, planPrice, roomPrice, orderStat, payMethod, remAcct, cardLast4)
+VALUES (1, 1001, 30000, 5000, 1, 0, '822-06342209481', NULL),   -- 已付款 轉帳
+	   (2, 1001, 30000, 4000, 1, 1, NULL, '4431'),              -- 已付款 信用卡
+	   (2, 1001, 30000, 3500, 0, 1, NULL, NULL),           		-- 信用卡 未付款
+	   (1, 1001, 60000, 15000, 0, 1, NULL, NULL),            	-- 信用卡 未付款
+       (1, 1001, 60000, 14500, 0, 0, NULL, NULL);            	-- 轉帳 未付款
+
+-- 活動--
+CREATE TABLE Event (
+                       evtId         INT NOT NULL AUTO_INCREMENT,
+                       evtName    VARCHAR(90) NOT NULL,
+                       evtDesc    VARCHAR(600) NOT NULL,
+                       evtDate    timestamp NOT NULL,
+                       evtStart       timestamp NOT NULL,
+                       evtDeadLine   timestamp NOT NULL,
+                       evtMax        INT NOT NULL,
+                       evtAttend      INT NOT NULL DEFAULT 0,
+                       evtStat    TINYINT NOT NULL COMMENT '0:未開放 1:報名中 2:已截止,3:已額滿' CHECK (evtStat IN (0, 1, 2, 3)),
+                       CONSTRAINT event_pk PRIMARY KEY (evtId)
+)   AUTO_INCREMENT = 101;
+
+INSERT INTO Event (evtName, evtDesc, evtDate, evtStart, evtDeadLine, evtMax, evtAttend, evtStat)
+VALUES  ('海上KTV', '在郵輪上一同高歌', '2024-06-10', '2024-06-01 09:00:00', '2024-06-09 18:00:00', 150, 50, 0),
+        ('海上夜市', '在郵輪上也能體驗台灣文化', '2024-06-11', '2024-06-01 09:00:00', '2024-06-10 18:00:00', 50, 30, 0),
+        ('JAVA課程', '出遊還能學一項新技能', '2024-06-12', '2024-06-01 09:00:00', '2024-06-11 18:00:00', 100, 60, 0);
+
+
+-- 活動圖片
+CREATE TABLE EventImg (
+    evtImgId 	  INT NOT NULL AUTO_INCREMENT,
+    evtId 		  INT NOT NULL,
+    evtImgName 	  VARCHAR(90) NOT NULL,
+    evtImg 		  MEDIUMBLOB,
+    CONSTRAINT eventimg_pk PRIMARY KEY (evtImgId),
+    CONSTRAINT eventimg_evtid_fk FOREIGN KEY (evtId) REFERENCES Event (evtId)
+) AUTO_INCREMENT = 1;
+
+INSERT INTO EventImg (evtId, evtImgName, evtImg)
+VALUES (101, '海上KTV', NULL),
+	   (102, '海上夜市照片', NULL),
+       (103, 'JAVA課程', NULL);
+
+
+-- 活動訂單--
+CREATE TABLE EventOrder (
+                            evtOrderId      INT NOT NULL AUTO_INCREMENT,
+                            evtId           INT NOT NULL,
+                            memId           INT NOT NULL,
+                            planOrderId     INT NOT NULL,
+                            evtName         VARCHAR(90) NOT NULL,
+                            evtDate         TIMESTAMP NOT NULL,
+                            evtAttend       INT NOT NULL,
+                            evtAttendDate   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                            evtRemarks      VARCHAR(100),
+                            evtOrderStat    TINYINT NOT NULL CHECK (evtOrderStat IN (0, 1, 2)) COMMENT ' 0: 審核中  1 : 已審核 2 : 不成立',
+                            CONSTRAINT eventorder_pk PRIMARY KEY (evtOrderId),
+                            CONSTRAINT eventorder_evtid_fk FOREIGN KEY (evtId) REFERENCES Event (evtId),
+                            CONSTRAINT eventorder_memid_fk FOREIGN KEY (memId) REFERENCES Member (memId),
+                            CONSTRAINT eventorder_planorderid_fk FOREIGN KEY (planOrderId) REFERENCES PlanOrder (planOrderId)
+) AUTO_INCREMENT = 1001;
+
+INSERT INTO EventOrder (evtId, memId, planOrderId, evtName, evtDate, evtAttend, evtOrderStat,evtRemarks)
+VALUES  (101, 2, 3, '海上KTV', '2024-06-10', 4, 0,'多準備一隻麥克風'),
+        (102, 2, 3, '海上夜市', '2024-06-11', 2, 0,'有沒有地瓜球'),
+        (103, 1, 4, 'JAVA課程', '2024-06-12', 1, 0,'JAVA我只上大小吳的課');
+
+
+-- 房間訂單
+SET auto_increment_increment = 1;
+CREATE TABLE RoomOrder (
+    roomOrderId 	INT NOT NULL AUTO_INCREMENT,
+    roomTypeId 		INT NOT NULL,
+    planOrderId 	INT NOT NULL,
+    roomTypeName 	VARCHAR(600) NOT NULL,
+    roomPrice 		INT NOT NULL,
+    orderQty 		INT NOT NULL,
+    CONSTRAINT room_order_pk PRIMARY KEY (roomOrderId),
+	FOREIGN KEY (roomTypeId) REFERENCES RoomType (roomTypeId),
+	FOREIGN KEY (planOrderId) REFERENCES PlanOrder (planOrderId)
+) 	AUTO_INCREMENT = 2001;
+
+INSERT INTO RoomOrder(planOrderId, roomTypeId, roomTypeName, roomPrice, orderQty)
+VALUES (1,3,'經典雙人房',3800,2),
+	   (1,4,'豪華雙人房',4300,1),
+       (2,4,'豪華雙人房',4300,2);
+-- 房型訂單的房價應該是跟著行程房型的價錢--
+
+-- 佈告欄
+SET auto_increment_offset = 1;
+SET auto_increment_increment = 1;
+CREATE TABLE BulletinBoard (
+    msgId 		INT NOT NULL AUTO_INCREMENT,
+    msgType 	TINYINT DEFAULT 3 NOT NULL COMMENT '0:行程公告、1:活動公告、2:商城公告、3:其他公告',
+    msgTitle 	VARCHAR(900) NOT NULL,
+    msgCon		VARCHAR(1900) NOT NULL,
+    postStat 	TINYINT DEFAULT 0 NOT NULL COMMENT '0:未發佈、1:已發佈、2:已刪除',
+    postTime 	DATETIME NOT NULL,
+    isPinned    BOOLEAN DEFAULT FALSE,
+    CONSTRAINT bulletinboard_pk PRIMARY KEY (msgId)
+)	AUTO_INCREMENT  = 1;
+
+INSERT INTO BulletinBoard(msgType,msgTitle,msgCon,postTime)
+VALUES (0,'10/31行程延期公告','原定10/31啟程行程因天候因素延期',"2021-10-28 08:00:00"),
+       (1,'11/15海上KTV活動公告','2024-11-15將舉行星空KTV活動，邀請您一同體驗海上唱歌的樂趣，敬請踴躍參加!',"2024-10-01 08:00:00"),
+	   (1,'12/25聖誕晚會活動公告','2024/12/25將舉行聖誕晚會，邀請您一同參加',"2024-11-01 08:00:00");
+
+
+-- 客服機器人
+CREATE TABLE OnlineCustomerService (
+	textId			INT NOT NULL AUTO_INCREMENT,
+	probDesc		VARCHAR(90) NOT NULL,
+	reply			VARCHAR(300) NOT NULL,
+	CONSTRAINT online_customer_service_id_pk PRIMARY KEY (textId)
+);
+
+INSERT INTO OnlineCustomerService(probDesc, reply)
+VALUES ('如何重置密碼？', '請至「忘記密碼」頁面進行密碼重置。'),
+	   ('如何修改訂單？', '請聯繫客服，並提供您的訂單號碼以便進行修改。'),
+       ('如何更改帳號綁定的電子郵件？', '請登入您的帳號，進入「帳號設定」頁面以更改綁定的電子郵件。');

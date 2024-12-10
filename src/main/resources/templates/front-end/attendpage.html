@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>活動報名</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hamburgers/1.1.3/hamburgers.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/elm.css}"/>
+</head>
+<body>
+<style>
+    .event-form {
+        width: 60%;
+        margin: 30px auto;
+        padding: 15px;
+    }
+
+    .event-info {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+    }
+
+    .event-title {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .order-section {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+    }
+
+    .section-title {
+        margin-bottom: 20px;
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    /* 移除會員編號和訂單編號的上下箭頭 */
+    input[type="text"] {
+        -moz-appearance: textfield;
+    }
+
+    input[type="text"]::-webkit-outer-spin-button,
+    input[type="text"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .info-item {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .info-label {
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        font-size: 0.9em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .info-label i {
+        color: #0080ff;
+    }
+
+    .info-value {
+        font-size: 1.1em;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    .attendance-status {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin: 20px 0;
+    }
+
+    .status-item {
+        text-align: center;
+        padding: 15px 25px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        min-width: 150px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .status-label {
+        font-size: 0.9em;
+        color: var(--text-secondary);
+        margin-bottom: 5px;
+    }
+
+    .status-value {
+        font-size: 1.5em;
+        color: #0080ff;
+        font-weight: bold;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #0080ff, #00ff88);
+        transition: width 0.3s ease;
+    }
+    .attendance-value.full {
+        color: #dc3545;  /* 紅色 */
+        font-weight: bold;
+    }
+
+    .alert {
+        margin: 20px auto;
+        max-width: 800px;
+        text-align: center;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+
+</style>
+<nav>
+    <a id="logo_area" href="">
+        <div class="img_con">
+            <img src="https://picsum.photos/100" alt=""/>
+        </div>
+        <div class="vertical-line"></div>
+        <h3>鄰星嗨嗨</h3>
+    </a>
+    <ul>
+        <li><a href="">行程預定</a></li>
+        <li><a href="">房型價格</a></li>
+        <li><a href="" th:href="@{/front/list}">活動預約</a></li>
+        <li><a href="">商城</a></li>
+        <li><a href="">討論區</a></li>
+        <li><a href="">公告</a></li>
+    </ul>
+    <button class="hamburger hamburger--collapse" type="button">
+            <span class="hamburger-box">
+                <span class="hamburger-inner"></span>
+            </span>
+        <div class="ham_list showList">
+            <a href="#" target="_blank">註冊會員</a>
+            <a href="#" target="_blank">會員登入</a>
+            <a href="#" target="_blank">會員中心</a>
+        </div>
+    </button>
+</nav>
+
+<div th:if="${event != null}" class="container">
+    <form th:action="@{'/confirm/' + ${event.evtId}}" method="post" id="eventForm">
+        <div class="event-info">
+            <h2 class="event-title" th:text="${event.evtName}"></h2>
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-calendar-alt"></i>活動時間
+                    </div>
+                    <div class="info-value">
+                        <span th:text="${#temporals.format(event.evtDate, 'yyyy-MM-dd HH:mm')}"></span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-hourglass-start"></i>開放報名
+                    </div>
+                    <div class="info-value">
+                        <span th:text="${#temporals.format(event.evtStart, 'yyyy-MM-dd HH:mm')}"></span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-hourglass-end"></i>報名截止
+                    </div>
+                    <div class="info-value">
+                        <span th:text="${#temporals.format(event.evtDeadLine, 'yyyy-MM-dd HH:mm')}"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="attendance-status">
+
+                <div class="status-item">
+                    <div class="status-label">目前報名</div>
+                    <div class="status-value" th:text="${event.evtAttend}" id="currentAttendance">0</div>
+                </div>
+
+                <div class="status-item">
+                    <div class="status-label">名額上限</div>
+                    <div class="status-value" th:text="${event.evtMax}" id="maxAttendance">0</div>
+                </div>
+            </div>
+
+
+            <div class="progress-bar">
+                <div class="progress-fill"
+                     th:style="'width: ' + ${(event.evtAttend * 100 / event.evtMax)} + '%'"></div>
+            </div>
+        </div>
+
+
+        <div class="order-section">
+            <h3 class="section-title">報名資訊</h3><br>
+            會員ID:<sp th:text="${memVO.memId}" ></sp><br>
+            會員名稱:<sp th:text="${memVO.name}" ></sp><br>
+
+            <div class="form-group">
+                <label for="evtAttend">參加人數：</label>
+                <input type="number" id="evtAttend" name="evtAttend" class="form-control basic_input"
+                       min="1" max="5" required>
+                <small class="form-text text-muted">剩餘名額：<span th:text="${event.evtMax - event.evtAttend}"></span></small>
+                <small class="form-text text-info"><i class="fas fa-info-circle"></i> 一次最多可報名5人</small>
+            </div>
+
+            <div class="form-group">
+                <label for="evtRemarks">備註訊息：</label>
+                <textarea id="evtRemarks"
+                          name="evtRemarks"
+                          class="form-control basic_input"
+                          rows="3"
+                          maxlength="100"
+                          placeholder="如有特殊需求請在此說明（最多100字）"></textarea>
+                <small class="form-text text-muted">
+                    <i class="fas fa-info-circle"></i>
+                    請填寫活動相關備註事項
+                </small>
+            </div>
+            <!-- 驗證碼,渲染時生成的 -->
+            <div class="form-group">
+                <label>驗證碼：</label>
+                <img id="captchaImage"
+                     th:src="@{/captcha/generate(key=${captchaKey})}"
+                     onclick="refreshCaptcha()"
+                     style="cursor:pointer">
+                <input type="text" id="captcha" name="captcha" class="form-control basic_input" required>
+                <small class="form-text text-muted">點擊圖片可重新產生驗證碼</small>
+            </div>
+        </div>
+
+
+        <input type="hidden" name="evtName" th:value="${event.evtName}">
+        <input type="hidden" name="evtDate" th:value="${#temporals.format(event.evtDate, 'yyyy-MM-dd''T''HH:mm')}">
+        <input type="hidden" name="evtOrderStat" value="0">
+            <!--提交隱藏key AttendController生成的-->
+        <input type="hidden" id="captchaKey" th:value="${captchaKey}">
+
+
+        <div class="button-group">
+
+            <a th:href="@{/front/detail/{id}(id=${event.evtId})}" class="btn">
+                <div class="inner">
+                    <div class="blob"></div>
+                    <div class="blob"></div>
+                    <div class="blob"></div>
+                    <div class="blob"></div>
+                </div>
+                返回
+            </a>
+            <!-- 確認報名按鈕 -->
+            <button type="submit" class="btn" id="submitBtn">
+                <div class="inner">
+                    <div class="blob"></div>
+                    <div class="blob"></div>
+                    <div class="blob"></div>
+                    <div class="blob"></div>
+                </div>
+                確認報名
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- 頁尾區域 -->
+<div th:replace="~{back-end/footer :: f}"></div>
+
+<!-- 引入JavaScript資源 -->
+<!-- 引入JavaScript資源 -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script>
+
+    const ham_list = document.querySelector(".ham_list");
+    const nav = document.querySelector("nav");
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        refreshCaptcha();
+        setCaptchaExpireAlert();
+        checkEventStatus();
+    });
+
+    // 刷新驗證碼
+    function refreshCaptcha() {
+        const captchaKey = '[[${captchaKey}]]';
+        const img = document.getElementById('captchaImage');
+        // [[@{/captcha/generate}]] 從路徑拿圖
+        // 用math.random確保瀏覽器每次都重新載入新的驗證碼圖片。
+        img.src = '[[@{/captcha/generate}]]?key=' + captchaKey + '&random=' + Math.random();
+
+        // 重新設置過期提醒
+        setCaptchaExpireAlert();
+    }
+
+    // 設置驗證碼過期提醒
+    function setCaptchaExpireAlert() {
+        if (window.expireTimer) {
+            clearTimeout(window.expireTimer);
+        }
+        window.expireTimer = setTimeout(() => {
+            alert('驗證碼已過期，請點擊圖片重新獲取');
+        }, 60000);
+    }
+
+    // 檢查活動狀態
+    function checkEventStatus() {
+        const currentAttendance = parseInt(document.getElementById('currentAttendance').textContent);
+        const maxAttendance = parseInt(document.getElementById('maxAttendance').textContent);
+        const submitBtn = document.getElementById('submitBtn');
+
+        if (currentAttendance >= maxAttendance) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="inner">活動已額滿</div>';
+            alert('此活動已額滿，無法進行報名！');
+        }
+    }
+
+    // 漢堡選單相關功能
+    document.querySelector(".hamburger").addEventListener("click", function() {
+        this.classList.toggle("is-active");
+    });
+
+    ham_list.addEventListener("click", function(e) {
+        e.stopPropagation();
+    });
+
+    $(".hamburger").on("click", function() {
+        $(".ham_list").toggleClass("showList");
+    });
+
+    window.addEventListener("scroll", (e) => {
+        if (window.scrollY !== 0) {
+            nav.style.backgroundColor = "rgba(173, 216, 230, 0.8)";
+            nav.style.boxShadow = "0px 8px 10px lightgray";
+        } else {
+            nav.style.backgroundColor = "lightblue";
+            nav.style.boxShadow = "none";
+        }
+    });
+
+    // 表單驗證與提交處理
+    document.getElementById('eventForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // 取得表單相關數值
+        const attendInput = document.getElementById('evtAttend');
+        const attendValue = parseInt(attendInput.value);
+        const maxSpots = parseInt(document.querySelector('.form-text.text-muted span').textContent);
+        const currentAttendance = parseInt(document.getElementById('currentAttendance').textContent);
+        const maxAttendance = parseInt(document.getElementById('maxAttendance').textContent);
+
+        // 檢查活動是否已額滿
+        if (currentAttendance >= maxAttendance) {
+            alert('很抱歉，本活動已額滿！');
+            return;
+        }
+
+        // 檢查參加人數限制
+        if (attendValue <= 0) {
+            alert('參加人數必須大於 0！');
+            return;
+        }
+
+        if (attendValue > 5) {
+            alert('一次最多只能報名 5 人！');
+            return;
+        }
+
+        // 檢查剩餘名額
+        if (attendValue > maxSpots) {
+            alert('報名人數超過剩餘名額！剩餘名額：' + maxSpots + '人');
+            return;
+        }
+
+        if (currentAttendance + attendValue > maxAttendance) {
+            alert('報名人數將超過活動名額上限！請重新確認報名人數。');
+            return;
+        }
+
+        // 驗證碼驗證
+        const form = this;
+        const captchaValue = document.getElementById('captcha').value;
+        const captchaKey = document.getElementById('captchaKey').value;
+
+        fetch('/captcha/verify', {
+            method: 'POST',
+            headers: {
+                //數據會以 URL 編碼的形式發送
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `key=${encodeURIComponent(captchaKey)}&captcha=${encodeURIComponent(captchaValue)}`
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    form.submit();
+                } else {
+                    alert('驗證碼錯誤');
+                    refreshCaptcha();
+                }
+            })
+            .catch(error => {
+                console.error('錯誤:', error);
+                alert('驗證失敗');
+                refreshCaptcha();
+            });
+    });
+</script>
+</body>
+</html>
+

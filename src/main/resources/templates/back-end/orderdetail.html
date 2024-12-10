@@ -1,0 +1,270 @@
+    <!DOCTYPE html>
+    <html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>活動訂單明細</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+        <style>
+            .order-container {
+                width: 80%;
+                margin: 30px auto;
+                padding: 20px;
+                background: rgba(255, 255, 255, 0.9);
+                border-radius: 12px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+
+            .order-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+            }
+
+
+            h2 {
+                text-align: center;
+                color: #333;
+                margin-bottom: 30px;
+                font-weight: bold;
+            }
+
+            .section {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            }
+
+            .section-title {
+                color: #0080ff;
+                font-weight: bold;
+                margin-bottom: 15px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #f0f0f0;
+                text-align: center;
+                justify-content: center;
+            }
+
+            .detail-row {
+                display: grid;
+                grid-template-columns: 140px 1fr; /* 增加到 140px */
+                gap: 10px;
+                margin: 10px 0;
+                align-items: center;
+                padding-left: 35px;
+                min-height: 24px; /* 確保每行高度一致 */
+            }
+
+            .detail-label {
+                color: #666;
+                font-weight: 500;
+                text-align: right;
+                white-space: nowrap;
+                padding-right: 5px; /* 添加右側間距 */
+            }
+
+            .detail-value {
+                color: #333;
+                text-align: left;
+            }
+
+            .button-group {
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+                margin-top: 30px;
+                padding: 20px;
+                background: white;
+                border-radius: 10px;
+            }
+
+            .btn {
+                padding: 10px 30px;
+                border-radius: 25px;
+                font-size: 1rem;
+                transition: all 0.3s;
+                min-width: 120px;
+            }
+
+            .btn-return {
+                background-color: #6c757d;
+                color: white;
+            }
+
+            .btn-confirm {
+                background-color: #28a745;
+                color: white;
+            }
+
+            .btn-cancel {
+                background-color: #dc3545;
+                color: white;
+            }
+
+            .btn-mail {
+                background-color: #0d6efd;
+                color: white;
+            }
+
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+
+            .status-badge {
+                display: inline;
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-size: 0.9em;
+            }
+
+            .status-pending {
+                background-color: #ffc107;
+                color: #000;
+            }
+
+            .status-confirmed {
+                background-color: #28a745;
+                color: white;
+            }
+
+            .status-cancelled {
+                background-color: #dc3545;
+                color: white;
+            }
+
+        </style>
+    </head>
+    <body>
+    <div class="order-container">
+        <h2>活動訂單明細</h2>
+
+        <div class="order-grid">
+            <!-- 左欄 -->
+            <div class="left-column">
+                <div class="section">
+                    <h3 class="section-title"><i class="fas fa-user"></i>會員資訊</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">會員名稱：</span>
+                        <span class="detail-value" th:text="${order.memVO.name}"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">會員信箱：</span>
+                        <span class="detail-value" th:text="${order.memVO.email}"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">會員電話：</span>
+                        <span class="detail-value" th:text="${order.memVO.tel}"></span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title"><i class="fas fa-route"></i>行程訂單資訊</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">行程訂單編號：</span>
+                        <span class="detail-value" th:text="${order.planOrder.planOrderId}"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">行程編號：</span>
+                        <span class="detail-value" th:text="${order.planOrder.plan.planId}"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">訂單時間：</span>
+                        <span class="detail-value" th:text="${#temporals.format(order.planOrder.orderDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右欄 -->
+            <div class="right-column">
+                <div class="section">
+                    <h3 class="section-title"><i class="fas fa-calendar-check"></i>活動訂單資訊</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">訂單編號：</span>
+                        <span class="detail-value" th:text="${order.evtOrderId}"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">活動名稱：</span>
+                        <span class="detail-value" th:text="${order.evtName}"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">報名時間：</span>
+                        <span class="detail-value" th:text="${#temporals.format(order.evtAttendDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                    </div>
+
+                    <!-- 活動時間 -->
+                    <div class="detail-row">
+                        <span class="detail-label">活動時間：</span>
+                        <span class="detail-value" th:text="${#temporals.format(order.evtDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">參加人數：</span>
+                        <span class="detail-value" th:text="${order.evtAttend}"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">訂單備註：</span>
+                        <span class="detail-value" th:text="${order.evtRemarks}"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">訂單狀態：</span>
+                        <div class="detail-value">
+                           <span class="status-badge"
+                                 th:class="${order.evtOrderStat == 0 ? 'status-badge status-pending' :
+                                          order.evtOrderStat == 1 ? 'status-badge status-confirmed' :
+                                          'status-badge status-cancelled'}"
+                                 th:text="${order.evtOrderStat == 0 ? '審核中' :
+                                          order.evtOrderStat == 1 ? '已確認' : '已取消'}">
+                           </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title"><i class="fas fa-info-circle"></i>活動詳情</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">活動描述：</span>
+                        <span class="detail-value" th:text="${evt.evtDesc}"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">開始報名：</span>
+                        <span class="detail-value" th:text="${#temporals.format(evt.evtStart, 'yyyy-MM-dd HH:mm:ss')}"></span>
+
+                    </div>
+
+                    <!-- 報名截止 -->
+                    <div class="detail-row">
+                        <span class="detail-label">報名截止：</span>
+                        <span class="detail-value" th:text="${#temporals.format(evt.evtDeadLine, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">人數上限：</span>
+                        <span class="detail-value" th:text="${evt.evtMax}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <a th:href="@{/ordlistall}" class="btn btn-return">
+                <i class="fas fa-arrow-left"></i> 返回
+            </a>
+            <a class="btn btn-confirm" th:href="@{/confirmord(id=${order.evtOrderId},status=1)}">
+                <i class="fas fa-check"></i> 確認訂單
+            </a>
+            <a class="btn btn-cancel" th:href="@{/confirmord(id=${order.evtOrderId},status=2)}">
+                <i class="fas fa-times"></i> 取消訂單
+            </a>
+            <button class="btn btn-mail">
+                <i class="fas fa-envelope"></i> 發送郵件
+            </button>
+        </div>
+    </div>
+
+    <div th:replace="~{back-end/footer :: f}"></div>
+    </body>
+    </html>

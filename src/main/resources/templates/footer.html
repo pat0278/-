@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>所有行程</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/elm.css" />
+  <link rel="stylesheet" href="/css/plan.css" />
+
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">行程管理系統</a>
+  </div>
+</nav>
+
+<div class="container mt-5">
+  <h1 class="text-center mb-4">所有行程</h1>
+
+  <!-- Action Buttons -->
+  <div class="d-flex justify-content-between mb-3">
+    <form action="/plans/addplan" method="get">
+      <button type="submit" class="btn btn-primary">行程建立</button>
+    </form>
+    <form action="/plans/addplantype" method="get">
+      <button type="submit" class="btn btn-success">建立行程類型</button>
+    </form>
+    <form action="/planinfo/add" method="get">
+      <button type="submit" class="btn btn-info">建立行程資訊</button>
+    </form>
+    <form action="/" method="get">
+      <button type="submit" class="btn btn-home">回首頁</button>
+    </form>
+  </div>
+
+  <!-- Plans Table -->
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered">
+      <thead class="table-dark">
+      <tr>
+        <th scope="col" class="text-center">行程編號</th>
+        <th scope="col" class="text-center">行程類型</th>
+        <th scope="col" class="text-center">行程開始時間</th>
+        <th scope="col" class="text-center">行程結束時間</th>
+        <th scope="col" class="text-center">行程價格</th>
+        <th scope="col" class="text-center">行程最大人數</th>
+        <th scope="col" class="text-center">目前人數</th>
+        <th scope="col" class="text-center">修改</th>
+        <th scope="col" class="text-center">刪除</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="plan : ${plans}">
+        <td class="text-center" th:text="${plan.planId}"></td>
+        <td class="text-center" th:text="${plan.planType.planTypeId}"></td>
+        <td class="text-center" th:text="${#temporals.format(plan.startDate, 'yyyy-MM-dd')}"></td>
+        <td class="text-center" th:text="${#temporals.format(plan.endDate, 'yyyy-MM-dd')}"></td>
+        <td class="text-center" th:text="${plan.planPrice}"></td>
+        <td class="text-center" th:text="${plan.attMax}"></td>
+        <td class="text-center" th:text="${plan.attEnd}"></td>
+        <td class="text-center">
+          <a th:href="@{/plans/editplan/{planId}(planId=${plan.planId})}" class="btn btn-warning btn-sm">修改</a>
+        </td>
+        <td class="text-center">
+          <a th:href="@{'/plans/delete/' + ${plan.planId}}" class="btn btn-danger btn-sm">刪除</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Error Message -->
+  <div th:if="${error != null}" class="alert alert-danger mt-4" role="alert">
+    <p th:text="${error}"></p>
+  </div>
+</div>
+
+<footer class="mt-5 text-center">
+  <sup>&copy;</sup> 2024 本網站僅供 tibame 專題展示用，並無進行任何商業行為
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

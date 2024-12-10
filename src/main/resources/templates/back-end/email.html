@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>鄰星嗨嗨:活動報名成功通知</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+
+<div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+  <h2 style="color: #0080ff;">活動報名成功通知</h2>
+
+  <div style="background-color: #f8f9fa; border-radius: 10px; padding: 20px; margin: 20px 0;">
+    <p>親愛的 <span th:text="${memberName}"></span> 您好：</p>
+    <p>您的活動報名成功，以下是訂單詳情：</p>
+    <ul style="list-style: none; padding: 0;">
+      <li style="margin: 10px 0;">訂單編號：<span th:text="${orderId}"></span></li>
+    <li style="margin: 10px 0;">活動名稱：<span th:text="${eventName}"></span></li>
+    <li style="margin: 10px 0;">訂單時間：<span th:text="${#temporals.format(evtAttendDate, 'yyyy-MM-dd HH:mm')}"></span></li>
+    <li style="margin: 10px 0;">訂單狀態：<span th:if="${status == 1}" th:text="'已審核'"></span></li>
+    </ul>
+  </div>
+
+  <p style="color: #666;">如有任何問題，請隨時與我們聯絡。</p>
+  <div style="text-align: center; margin-top: 20px;">
+    <img src="cid:footer" width="100%" alt="Footer"/>
+  </div>
+
+  <div th:replace="~{back-end/footer :: f}"></div>
+</div>
+</body>
+</html>

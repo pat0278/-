@@ -1,0 +1,352 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css");
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.btn {
+  position: relative;
+  min-width: 200px;
+  background-color: transparent;
+  border: none;
+  color: #0080ff;
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  transition: color 0.5s;
+  padding: 12px 20px;
+}
+.btn:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border: 3px solid #0080ff;
+  border-radius: 30px;
+}
+.btn:hover {
+  color: white;
+}
+.btn:hover:after {
+  transition: all 0.3s;
+  left: 0;
+  top: 0;
+}
+.btn:hover .inner .blob {
+  transform: translateZ(0) scale(1.7);
+}
+.btn .inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: 30px;
+}
+.btn .inner .blob {
+  position: absolute;
+  top: 6px;
+  width: 25%;
+  height: 100%;
+  background: #0080ff;
+  border-radius: 100%;
+  transform: translate3d(0, 120%, 0) scale(1.5);
+  transition: transform 0.45s;
+}
+.btn .inner .blob:nth-child(1) {
+  left: 0%;
+  transition-delay: 0s;
+}
+.btn .inner .blob:nth-child(2) {
+  left: 30%;
+  transition-delay: 0.08s;
+}
+.btn .inner .blob:nth-child(3) {
+  left: 60%;
+  transition-delay: 0.16s;
+}
+.btn .inner .blob:nth-child(4) {
+  left: 90%;
+  transition-delay: 0.24s;
+}
+
+form {
+  border-radius: 15px;
+  width: 60%;
+  margin: 30px auto;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: linear-gradient(to bottom, #d7f3ff, #bde6e2, #9cdcc4);
+}
+form .btn {
+  width: 200px;
+  z-index: 3;
+  margin: 0 auto;
+}
+form .form-group {
+  margin: 10px 0;
+}
+form .form-group label {
+  margin: 5px 0;
+}
+form .form-group label:first-child {
+  margin: 0;
+}
+form .radio_el,
+form .checkBox_el {
+  display: flex;
+  align-items: center;
+}
+form .radio_el div,
+form .checkBox_el div {
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+}
+form .radio_el div label,
+form .checkBox_el div label {
+  margin: 0 5px;
+  padding-top: 3px;
+}
+form .upload_el {
+  cursor: pointer;
+  border: 3px solid #46b8da;
+  background-color: rgba(91, 192, 222, 0.9);
+  border-radius: 10px;
+  padding: 3px 10px;
+}
+form .img_prev {
+  margin: 0 auto;
+  margin-bottom: 30px;
+  width: 100%;
+}
+form .img_prev ul.prev_ul_el {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+}
+form .img_prev ul.prev_ul_el li {
+  width: 45%;
+  list-style: none;
+  margin: 2.5%;
+}
+form .img_prev ul.prev_ul_el li img {
+  width: 100%;
+  height: 90%;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+
+#DataTables_Table_0_wrapper {
+  margin: 30px;
+}
+#DataTables_Table_0_wrapper .current {
+  background-color: white;
+}
+
+.myTable th {
+  border-right: 2px solid rgba(0, 0, 0, 0.7);
+  background-color: rgb(30, 143, 255);
+}
+.myTable th:first-child {
+  border-top-left-radius: 10px;
+}
+.myTable th:last-child {
+  border-right: none;
+  border-top-right-radius: 10px;
+}
+.myTable tbody tr td {
+  border-right: 2px solid rgba(0, 0, 0, 0.7);
+}
+.myTable tbody tr td:last-child {
+  border-right: none;
+}
+.myTable tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 10px;
+}
+.myTable tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 10px;
+}
+.myTable tbody tr:nth-child(odd) {
+  background-color: rgba(135, 206, 250, 0.8);
+}
+.myTable tbody tr:nth-child(even) {
+  background-color: rgba(65, 105, 225, 0.8);
+}
+
+.basic_input {
+  margin-left: 10px;
+  padding-left: 5px;
+  outline: none;
+  transition: border-color 0.3s;
+  position: relative;
+}
+.basic_input:focus {
+  border-radius: 8px;
+  border: 2px solid transparent;
+  animation: wave 2s infinite linear;
+  background-clip: padding-box;
+}
+
+@keyframes wave {
+  0% {
+    box-shadow: 0 0 5px 2px rgba(0, 123, 255, 0.5), 0 0 10px 5px rgba(0, 123, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px 5px rgba(0, 123, 255, 0.3), 0 0 20px 10px rgba(0, 123, 255, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 5px 2px rgba(0, 123, 255, 0.5), 0 0 10px 5px rgba(0, 123, 255, 0.3);
+  }
+}
+nav {
+  background-color: lightblue;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  transition: all 0.3s;
+}
+nav #logo_area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  left: 3%;
+  gap: 20px;
+  text-decoration: none;
+  color: rgb(0, 0, 0);
+}
+nav #logo_area .img_con {
+  width: 80px;
+}
+nav #logo_area .img_con img {
+  width: 100%;
+}
+nav #logo_area .vertical-line {
+  width: 2px;
+  height: 70px;
+  background-color: lightgoldenrodyellow;
+}
+nav #logo_area h3 {
+  font-weight: bold;
+  line-height: 0;
+  margin: 0;
+  padding: 0;
+  font-size: 2.25rem;
+}
+nav ul {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  position: absolute;
+  width: 65%;
+  right: 70px;
+  margin: 0;
+  padding: 0;
+}
+nav ul li {
+  list-style: none;
+}
+nav ul li a {
+  display: inline-block;
+  font-weight: bold;
+  font-size: 1.25rem;
+  color: rgba(0, 0, 0, 0.7);
+  text-decoration: none;
+  transition: all 0.3s;
+}
+nav ul li a:hover {
+  transform: scale(1.1);
+  color: lightgoldenrodyellow;
+}
+nav .hamburger.is-active:hover {
+  opacity: 1;
+}
+nav .hamburger {
+  height: 100%;
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  right: 0;
+  background-color: #5b5b5b;
+}
+nav .hamburger:hover {
+  opacity: 1;
+}
+nav .hamburger .hamburger-inner {
+  background-color: white;
+}
+nav .hamburger .hamburger-inner::before, nav .hamburger .hamburger-inner::after {
+  background-color: white;
+}
+nav .hamburger .showList {
+  transform: translateX(200px);
+}
+nav .hamburger div.ham_list {
+  border-bottom: 0px;
+  background-color: lightblue;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  transition: all 0.3s;
+}
+nav .hamburger div.ham_list a:last-of-type {
+  border: none;
+}
+nav .hamburger div.ham_list a {
+  text-decoration: none;
+  background-color: white;
+  border-bottom: 0.5px solid brown;
+  width: 100%;
+  padding: 10px 0;
+  font-size: 1.25rem;
+  color: rgb(79, 194, 232);
+  transition: all 0.1s;
+}
+nav .hamburger div.ham_list a:hover {
+  background-color: lightblue;
+  color: white;
+  transform: scale(1.1);
+}
+
+.show {
+  display: block;
+}
+
+.hamburger.is-active .hamburger-inner::before,
+.hamburger.is-active .hamburger-inner::after,
+.hamburger.is-active .hamburger-inner {
+  background-color: white;
+}
+
+footer {
+  height: 50px;
+  text-align: center;
+  line-height: 50px;
+  background-color: rgba(173, 216, 230, 0.3);
+}/*# sourceMappingURL=elm.css.map */
