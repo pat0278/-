@@ -62,8 +62,8 @@ public class PlanOrderService {
         helper.setSubject("鄰星嗨嗨:行程訂單成立通知");
         helper.setText(mailContent, true);
 
-        // 若是訂單成功，添加圖片
-            ClassPathResource footer = new ClassPathResource("static/email/emailsucess.png");
+        // 若是付款成功，添加圖片
+            ClassPathResource footer = new ClassPathResource("static/email/planemail.png");
             helper.addInline("footer", footer);
         // 發送郵件
         mailSender.send(message);
