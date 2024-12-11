@@ -25,7 +25,7 @@
 		</span>
 
 		<div class="ham_list showList">
-			<a th:href="@{/mem/register}">註冊會員</a> 
+			<a th:href="@{/mem/register}" th:if="${session.auth == null}">註冊會員</a> 
 			<a th:href="@{/mem/login}" th:if="${session.auth == null}">會員登入</a> 
 			<a th:href="@{/mem/logout}" th:if="${session.auth}">登出</a> 
 			<a th:href="@{/mem/profile}">會員中心</a>
