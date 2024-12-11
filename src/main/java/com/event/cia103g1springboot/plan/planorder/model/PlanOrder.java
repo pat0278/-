@@ -39,7 +39,7 @@
             @Column(name = "roomPrice", nullable = false)
             private Integer roomPrice;
 
-            @Column(name = "totalPrice", insertable = false, updatable = false)
+            @Column(name = "totalPrice",nullable = false,insertable = false,updatable = false)
             private Integer totalPrice;
 
             @Column(name = "orderDate", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
