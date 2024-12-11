@@ -2,6 +2,7 @@ package com.event.cia103g1springboot.plan.planorder.model;
 
 import com.event.cia103g1springboot.plan.plan.model.PlanService;
 
+import com.event.cia103g1springboot.plan.planorder.controller.planOrderController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -45,20 +46,21 @@ public class PlanOrderService {
     		return optional.orElse(null);
     	}
 
-        public void sendPlanOrdMail(PlanOrder order, Map<Object, Object> roomData) throws MessagingException {
-        Integer roomPrice = Integer.parseInt(roomData.get("roomPrice").toString());
-        int roomQty = Integer.parseInt(roomData.get("roomQty").toString());
-        int totalRoomPrice = roomQty * roomPrice;
-        Integer totalprice = order.getPlanPrice()+totalRoomPrice;
+    public void sendPlanOrdMail(PlanOrder order, List<planOrderController.RoomSelection> rooms) throws MessagingException {
+        Integer totalRoomPrice = rooms.stream()
+                .mapToInt(room -> room.getRoomPrice() * room.getQuantity())
+                .sum();
+
+        Integer totalPrice = order.getPlanPrice() + totalRoomPrice;
+
         Context context = new Context();
         context.setVariable("memberName", order.getMemVO().getName());
         context.setVariable("planName", order.getPlan().getPlanType().getPlanName());
-        context.setVariable("roomType", roomData.get("roomTypeName"));
+        context.setVariable("rooms", rooms);  // 傳遞所有房型資訊
         context.setVariable("payMethod", order.getPayMethod());
-        context.setVariable("totalPrice", totalprice);
+        context.setVariable("totalPrice", totalPrice);
         context.setVariable("startDate", order.getPlan().getStartDate());
         context.setVariable("orderDate", order.getOrderDate());
-//        context.setVariable("totalRoomPrice", totalRoomPrice);
 
         String mailContent = templateEngine.process("plan/planfront/planemail", context);
 
@@ -68,10 +70,9 @@ public class PlanOrderService {
         helper.setSubject("鄰星嗨嗨:行程訂單成立通知");
         helper.setText(mailContent, true);
 
-        // 若是付款成功，添加圖片
-            ClassPathResource footer = new ClassPathResource("static/email/planemail.png");
-            helper.addInline("footer", footer);
-        // 發送郵件
+        ClassPathResource footer = new ClassPathResource("static/email/planemail.png");
+        helper.addInline("footer", footer);
+
         mailSender.send(message);
     }
 }
