@@ -10,17 +10,14 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import hibernate.util.CompositeQuery.HibernateUtil_CompositeQuery_BB;
+//import hibernate.util.CompositeQuery.HibernateUtil_CompositeQuery_BB;
 
 @Service("bbService")
 public class BBService{
 
 	@Autowired
 	BBRepository repository;
-	
-	@Autowired
-	private SessionFactory sessionFactory;
-	
+
 	public void addMsg(BBVO bbVO) {
 		repository.save(bbVO);
 	}
@@ -44,9 +41,9 @@ public class BBService{
 		return repository.getAllMsg();
 	}
 	
-	public List<BBVO> getAll(Map<String, String[]> map){
-		return HibernateUtil_CompositeQuery_BB.getAllC(map,sessionFactory.openSession());
-	}
+//	public List<BBVO> getAll(Map<String, String[]> map){
+//		return HibernateUtil_CompositeQuery_BB.getAllC(map,sessionFactory.openSession());
+//	}
 	
 	public List<BBVO> getPostMsg(){
 		return repository.getPostMsg();

@@ -216,6 +216,26 @@
     <div class="room-selection" >
         <div class="mb-3">
             <label class="form-label fw-bold">
+                <i class="fas fa-users"></i> 報名人數：
+            </label>
+            <div class="d-flex align-items-center">
+                <button class="quantity-btn" @click="updateAttendeeCount(-1)" :disabled="attendeeCount <= 1">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <input type="number"
+                       class="quantity-input mx-2"
+                       x-model="attendeeCount"
+                       @input="validateAttendeeCount"
+                       :min="1"
+                       :max="maxAttendees">
+                <button class="quantity-btn" @click="updateAttendeeCount(1)" :disabled="attendeeCount >= maxAttendees">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <span class="ms-2 text-muted">/ <span x-text="maxAttendees"></span> 人</span>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-bold">
                 <i class="fas fa-bed"></i> 選擇房型：
             </label>
             <select class="form-select" x-model="selectedRoomTypeId" @change="handleRoomTypeChange">
@@ -269,7 +289,16 @@
         <!-- 價格摘要 -->
         <div class="price-summary" x-show="selectedRooms.length > 0" x-cloak>
             <div class="info-item">
-                <span class="fw-bold">總房價：</span>
+                <span class="fw-bold">行程費用：</span>
+                <span class="text-primary fw-bold" x-text="`${tripTotal}元`"></span>
+                <small class="text-muted" x-text="`(${planPrice}元 × ${attendeeCount}人)`"></small>
+            </div>
+            <div class="info-item">
+                <span class="fw-bold">房間費用：</span>
+                <span class="text-primary fw-bold" x-text="`${roomTotal}元`"></span>
+            </div>
+            <div class="info-item">
+                <span class="fw-bold">總金額：</span>
                 <span class="text-primary fw-bold" x-text="`${totalPrice}元`"></span>
             </div>
         </div>
@@ -300,14 +329,14 @@
             selectedRooms: [],
             availableRooms: [],
             planId: '[[${plan.planId}]]',
+            planPrice: [[${plan.planPrice}]],
+            attendeeCount: 1,
+            maxAttendees: [[${plan.attMax - plan.attEnd}]], // 剩餘可報名人數
 
             init() {
-                // 從隱藏的 input 中獲取房型數據
                 const roomDataJson = document.getElementById('roomDataJson').value;
                 this.availableRooms = JSON.parse(roomDataJson);
             },
-
-
             handleRoomTypeChange() {
                 if (!this.selectedRoomTypeId) return;
 
@@ -347,19 +376,40 @@
 
             handleQuantityInput(event, room) {
                 const value = parseInt(event.target.value) || 0;
-                const newValue = Math.min(Math.max(1, value), room.maxQuantity);
-                room.quantity = newValue;
+                room.quantity = Math.min(Math.max(1, value), room.maxQuantity);
             },
 
             removeRoom(id) {
                 this.selectedRooms = this.selectedRooms.filter(r => r.id !== id);
             },
 
-            get totalPrice() {
+            // 新增人數相關方法
+            updateAttendeeCount(change) {
+                const newCount = this.attendeeCount + change;
+                if (newCount >= 1 && newCount <= this.maxAttendees) {
+                    this.attendeeCount = newCount;
+                }
+            },
+
+            validateAttendeeCount() {
+                this.attendeeCount = Math.max(1, Math.min(this.maxAttendees, this.attendeeCount));
+            },
+
+            // 計算相關屬性
+            get tripTotal() {
+                return this.planPrice * this.attendeeCount;
+            },
+
+            get roomTotal() {
                 return this.selectedRooms.reduce((sum, room) =>
                     sum + (room.roomPrice * room.quantity), 0);
             },
 
+            get totalPrice() {
+                return this.tripTotal + this.roomTotal;
+            },
+
+            // 提交方法更新
             async submitSelection() {
                 if (this.selectedRooms.length === 0) {
                     alert('請至少選擇一個房型');
@@ -375,6 +425,7 @@
                         body: JSON.stringify({
                             planId: this.planId,
                             rooms: this.selectedRooms,
+                            attendeeCount: this.attendeeCount,
                             totalPrice: this.totalPrice
                         })
                     });

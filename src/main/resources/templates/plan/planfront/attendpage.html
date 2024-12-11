@@ -110,6 +110,19 @@
         .alert-danger {
           display: none;
         }
+        .attendee-info {
+          background-color: rgba(255, 255, 255, 0.8);
+          padding: 15px;
+          border-radius: 8px;
+          margin: 15px 0;
+        }
+
+        .price-breakdown {
+          font-size: 0.95em;
+          color: #666;
+          margin: 5px 0;
+          padding-left: 20px;
+        }
       </style>
     </head>
     <body>
@@ -150,7 +163,7 @@
             <i class="fas fa-info-circle"></i> 報名資訊
           </h3>
 
-
+          <!-- 會員資訊部分保持不變 -->
           <div class="info-item">
             <i class="fas fa-user"></i>
             會員編號：<span th:text="${mem.memId}"></span>
@@ -160,7 +173,7 @@
             會員名稱：<span th:text="${mem.name}"></span>
           </div>
 
-
+          <!-- 行程資訊部分 -->
           <div class="info-item">
             <i class="fas fa-route"></i>
             行程名稱：<span th:text="${plan.planType.planName}"></span>
@@ -171,7 +184,13 @@
             至 <span th:text="${#temporals.format(plan.endDate, 'yyyy-MM-dd')}"></span>
           </div>
 
+          <!-- 新增報名人數資訊 -->
+          <div class="info-item">
+            <i class="fas fa-users"></i>
+            報名人數：<span th:text="${attendeeCount}"></span> 人
+          </div>
 
+          <!-- 房間選擇資訊 -->
           <div class="room-selections">
             <template x-for="room in selectedRooms" :key="room.id">
               <div class="info-item">
@@ -183,29 +202,46 @@
             </template>
           </div>
 
-          <!-- 價格摘要 -->
+          <!-- 修改價格摘要 -->
           <div class="price-summary">
+            <!-- 行程費用 -->
             <div class="price-item">
-              <span>行程價格：</span>
-              <span th:text="${plan.planPrice}">0</span>
+              <span>行程費用：</span>
+              <div>
+                <!-- 使用 th:with 來處理預設值 -->
+                <span th:with="price=(${plan.planPrice} ?: 0), count=(${attendeeCount} ?: 1)"
+                      th:text="${price * count}">0</span>
+                <div class="price-breakdown">
+                  <!-- 單獨顯示各個值時也要處理預設值 -->
+                  <span th:text="${plan.planPrice ?: 0}">0</span> ×
+                  <span th:text="${attendeeCount ?: 1}">1</span> 人
+                </div>
+              </div>
             </div>
+
             <div th:each="room : ${selectedRooms}" class="price-item">
-              <span th:text="${room.roomTypeName + '：'}"></span>
-              <span th:text="${room.roomPrice}">0</span>
-              <span>× </span>
-              <span th:text="${room.quantity}">0</span>
-              <span>間 = </span>
-              <span th:text="${room.roomPrice * room.quantity}">0</span>
+              <span th:text="${room.roomTypeName ?: '房型'}">房型</span>
+              <div>
+                <!-- 使用 th:with 來處理預設值 -->
+                <span th:with="price=(${room.roomPrice} ?: 0), qty=(${room.quantity} ?: 0)"
+                      th:text="${price * qty}">0</span>
+                <div class="price-breakdown">
+                  <span th:text="${room.roomPrice ?: 0}">0</span> ×
+                  <span th:text="${room.quantity ?: 0}">0</span> 間
+                </div>
+              </div>
             </div>
+
             <div class="price-item total-price">
               <span>總價格：</span>
-              <span th:text="${totalPrice}">0</span>
+              <span th:text="${totalPrice ?: 0}">0</span>
             </div>
           </div>
 
           <div id="roomData" style="display: none;"
                th:data-plan-id="${plan.planId}"
                th:data-plan-price="${plan.planPrice}"
+               th:data-attendee-count="${attendeeCount}"
                th:data-selected-rooms="${selectedRooms}">
           </div>
 
@@ -216,8 +252,6 @@
             <h3 class="section-title">
               <i class="fas fa-credit-card"></i> 付款資訊
             </h3>
-
-
 
             <div class="form-group">
               <label>付款方式：</label>
@@ -272,6 +306,7 @@
         <input type="hidden" name="memId" th:value="${mem.memId}">
         <input type="hidden" name="planId" th:value="${plan.planId}">
         <input type="hidden" name="planPrice" th:value="${plan.planPrice}">
+        <input type="hidden" name="attendeeCount" th:value="${attendeeCount}">
         <input type="hidden" name="rooms" id="roomsInput">
         <input type="hidden" name="orderStat" value="1">
 
@@ -304,27 +339,14 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
     <script>
-
       (async function() {
-        // 等待 DOM 載入
         $(document).ready(async function() {
-          console.log('DOM 已載入');
+          //沒差啊 要這樣搞我 一行找2小時
+          const planId = $('#roomData').data('planId');
           let selectedRooms = [];
+          let attendeeCount = 0;
 
-          //檢測用
-          const roomDataElement = $('#roomData');
-          if (roomDataElement.length === 0) {
-            console.error('找不到 roomData 元素');
-            return;
-          }
-          //檢測用 媽的用超九
-          const planId = roomDataElement.data('planId');
-          if (!planId) {
-            console.error('找不到 planId');
-            return;
-          }
-
-          //從車車拿數據
+          // 從後端獲取數據
           try {
             const response = await $.ajax({
               url: `/planord/cart/${planId}`,
@@ -333,17 +355,23 @@
             });
 
             selectedRooms = response.rooms || [];
-            console.log('已載入房型數據:', selectedRooms);
+            attendeeCount = response.attendeeCount || 0;
 
-            // 更新總價格顯示
-            const totalPrice = response.totalPrice || 0;
+            $('#roomsInput').val(JSON.stringify(selectedRooms));
+
+            // 更新總價格計算
+            const planPrice = Number($('#roomData').data('planPrice'));
+            const tripTotal = planPrice * attendeeCount;
+            const roomTotal = selectedRooms.reduce((sum, room) =>
+                    sum + (room.roomPrice * room.quantity), 0);
+            const totalPrice = tripTotal + roomTotal;
+
             $('#totalPrice').text(totalPrice);
 
           } catch (error) {
-            console.error('載入房型數據失敗:', error);
+            console.error('載入數據失敗:', error);
           }
 
-          // 付款方式切換處理
           $('input[name="payMethod"]').change(function() {
             const creditCardFields = $('#creditCardFields');
             const remittanceFields = $('#remittanceFields');
@@ -394,10 +422,12 @@
               }
             }
 
-            const formData = new FormData(this);
-            formData.append('rooms', JSON.stringify(selectedRooms));
+            // 準備表單數據
+            const formData = $(this).serializeArray();
             const roomsJson = JSON.stringify(selectedRooms);
             $('#roomsInput').val(roomsJson);
+
+            // 提交表單
             this.submit();
           });
         });
@@ -429,6 +459,7 @@
           }
         });
       })();
+
     </script>
 
     </body>

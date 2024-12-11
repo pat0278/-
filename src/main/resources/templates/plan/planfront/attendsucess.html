@@ -153,6 +153,13 @@
             </div>
 
             <div class="info-item">
+                <i class="fas fa-users"></i>
+                <span class="label">報名人數:</span>
+                <span class="value" th:text="${attendeeCount} + '人'"></span>
+            </div>
+
+
+            <div class="info-item">
                 <i class="fas fa-file-invoice"></i>
                 <span class="label">訂單編號:</span>
                 <span class="value" th:text="${planord.planOrderId}"></span>
@@ -184,24 +191,57 @@
         </div>
 
         <div class="price-section">
-            <h3 style="color: #333; margin-bottom: 15px;">已預訂房型</h3>
-            <!-- 遍歷所有已選房型 -->
-            <div th:each="room : ${selectedRooms}" class="info-item" style="margin-bottom: 10px;">
-                <i class="fas fa-bed"></i>
-                <span class="label" th:text="${room.roomTypeName}"></span>
-                <span class="value" th:text="${room.quantity} + '間 × ' + ${room.roomPrice} + '元'"></span>
-                <span class="price" th:text="'= ' + ${room.quantity * room.roomPrice} + '元'" style="margin-left: auto;"></span>
+            <h3 style="color: #333; margin-bottom: 15px;">價格明細</h3>
+
+            <!-- 行程費用 -->
+            <div class="info-item" style="margin-bottom: 10px;">
+                <i class="fas fa-route"></i>
+                <span class="label">行程費用：</span>
+                <span class="value">
+            <span th:text="${plan.planPrice}">0</span>元 ×
+            <span th:text="${attendeeCount}">1</span>人
+        </span>
+                <span class="price" th:text="'= ' + ${tripTotal} + '元'"
+                      style="margin-left: auto;"></span>
             </div>
 
-            <!-- 價格摘要 -->
-            <div class="info-item">
-                <i class="fas fa-dollar-sign"></i>
-                <span class="label">行程價格:</span>
-                <span class="value" th:text="${plan.planPrice} + '元'"></span>
-            </div>
+            <!-- 房間費用清單 -->
+            <th:block th:if="${selectedRooms != null and not #lists.isEmpty(selectedRooms)}">
+                <h4 style="color: #333; margin: 15px 0;">房間明細</h4>
+                <div th:each="room : ${selectedRooms}" class="info-item" style="margin-bottom: 10px;">
+                    <i class="fas fa-bed"></i>
+                    <span class="label" th:text="${room.roomTypeName}">房型</span>
+                    <span class="value">
+                <span th:text="${room.roomPrice}">0</span>元 ×
+                <span th:text="${room.quantity}">0</span>間
+            </span>
+                    <span class="price"
+                          th:with="roomPrice=${room.roomPrice != null ? room.roomPrice : 0},
+                           roomQty=${room.quantity != null ? room.quantity : 0}"
+                          th:text="'= ' + ${roomPrice * roomQty} + '元'"
+                          style="margin-left: auto;"></span>
+                </div>
 
-            <div class="total-price">
-                總價格: <span th:text="${totalprice}"></span> 元
+                <!-- 房間總價 -->
+                <div class="info-item" style="margin: 15px 0; background-color: #f8f9fa;">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span class="label">房間總價：</span>
+                    <span class="value" style="margin-left: auto;" th:text="${roomTotal} + '元'"></span>
+                </div>
+            </th:block>
+
+            <!-- 分隔線 -->
+            <div style="border-top: 2px dashed #ddd; margin: 20px 0;"></div>
+
+            <!-- 總價格 -->
+            <div class="total-price" style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="label">總價格：</span>
+                <span>
+            <span th:text="${totalprice}">0</span> 元
+            <div style="font-size: 0.8em; color: #666; margin-top: 5px;">
+                (行程費用 + 房間費用總和)
+            </div>
+        </span>
             </div>
         </div>
 

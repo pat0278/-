@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.product.model.PdtVO;
+//import com.product.model.PdtVO;
 
 
 public interface BBRepository extends JpaRepository<BBVO, Integer>{
