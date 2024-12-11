@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.event.cia103g1springboot.member.mem.model.MemService;
 import com.event.cia103g1springboot.member.mem.model.MemVO;
@@ -88,7 +89,7 @@ public class MemController {
 		memSvc.registerOneMem(memVO);
 
 		/*************************** 3.新增完成,準備轉交 **************/
-		model.addAttribute("success", "帳號註冊成功");
+		model.addAttribute("msg", "帳號註冊成功");
 		return "front-end/mem/login";
 	}
 
@@ -140,7 +141,7 @@ public class MemController {
 
 		@SuppressWarnings("unchecked")
 		MemVO mem = (MemVO) session.getAttribute("auth");
-		return "frontend/mem/profile";
+		return "front-end/mem/profile";
 	}
 
 	@PostMapping("/modify_profile")
@@ -151,7 +152,7 @@ public class MemController {
 //		mem.setMemImg(null);
 		model.addAttribute("memVO", mem);
 
-		return "frontend/mem/profile";
+		return "front-end/mem/profile";
 	}
 
 	@PostMapping("/update")
@@ -175,26 +176,26 @@ public class MemController {
 
 		if (result.hasErrors()) {
 			model.addAttribute("modify", true);
-			return "frontend/mem/profile";
+			return "front-end/mem/profile";
 		}
 
 		memSvc.update(memVO);
 		session.setAttribute("auth", memVO);
 		session.setAttribute("sex", memVO.getGenderText());
 
-		return "frontend/mem/profile";
+		return "front-end/mem/profile";
 	}
 
 	@GetMapping("/logout")
-	public String logout(ModelMap model) {
+	public String logout(ModelMap model,RedirectAttributes redirectAttributes) {
 		session.removeAttribute("auth");
-		model.addAttribute("logout", "登出成功");
-		return "index";
+		redirectAttributes.addFlashAttribute("msg", "登出成功");
+		return "redirect:/";
 	}
 
 	@GetMapping("/forgetpwd")
 	public String getforgetPwd() {
-		return "frontend/mem/forgetpwd";
+		return "front-end/mem/forgetpwd";
 	}
 
 	@PostMapping("forgetPwd")
@@ -204,7 +205,7 @@ public class MemController {
 		boolean hasUser = memSvc.checkAcct(memAcct.trim());
 		if (!hasUser) {
 			model.addAttribute("noAcctError", "查無使用者");
-			return "frontend/mem/forgetpwd";
+			return "front-end/mem/forgetpwd";
 		}
 
 		MemVO mem = memSvc.findOneMem(memAcct);
@@ -217,7 +218,7 @@ public class MemController {
 
 	@GetMapping("/modifyPwd")
 	public String getModifyPwd() {
-		return "frontend/mem/modifyPwd";
+		return "front-end/mem/modifyPwd";
 	}
 
 	// 錯誤處理待完成
@@ -231,7 +232,7 @@ public class MemController {
 		memSvc.update(mem);
 
 		session.removeAttribute("modify_id");
-		return "frontend/mem/login";
+		return "front-end/mem/login";
 	}
 
 	@ModelAttribute("memVO") // 用於補充未填充的數據

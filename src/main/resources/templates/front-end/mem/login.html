@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <title>Login</title>
-<link rel="stylesheet" href="../static/css/elm.css" />
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/hamburgers/1.1.3/hamburgers.min.css" />
+<link rel="stylesheet" href="../static/css/elm.css" />
+<link rel="stylesheet" href="../static/css/progress.css" />
 <style type="text/css">
 form.cus_form {
 	width: 30%;
@@ -26,28 +27,6 @@ form.cus_form .form-group {
 
 .fa-eye {
 	display: none;
-}
-
-.progress {
-	border: 1px solid red;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-evenly;
-	align-items: center;
-	height: 120px;
-	position: fixed;
-	right: 50px;
-	top: 120px;
-}
-
-.progress p {
-	font-size: 1.75rem;
-	margin: 0 30px;
-}
-
-.progress progress {
-	width: 90%;
-	margin: 0 30px;
 }
 
 span.errorMsg {
@@ -105,14 +84,8 @@ div.below_block  span {
 	</form>
 	
     <div th:replace="~{back-end/footer :: f}"></div>
-
-
-	<div class="progress" th:if=${success}>
-		<p th:text=${success}></p>
-		<progress max="100" value="100" class="progress_bar"></progress>
-	</div>
-
-
+    
+	<div th:insert="~{/front-end/mem/progressbar :: progress}" th:if="${msg}"></div>
 
 	<script src="https://code.jquery.com/jquery-3.7.1.min.js"
 		integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
@@ -120,21 +93,6 @@ div.below_block  span {
 	<script type="text/javascript" th:src="@{/js/nav.js}"></script>
 
 	<script type="text/javascript">
-		const progress_bar = document.querySelector(".progress_bar");
-		const progress = document.querySelector(".progress");
-
-		if (progress) {
-			const interval = setInterval(() => {
-			    if (progress_bar.value == 0) {
-			      clearInterval(interval);
-			      progress.style.display = "none";
-			      return;
-			    }
-			    progress_bar.value -= 10;
-			  }, 200);
-		}
-		
-		
 		const look_el = document.querySelector(".fa-eye");
 		const no_look_el = document.querySelector(".fa-eye-slash");
 		const pwd_input = document.querySelector("#memPwd");
@@ -152,6 +110,21 @@ div.below_block  span {
 
 			pwd_input.type = "text";
 		});
+		
+		 const progress_bar = document.querySelector(".progress_bar"); 
+			const progress = document.querySelector(".progress");
+
+			if (progress) {
+				const interval = setInterval(() => {
+				    if (progress_bar.value == 0) {
+				      clearInterval(interval);
+				      progress.style.display = "none";
+				      return;
+				    }
+				    progress_bar.value -= 10;
+				  }, 150);
+						
+			}
 
 
 	</script>

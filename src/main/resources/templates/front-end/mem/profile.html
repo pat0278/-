@@ -9,9 +9,8 @@
 	crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/hamburgers/1.1.3/hamburgers.min.css" />
-<link rel="stylesheet" href="../static/css/elm.css" />
-<link rel="stylesheet" href="../static/css/profile_css" />
-
+<link rel="stylesheet" href="../static/css/testElmHuan.css" />
+<link rel="stylesheet" href="../static/css/profile.css" />
 <style type="text/css">
 span.errorMsg {
 	font-size: 0.85rem;
@@ -49,11 +48,11 @@ span.errorMsg {
 
 
 
-		<div class="content">
-			<div class="top_info">
+		<div class="content" >
+			<div class="top_info" >
 				<div class="img_con">
 					<img alt="個人照片"
-						th:src="@{/DBGifReader} + '?memid=' + ${session.auth.memId}">
+						th:src="@{/mem/DBGifReader_mem_profile} + '?memid=' + ${session.auth.memId}">
 				</div>
 				<form method="POST" th:action="@{modify_profile}" th:if="!${modify}">
 					<button>修改會員資料</button>
