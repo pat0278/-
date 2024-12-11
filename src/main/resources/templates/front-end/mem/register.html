@@ -3,10 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <title>Register</title>
-<link rel="stylesheet" th:href="@{/css/style.css}" />
-<link th:replace="common_resource.html :: fontawesome">
-<link th:replace="common_resource.html :: hamburger">
+ <link rel="stylesheet" href="../static/css/elm.css" />
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/hamburgers/1.1.3/hamburgers.min.css" />
 <style type="text/css">
+h2{
+	text-align:center;
+	margin:0;
+	padding:0;
+	margin-top:15px;
+}
 span.errorMsg {
 	font-size: 0.85rem;
 	color: red;
@@ -64,8 +72,8 @@ span.errorMsg {
 </style>
 </head>
 <body>
-	<div th:replace="~{/nav}"></div>
-	<h2>註冊頁面</h2>
+	<div th:replace="~{front-end/nav}"></div>
+	<h2>加入會員</h2>
 	<form method="POST" enctype="multipart/form-data"
 		th:action="@{register}" th:object="${memVO}" class="cus_form">
 
@@ -119,7 +127,7 @@ span.errorMsg {
 		</div>
 
 		<div class="form-group">
-			<label for="email">Email</label> <input type="email"
+			<label for="email">Email (請填寫可正常收信之電子信箱)</label> <input type="email"
 				class="form-control email_field" th:field="*{email}" /> <span
 				class="errorMsg" th:if="${#fields.hasErrors('email')}"
 				th:errors="*{email}"></span>
@@ -197,13 +205,15 @@ span.errorMsg {
 	<div th:if=${reg_code_error} th:value=${reg_code_error}
 		class="reg_error" style="display: none;"></div>
 
+	<div th:replace="~{back-end/footer :: f}"></div>
 
 
 
 
 
-	<script type="text/javascript"
-		th:replace="common_resource.html :: jquery"></script>
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+		integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+		crossorigin="anonymous"></script>
 	<script type="text/javascript" th:src="@{/js/nav.js}"></script>
 	<script type="text/javascript" th:src="@{/js/uplaodImg.js}"></script>
 	<script type="text/javascript" th:src="@{/js/changeAddr.js}"></script>

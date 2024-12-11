@@ -48,7 +48,7 @@ public class MailController {
 		Context context = new Context();
 		context.setVariable("code", randNum);
 
-		String mailContent = templateEngine.process("frontend/mem/registerMail", context);
+		String mailContent = templateEngine.process("front-end/mem/registerMail", context);
 
 		MimeMessage message = mailSender.createMimeMessage();
 		// 第二個參數 "multipart=true"表示可以內嵌圖片或副件
@@ -61,7 +61,7 @@ public class MailController {
 
 		session.setAttribute("code", randNum);
 
-		return "frontend/mem/register";
+		return "front-end/mem/register";
 	}
 
 	

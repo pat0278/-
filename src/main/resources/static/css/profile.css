@@ -1,0 +1,242 @@
+@charset "UTF-8";
+
+a {
+	text-decoration: none;
+	color: black;
+}
+
+body {
+	font-family: "Arial", sans-serif;
+	margin: 0;
+	padding: 0;
+	background-color: #f4f6f9;
+}
+
+main {
+	display: flex;
+	justify-content: flex-start;
+	margin: 20px;
+}
+
+main .side_bar {
+	margin: 0;
+	width: 240px;
+	background-color: #ffffff;
+	padding: 16px;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	list-style: none;
+	margin-right: 12px;
+	padding-top: 20px;
+}
+
+main .side_bar .list_item {
+	padding: 10px;
+	margin-bottom: 8px;
+	color: #333;
+	transition: background-color 0.3s;
+	font-size: 1.25rem;
+	margin-top: 8px;
+	padding-left: 20px;
+}
+
+main .side_bar .list_item a {
+	text-decoration: none;
+	color: inherit;
+	width: 100%;
+	display: block;
+	padding: 8px;
+	border-radius: 8px;
+}
+
+main .side_bar .list_item:hover {
+	background-color: #3498db;
+	border-radius: 8px;
+}
+
+main .side_bar .list_item:hover a {
+	color: #fff;
+}
+
+main .side_bar .my_list {
+	padding: 18px;
+	padding-left: 28px;
+	cursor: pointer;
+}
+
+main .side_bar .my_list:hover {
+	background-color: #3498db;
+	border-radius: 8px;
+	color: #fff;
+}
+
+main .side_bar .expand_list {
+	display: none;
+	border: 1px solid transparent;
+}
+
+main .side_bar .expand_list p {
+	padding-left: 10px;
+	font-size: 1.05rem;
+	color: #666;
+	margin: 0 0 20px 40px;
+	padding: 10px;
+}
+
+main .side_bar .expand_list p:hover {
+	background-color: #3498db;
+	border-radius: 8px;
+}
+
+main .side_bar .expand_list p:hover a {
+	color: #fff;
+}
+
+main .content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: calc(100% - 260px);
+	background-color: #ffffff;
+	padding: 16px;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+main .content .top_info {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 24px;
+}
+
+main .content .top_info .img_con {
+	width: 120px;
+	height: 120px;
+	border-radius: 50%;
+	overflow: hidden;
+	margin-bottom: 16px;
+}
+
+main .content .top_info .img_con img {
+	width: 100%;
+	height: 100%;
+	-o-object-fit: cover;
+	object-fit: cover;
+}
+
+button {
+	padding: 10px 20px;
+	background-color: #3498db;
+	border: none;
+	color: white;
+	font-size: 14px;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+main .content .top_info button {
+	padding: 10px 20px;
+	background-color: #3498db;
+	border: none;
+	color: white;
+	font-size: 14px;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+main .content .top_info button:hover {
+	background-color: #217dbb;
+}
+
+main .content .mem_info {
+	display: flex;
+	flex-direction: column;
+	font-size: 1.25rem;
+	width: 60%;
+	padding: 30px 0;
+}
+
+main .content .mem_info .info {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 12px;
+	padding: 5px;
+}
+
+main .content .mem_info .info label {
+	flex: 1 1 200px;
+	font-weight: bold;
+	color: #333;
+}
+
+.radio_el {
+	display: flex;
+	padding: 0 10px;
+}
+
+.radio_el .form-check {
+	margin: 0 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.radio_el .form-check label {
+	margin-left: 3px;
+}
+
+.radio_el .form-check input {
+	flex: 0 0 auto;
+	font-weight: normal;
+	font-size: 16px;
+	font-weight: normal;
+}
+
+main .content .mem_info .info p {
+	font-size: 16px;
+	color: #666;
+	margin: 8px 0;
+}
+
+.btn_area {
+	display: flex;
+	justify-content: center;
+}
+
+.btn_area button {
+	margin: 10px 15px;
+}
+
+.img_prev {
+	display: flex;
+	justify-content: center;
+	margin: 0 auto;
+	margin-bottom: 30px;
+	/* 	width: 100%; */
+}
+
+.img_prev ul.prev_ul_el {
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.img_prev ul.prev_ul_el li {
+	width: 50%;
+	list-style: none;
+	margin: 2.5%;
+}
+
+.img_prev ul.prev_ul_el li img {
+	width: 100%;
+	height: 90%;
+	object-fit: contain;
+}
+
+/*# sourceMappingURL=profile.css.map */
