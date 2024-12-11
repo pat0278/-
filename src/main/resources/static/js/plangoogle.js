@@ -5,85 +5,100 @@ let tokenClient;
 let gapiInitialized = false;
 let gisInitialized = false;
 
+// 當 DOM 載入完成後初始化 Google API
+document.addEventListener('DOMContentLoaded', function() {
+    // 檢查是否在訂單成功頁面（通過檢查特定元素）
+    if (document.getElementById('calendarButton')) {
+        initializeGoogleApi();
+    }
+});
+
 async function initializeGoogleApi() {
     try {
+        // 初始化 GAPI
         await new Promise((resolve) => gapi.load('client', resolve));
         await gapi.client.init({
             apiKey: API_KEY,
             discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest']
         });
 
+        // 初始化 OAuth 客戶端
         tokenClient = google.accounts.oauth2.initTokenClient({
             client_id: CLIENT_ID,
             scope: 'https://www.googleapis.com/auth/calendar.events',
-            callback: ''  // 將在需要時動態設置
+            callback: '' // 將在需要時動態設置
         });
 
         gapiInitialized = true;
         gisInitialized = true;
-        console.log('Google APIs initialized successfully');
+        console.log('Google APIs 初始化成功');
     } catch (error) {
-        console.error('Error initializing Google APIs:', error);
+        console.error('初始化 Google APIs 失敗:', error);
     }
 }
 
-window.addEventListener('load', initializeGoogleApi);
-
+// 加入 Google 日曆的功能
 async function addToGoogleCalendar() {
     const btn = document.getElementById('calendarButton');
-    btn.disabled = true;
     const originalContent = btn.innerHTML;
+    btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 處理中...';
 
     try {
         if (!gapiInitialized || !gisInitialized) {
-            throw new Error('API 尚未初始化完成');
+            throw new Error('API 尚未初始化完成，請重新整理頁面');
         }
 
         const eventName = document.getElementById('eventName').value;
         const eventDate = document.getElementById('eventDate').value;
         const orderId = document.getElementById('orderId').value;
 
-        const startTime = new Date(eventDate);
-        const endTime = new Date(startTime);
-        endTime.setDate(endTime.getDate() + 1); // 假設行程為一天
+        if (!eventName || !eventDate || !orderId) {
+            throw new Error('無法取得行程資訊');
+        }
 
         const event = {
-            'summary': `${eventName}`,
+            'summary': eventName,
             'description': `訂單編號: ${orderId}`,
             'start': {
                 'date': eventDate,
                 'timeZone': 'Asia/Taipei'
             },
             'end': {
-                'date': endTime.toISOString().split('T')[0],
+                'date': new Date(new Date(eventDate).getTime() + 24*60*60*1000).toISOString().split('T')[0],
                 'timeZone': 'Asia/Taipei'
             },
             'reminders': {
                 'useDefault': false,
                 'overrides': [
-                    {'method': 'popup', 'minutes': 24 * 60}  // 提前一天提醒
+                    {'method': 'popup', 'minutes': 24 * 60}
                 ]
             }
         };
 
-        return new Promise((resolve, reject) => {
+        // 使用 Promise 處理 OAuth 流程
+        await new Promise((resolve, reject) => {
             tokenClient.callback = async (resp) => {
                 if (resp.error !== undefined) {
-                    reject(resp);
+                    reject(new Error('授權失敗'));
                     return;
                 }
                 try {
-                    const result = await gapi.client.calendar.events.insert({
+                    const response = await gapi.client.calendar.events.insert({
                         'calendarId': 'primary',
                         'resource': event
                     });
-                    resolve(result);
+                    resolve(response);
                 } catch (err) {
                     reject(err);
                 }
             };
-            tokenClient.requestAccessToken();
+
+            if (gapi.client.getToken() === null) {
+                tokenClient.requestAccessToken({ prompt: 'consent' });
+            } else {
+                tokenClient.requestAccessToken({ prompt: '' });
+            }
         }).then(response => {
             if (response && response.result && response.result.htmlLink) {
                 alert('行程已成功加入 Google 日曆！');
