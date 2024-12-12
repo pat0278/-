@@ -14,11 +14,18 @@
       referrerpolicy="no-referrer"
     />
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
       rel="stylesheet"
+      href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/hamburgers/1.1.3/hamburgers.min.css"
     />
     <link rel="stylesheet" th:href="@{/css/bb.css}" />
+    <link rel="stylesheet" th:href="@{/css/new_elm.css}" />
     <link rel="stylesheet" th:href="@{/css/pdtFront.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/slick/slick.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/slick/slick-theme.css}"/>
     <style>
         .product-details .product-image {
             width: 100%;
@@ -76,20 +83,17 @@
     </style>
 </head>
 <body>
+	<div th:insert="~{/front-end/nav :: nav}"></div>
 	<div id="header"><i class="fa-solid fa-gift"></i> 商城</div>
     <div id="sub-header"><i class="fa-solid fa-list"></i> 商品詳情</div>
     <!-- 商品詳情區 -->
     <div class="container py-5 product-details">
         <div class="row">
             <!-- 左側商品圖片 -->
-            <div class="col-lg-6" th:fragment="pdtimgs-div">
-                <img class="product-image" 
-                     th:src="@{/product/DBGifReader_pdtlist} + '?pdtId=' + ${pdtVO.pdtId}" 
-                     alt="商品圖片">
-                <div class="d-flex justify-content-center mt-3 product-thumbnails" th:each="pdtImgVO : ${pdtImgList}" >
-                    <img th:src="@{/product/DBGifReader} + '?pdtImgId=' + ${pdtImgVO.pdtImgId}" 
-                         alt="商品附加圖片">
-                </div>
+            <div class="col-lg-6">
+            	<div class="my-class">
+				  <div class="slick-box" th:each="pdtImgVO : ${pdtImgList}"><img class="product-image" th:src="@{/product/DBGifReader} + '?pdtImgId=' + ${pdtImgVO.pdtImgId}"/></div>
+				</div>
             </div>
 
             <!-- 右側商品資訊 -->
@@ -134,12 +138,22 @@
 			<i class="fas fa-shopping-cart"></i></a>
    	</div>
 	   	
-	<div th:replace="~{back-end/footer :: f}"></div>
+	<div th:replace="~{back-end/footer :: footer}"></div>
     <!-- 引入 JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+	  <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+	  <script type="text/javascript" th:src="@{/css/slick/slick.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/nav.js}"></script>
 	<script>
+    $(document).ready(function(){
+      $('.my-class').slick({
+    	  slidesToShow: 1,
+    	  slidesToScroll: 1,
+    	  autoplay: true,
+    	  autoplaySpeed: 2000,
+      });
+    });  
+	
 	//數量框輸入限制
     function validateQuantity(input) {
         const min = parseInt(input.getAttribute('min')) || 1;
