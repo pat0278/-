@@ -84,7 +84,7 @@ public class EvtOrderController {
         model.addAttribute("memVO", memVO);
         model.addAttribute("event", event);
         model.addAttribute("captchaKey", captchaKey);
-        return "front-end/attendpage";
+        return "front-end/evtord/attendpage";
     }
 
 
@@ -93,7 +93,7 @@ public class EvtOrderController {
     public String orderlistall(@RequestParam(defaultValue = "0") Integer page, Model model) {
         Page<EvtOrderVO> evtOrderPage = evtOrderService.getAllEvtorders(page);
         model.addAttribute("ord", evtOrderPage);
-        return "/back-end/orderlist";
+        return "/back-end/evtord/orderlist";
     }
 
     @Transactional
@@ -114,7 +114,7 @@ public class EvtOrderController {
         model.addAttribute("order", evtOrderVO);
         model.addAttribute("planOrder", planOrder);
 
-        return "front-end/attendsucess";
+        return "front-end/evtord/attendsucess";
     }
 
     //活動明細 有會員資訊 活動資訊 報名時間、備註....然後審核可以寄MAIL通知bla~~
@@ -125,7 +125,7 @@ public class EvtOrderController {
         model.addAttribute("order", evtord);
         model.addAttribute("evt", evt);
         //之後拿會員~行程~~
-        return "back-end/orderdetail";
+        return "back-end/evtord/orderdetail";
     }
 
     @Transactional
@@ -152,7 +152,7 @@ public class EvtOrderController {
             context.setVariable("status", status);
 
             //判斷訂單狀態 --->訂單狀態是1的話傳"back-end/email"這個thymeleaf 不為1傳"back-end/emailfail"
-            String templatePath = (status == 1) ? "back-end/email" : "back-end/emailfail";
+            String templatePath = (status == 1) ? "back-end/evtemail/email" : "back-end/evtemail/emailfail";
             //經過上面判斷後設定要去抓哪個網頁--->templatePath;信件內容:context
             String mailContent = templateEngine.process(templatePath, context);
 

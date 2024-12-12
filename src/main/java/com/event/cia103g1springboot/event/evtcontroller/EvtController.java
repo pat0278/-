@@ -42,7 +42,7 @@ public class EvtController {
         //jPA的PAGE讚讚好用
         Page<EvtVO> evtPage = evtService.getAllEvts(page);
         model.addAttribute("list", evtPage);
-        return "back-end/evtlistall";
+        return "back-end/evt/evtlistall";
     }
 
     @Transactional
@@ -111,7 +111,7 @@ public class EvtController {
 
         model.addAttribute("evt", evt);
         model.addAttribute("evtImgs", evtImgs);
-        return "back-end/evteditpage";
+        return "back-end/evt/evteditpage";
     }
 
     @Transactional
@@ -188,7 +188,7 @@ public class EvtController {
         //拿下周
         model.addAttribute("nextWeek", currentDate.plusWeeks(1).toString());
         model.addAttribute("events", events);
-        return "front-end/calendar";
+        return "front-end/evt/calendar";
     }
 
 
