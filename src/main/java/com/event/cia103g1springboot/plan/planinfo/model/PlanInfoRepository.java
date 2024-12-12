@@ -7,5 +7,6 @@ import java.util.List;
 
 @Repository
 public interface PlanInfoRepository extends JpaRepository<PlanInfo, Integer> {
+    PlanInfo findByPlanTypeIdAndPlanDay(String planTypeId, int planDay);
     List<PlanInfo> findByPlanTypeId(String planTypeId);
 }

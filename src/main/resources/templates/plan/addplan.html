@@ -21,11 +21,11 @@
 <div class="container mt-5">
   <h2 class="text-center mb-4">新增行程</h2>
   <form th:action="@{/api/plan/add}" method="post">
-    <!-- 行程類型 -->
+    <!-- 行程類別 -->
     <div class="mb-3">
-      <label for="planTypeId" class="form-label">行程類型</label>
+      <label for="planTypeId" class="form-label">行程名稱</label>
       <select class="form-control" id="planTypeId" name="planTypeId" required>
-        <option value="" disabled selected>請選擇行程類型</option>
+        <option value="" disabled selected>請選擇行程類別</option>
         <option th:each="planType : ${planTypes}"
                 th:value="${planType.planTypeId}"
                 th:data-days="${planType.planDay}"
@@ -41,7 +41,7 @@
     <!-- 結束日期 -->
     <div class="mb-3">
       <label for="endDate" class="form-label">結束日期</label>
-      <input type="date" class="form-control" id="endDate" name="endDate" required>
+      <input type="date" class="form-control" id="endDate" name="endDate" readonly>
     </div>
     <!-- 價格 -->
     <div class="mb-3">
@@ -54,10 +54,10 @@
       <input type="number" class="form-control" id="attMax" name="attMax" required>
     </div>
     <!-- 目前人數 -->
-    <div class="mb-3">
-      <label for="attEnd" class="form-label">目前參加人數</label>
-      <input type="number" class="form-control" id="attEnd" name="attEnd" value="0" required>
-    </div>
+    <!--    <div class="mb-3">-->
+    <!--      <label for="attEnd" class="form-label">目前參加人數</label>-->
+    <!--      <input type="number" class="form-control" id="attEnd" name="attEnd" value="0" required>-->
+    <!--    </div>-->
     <!-- 提交按鈕 -->
     <button type="submit" class="btn btn-primary w-100">新增</button>
   </form>

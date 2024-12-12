@@ -143,8 +143,6 @@
 //            item.setOrderQty(1);
 //            productOrderItemRepository.save(item);
 //            System.out.println("訂單項目: orderId=" + item.getPdtOrderId() + ", pdtId=" + item.getPdtId());
-//            System.out.println("訂單項目: orderId=" + item.getPdtOrderId() + ", pdtId=" + item.getPdtId());
-//
 //        }
 //
 //
