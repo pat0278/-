@@ -144,8 +144,20 @@
             <div class="info-item">
                 <i class="fas fa-bed"></i>
                 <span class="label">房型名稱:</span>
-                <span class="value" th:text="${roomData.roomTypeName}"></span>
+                <span class="value">
+                    <th:block th:each="room, iterStat : ${selectedRooms}">
+                        <span th:text="${room.roomTypeName}"></span>
+                        <th:block th:if="${!iterStat.last}">, </th:block>
+                </th:block>
+                </span>
             </div>
+
+            <div class="info-item">
+                <i class="fas fa-users"></i>
+                <span class="label">報名人數:</span>
+                <span class="value" th:text="${attendeeCount} + '人'"></span>
+            </div>
+
 
             <div class="info-item">
                 <i class="fas fa-file-invoice"></i>
@@ -179,18 +191,57 @@
         </div>
 
         <div class="price-section">
-            <div class="info-item">
-                <i class="fas fa-dollar-sign"></i>
-                <span class="label">行程價格:</span>
-                <span class="value" th:text="${plan.planPrice}"></span>
+            <h3 style="color: #333; margin-bottom: 15px;">價格明細</h3>
+
+            <!-- 行程費用 -->
+            <div class="info-item" style="margin-bottom: 10px;">
+                <i class="fas fa-route"></i>
+                <span class="label">行程費用：</span>
+                <span class="value">
+            <span th:text="${plan.planPrice}">0</span>元 ×
+            <span th:text="${attendeeCount}">1</span>人
+        </span>
+                <span class="price" th:text="'= ' + ${tripTotal} + '元'"
+                      style="margin-left: auto;"></span>
             </div>
-            <div class="info-item">
-                <i class="fas fa-home"></i>
-                <span class="label">房型價格:</span>
-                <span class="value" th:text="${roomData.roomPrice} + ' × ' + ${roomData.roomQty} + '間 = ' + ${totalRoomPrice} + '元'"></span>
+
+            <!-- 房間費用清單 -->
+            <th:block th:if="${selectedRooms != null and not #lists.isEmpty(selectedRooms)}">
+                <h4 style="color: #333; margin: 15px 0;">房間明細</h4>
+                <div th:each="room : ${selectedRooms}" class="info-item" style="margin-bottom: 10px;">
+                    <i class="fas fa-bed"></i>
+                    <span class="label" th:text="${room.roomTypeName}">房型</span>
+                    <span class="value">
+                <span th:text="${room.roomPrice}">0</span>元 ×
+                <span th:text="${room.quantity}">0</span>間
+            </span>
+                    <span class="price"
+                          th:with="roomPrice=${room.roomPrice != null ? room.roomPrice : 0},
+                           roomQty=${room.quantity != null ? room.quantity : 0}"
+                          th:text="'= ' + ${roomPrice * roomQty} + '元'"
+                          style="margin-left: auto;"></span>
+                </div>
+
+                <!-- 房間總價 -->
+                <div class="info-item" style="margin: 15px 0; background-color: #f8f9fa;">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span class="label">房間總價：</span>
+                    <span class="value" style="margin-left: auto;" th:text="${roomTotal} + '元'"></span>
+                </div>
+            </th:block>
+
+            <!-- 分隔線 -->
+            <div style="border-top: 2px dashed #ddd; margin: 20px 0;"></div>
+
+            <!-- 總價格 -->
+            <div class="total-price" style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="label">總價格：</span>
+                <span>
+            <span th:text="${totalprice}">0</span> 元
+            <div style="font-size: 0.8em; color: #666; margin-top: 5px;">
+                (行程費用 + 房間費用總和)
             </div>
-            <div class="total-price">
-                總價格: <span th:text="${totalRoomPrice + plan.planPrice}"></span> 元
+        </span>
             </div>
         </div>
 
@@ -199,7 +250,9 @@
             <span class="label">訂單狀態:</span>
             <span class="status-badge" th:text="${planord.orderStat == 0 ? '待付款' : '已付款'}"></span>
         </div>
+
         <div class="action-buttons" style="display: flex; justify-content: center; gap: 20px; margin-top: 30px;">
+            <!-- 保留原有的按鈕 -->
             <a th:href="@{/api/plan/planfront}"  class="btn">
                 <div class="inner">
                     <div class="blob"></div>
@@ -222,12 +275,9 @@
         </div>
     </div>
 </div>
-
-<input type="hidden" id="eventName" th:value="${plan.planType.planName}">
-<input type="hidden" id="eventDate" th:value="${#temporals.format(plan.startDate, 'yyyy-MM-dd')}">
-<input type="hidden" id="orderId" th:value="${planord.planOrderId}">
-
+        <!-- 確保隱藏欄位在 script 之前 -->
 <div th:replace="~{back-end/footer :: f}"></div>
+
 <script th:src="@{/js/plangoogle.js}"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
@@ -257,5 +307,6 @@
         }
     });
 </script>
+
 </body>
 </html>

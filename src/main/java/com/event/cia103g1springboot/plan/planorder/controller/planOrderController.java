@@ -1,9 +1,13 @@
 package com.event.cia103g1springboot.plan.planorder.controller;
 import com.event.cia103g1springboot.plan.planorder.model.PlanOrder;
 import com.event.cia103g1springboot.plan.planroom.model.PlanRoom;
-import com.event.cia103g1springboot.plan.planroom.model.PlanRoomId;
-import com.event.cia103g1springboot.room.roomtype.model.RTVO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import com.event.cia103g1springboot.member.mem.model.MemService;
@@ -21,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -42,157 +48,336 @@ public class planOrderController {
     MemService memService;
 
     @Autowired
-    private StringRedisTemplate stringRedisTemplate;
+    private StringRedisTemplate redisTemplate;
 
 
     @GetMapping("/detail/{id}")
     public String planDetail(@PathVariable Integer id, Model model) {
         Plan plan = planService.findPlanById(id);
+
+        if (plan == null) {
+            throw new RuntimeException("Plan not found with ID: " + id); // 防止空值問題
+        }
+
+        // 為前端準備房型數據
+        List<Map<String, Object>> roomDataList = new ArrayList<>();
+        for (PlanRoom planRoom : plan.getPlanRoom()) {
+            Map<String, Object> roomData = new HashMap<>();
+            roomData.put("roomTypeId", planRoom.getRoomTypeId());
+            roomData.put("roomTypeName", planRoom.getRtvo().getRoomTypeName());
+            roomData.put("roomPrice", planRoom.getRtvo().getRoomPrice());
+            roomData.put("roomQty", planRoom.getRoomQty());
+            roomData.put("description", planRoom.getRtvo().getRoomTypeDesc());
+            roomData.put("occupancy", planRoom.getRtvo().getOccupancy());
+            roomDataList.add(roomData);
+        }
+
+        // 將數據轉換為 JSON 字符串
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String roomDataJson = mapper.writeValueAsString(roomDataList);
+            model.addAttribute("roomDataJson", roomDataJson);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
         model.addAttribute("plan", plan);
         return "plan/planfront/detail";
     }
 
-    @PostMapping("/setRoom")
-    @ResponseBody                                      //不是ㄚㄅJ要注意= =
-    public ResponseEntity<String> setRoom(@RequestBody Map<String, String> roomData) {
+    @PostMapping("/api/setRooms")
+    @ResponseBody
+    public ResponseEntity<?> setRooms(@RequestBody RoomSelectionRequest request) {
         try {
-            PlanRoom planRoom = planRoomService.findByRmTypeIdAndPlanId(
-                    Integer.parseInt(roomData.get("roomTypeId")),
-                    Integer.parseInt(roomData.get("planId"))
-            );
+            String cartKey = "plan:cart:" + request.getPlanId();
 
-            if (planRoom.getRoomQty() == 0) {
-                return ResponseEntity.badRequest().body("此房型已無剩餘房間");
-            }
+            Map<String, String> cartData = new HashMap<>();
+            ObjectMapper mapper = new ObjectMapper();
 
-            int requestQty = Integer.parseInt(roomData.get("roomQty"));
-            if (planRoom.getRoomQty() < requestQty) {
-                return ResponseEntity.badRequest().body("選擇房間數量超過可用數量");
-            }
+            // 存入房間資訊
+            cartData.put("rooms", mapper.writeValueAsString(request.getRooms()));
 
+            // 存入價格資訊
+            cartData.put("totalPrice", String.valueOf(request.getTotalPrice()));
 
-            String key = "plan:room:" + roomData.get("planId");
-            // 用 hash 別用string那爛咚咚
-            stringRedisTemplate.opsForHash().putAll(key, roomData);
-            stringRedisTemplate.expire(key, 30, TimeUnit.MINUTES);
-            String roomQty = roomData.get("roomQty");
-            return ResponseEntity.ok("success");
+            // 存入人數資訊
+            cartData.put("attendeeCount", String.valueOf(request.getAttendeeCount()));
+
+            // 存入行程ID
+            cartData.put("planId", String.valueOf(request.getPlanId()));
+
+            // 寫入 Redis 並設置過期時間
+            redisTemplate.opsForHash().putAll(cartKey, cartData);
+            redisTemplate.expire(cartKey, 30, TimeUnit.MINUTES);
+
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("不能存");
+                    .body(Map.of("error", e.getMessage()));
         }
     }
+
+    @ResponseBody
+    @GetMapping("/cart/{planId}")
+    public ResponseEntity<?> getCart(@PathVariable Integer planId) {
+        System.out.println("收到請求，planId: " + planId);
+        String cartKey = "plan:cart:" + planId;
+
+        try {
+            // 從 Redis 獲取購物車資料
+            Map<Object, Object> cartData = redisTemplate.opsForHash().entries(cartKey);
+
+            if (cartData.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            // 解析房間資料
+            String roomsJson = (String) cartData.get("rooms");
+            List<RoomSelection> rooms = mapper.readValue(roomsJson,
+                    new TypeReference<List<RoomSelection>>() {});
+
+            // 解析人數資料（如果沒有則預設為1）
+            int attendeeCount = 1;
+            if (cartData.containsKey("attendeeCount")) {
+                attendeeCount = Integer.parseInt(cartData.get("attendeeCount").toString());
+            }
+
+            // 取得總價
+            Object totalPrice = cartData.get("totalPrice");
+
+            // 重設過期時間
+            redisTemplate.expire(cartKey, 15, TimeUnit.MINUTES);
+
+            // 返回所有資料
+            return ResponseEntity.ok(Map.of(
+                    "rooms", rooms,
+                    "attendeeCount", attendeeCount,
+                    "totalPrice", totalPrice
+            ));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/cart/{planId}")
+    public ResponseEntity<?> clearCart(@PathVariable Integer planId) {
+        String cartKey = "plan:cart:" + planId;
+
+        try {
+            redisTemplate.delete(cartKey);
+            return ResponseEntity.ok(Map.of("message", "購物車已清空"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
 
 
     @GetMapping("/attend/{id}")
     public String attend(@PathVariable Integer id, Model model) {
         Plan plan = planService.findPlanById(id);
-        MemVO memVO = memService.findOneMem("benson000");
-        String key = "plan:room:" + id;
-        Map<Object, Object> roomData = stringRedisTemplate.opsForHash().entries(key);
-        if (!roomData.isEmpty()) {
-            try {
-                stringRedisTemplate.expire(key, 15, TimeUnit.MINUTES);
-                // 取得房間價格和數量並轉換為整數
-                Object roomPriceObj = roomData.get("roomPrice");
-                Object roomQtyObj = roomData.get("roomQty");
-
-                int roomPrice = (roomPriceObj instanceof Number)
-                        ? ((Number) roomPriceObj).intValue()
-                        : Integer.parseInt(roomPriceObj.toString());
-
-                int roomQty = (roomQtyObj instanceof Number)
-                        ? ((Number) roomQtyObj).intValue()
-                        : Integer.parseInt(roomQtyObj.toString());
-
-                // 計算房間總價和最終總價
-                int totalRoomPrice = roomPrice * roomQty;
-                int totalPrice = plan.getPlanPrice() + totalRoomPrice;
-                System.out.println(totalRoomPrice);
-                // 添加到 model
-                model.addAttribute("selectedRoom", roomData);
-                model.addAttribute("totalRoomPrice", totalRoomPrice);
-                model.addAttribute("totalPrice", totalPrice);
-                stringRedisTemplate.opsForHash().put(key, "totalRoomPrice", String.valueOf(totalRoomPrice));
-            } catch (Exception e) {
-                e.printStackTrace();
-                return "redirect:/planord/detail/" + id;
-            }
-        } else {
-            return "redirect:/planord/detail/" + id;
-        }
-        model.addAttribute("mem", memVO);
+        MemVO mem = memService.findOneMem("benson000");
+        String cartKey = "plan:cart:" + id;
+        model.addAttribute("mem", mem);
         model.addAttribute("plan", plan);
-
-        return "plan/planfront/attendpage";
-    }
-
-    @PostMapping("/confirm/{id}")
-    public String confirm(@PathVariable Integer id, @Valid PlanOrder planOrder, Model model) {
-        MemVO memVO = memService.findOneMem("benson000");
-        Plan plan = planService.findPlanById(id);
-        plan.setAttEnd(plan.getAttEnd()+1);
-
-
-        if (planOrder.getPayMethod() == 0) {  // 信用卡
-            planOrder.setRemAcct(null);  // 清空匯款帳號
-        } else if (planOrder.getPayMethod() == 1) {  // 匯款
-            planOrder.setCardLast4(null);  // 清空信用卡資訊
-        }
-
-        //這是人寫的???超醜超髒
-        String key = "plan:room:" + id;
-        Map<Object, Object> roomData = stringRedisTemplate.opsForHash().entries(key);
-        if (!roomData.isEmpty()) {
-            try {
-                model.addAttribute("roomData", roomData);;
-
-                // 直接使用 Redis 中的數量來更新房間庫存
-                Integer roomTypeId = Integer.parseInt(roomData.get("roomTypeId").toString());
-                int selectedRoomQty = Integer.parseInt(roomData.get("roomQty").toString());
-
-
-                //還要重算??
-                int roomPrice = Integer.parseInt(roomData.get("roomPrice").toString());
-                int roomQty = Integer.parseInt(roomData.get("roomQty").toString());
-                int totalRoomPrice = roomPrice * roomQty;
-                planOrder.setRoomPrice(totalRoomPrice);
-                model.addAttribute("totalRoomPrice", totalRoomPrice);
-
-                //拿ROOM因為是複合主鍵.....
-                PlanRoom planRoom = planRoomService.findByRmTypeIdAndPlanId(roomTypeId, plan.getPlanId());
-                planRoom.setRoomQty(planRoom.getRoomQty() - selectedRoomQty);
-                planRoom.setReservedRoom(planRoom.getReservedRoom() + selectedRoomQty);
-                planRoomService.save(planRoom);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                return "redirect:/planord/detail/" + id;
-            }
-        }
-        planOrder.setPlan(plan);
-        planOrder.setMemVO(memVO);
-        planOrderService.addPlanOrder(planOrder);
-
-        model.addAttribute("planord", planOrder);
-        model.addAttribute("plan", plan);
-        model.addAttribute("mem", memVO);
 
         try {
-            planOrderService.sendPlanOrdMail(planOrder, roomData);
-        } catch (MessagingException e) {
+            Map<Object, Object> cartData = redisTemplate.opsForHash().entries(cartKey);
+
+            if (cartData.isEmpty()) {
+                return "redirect:/planord/detail/" + id;
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+//            mapper.configure(DeserializationFeature.USE_LONG_FOR_INTS, true);
+
+            // 解析房間數據
+            List<RoomSelection> rooms = mapper.readValue(
+                    (String) cartData.get("rooms"),
+                    new TypeReference<List<RoomSelection>>() {}
+            );
+
+            // 取得報名人數，預設為1
+            int attendeeCount = 1;
+            if (cartData.get("attendeeCount") != null) {
+                attendeeCount = Integer.parseInt(cartData.get("attendeeCount").toString());
+            }
+
+            // 計算行程費用（人數 × 單價）
+            int tripTotal =  plan.getPlanPrice() * attendeeCount;
+
+            // 計算房間總價
+            int roomTotal = rooms.stream()
+                    .mapToInt(room ->
+                            (room.getRoomPrice() != null ? room.getRoomPrice() : 0) *
+                                    (room.getQuantity() != null ? room.getQuantity() : 0))
+                    .sum();
+
+            // 計算總價（行程費用 + 房間費用）
+          int totalPrice = tripTotal + roomTotal;
+
+            // 更新 Redis 過期時間
+            redisTemplate.expire(cartKey, 15, TimeUnit.MINUTES);
+
+            // 添加所有需要的數據到模型
+            model.addAttribute("selectedRooms", rooms);
+            model.addAttribute("attendeeCount", attendeeCount);
+            model.addAttribute("tripTotal", tripTotal);
+            model.addAttribute("roomTotal", roomTotal);
+            model.addAttribute("totalPrice", totalPrice);
+
+            return "plan/planfront/attendpage";
+        } catch (Exception e) {
+            System.out.println("Exception caught: " + e.getMessage());
             e.printStackTrace();
-            model.addAttribute("error", "郵件發送失敗");
+            return "redirect:/planord/detail/" + id;
         }
-        stringRedisTemplate.delete(key);
-        return "/plan/planfront/attendsucess";
     }
-//    後端------------------------------------------------------
+
+
+
+
+    @PostMapping("/confirm/{id}")
+    public String confirm(@PathVariable Integer id, @Valid PlanOrder planOrder,
+                          @RequestParam("rooms") String roomsJson, Model model) {
+        try {
+            System.out.println("接收到的 roomsJson: " + roomsJson);
+
+            ObjectMapper mapper = new ObjectMapper();
+            List<RoomSelection> selectedRooms = mapper.readValue(roomsJson,
+                    new TypeReference<List<RoomSelection>>() {});
+
+
+            System.out.println("解析後的房間資料：");
+            if (selectedRooms != null && !selectedRooms.isEmpty()) {
+                selectedRooms.forEach(room -> {
+                    System.out.println("房型ID: " + room.getRoomTypeId() +
+                            ", 名稱: " + room.getRoomTypeName() +
+                            ", 價格: " + room.getRoomPrice() +
+                            ", 數量: " + room.getQuantity());
+                });
+            } else {
+                System.out.println("沒有房間資料！");
+            }
+
+            // 拿會員跟行程先寫死
+            MemVO memVO = memService.findOneMem("benson000");
+            Plan plan = planService.findPlanById(id);
+
+            // 從 Redis 獲取報名人數
+            String cartKey = "plan:cart:" + id;
+            Map<Object, Object> cartData = redisTemplate.opsForHash().entries(cartKey);
+
+            // 取得報名人數，預設為1
+            int attendeeCount = 1;
+            if (cartData.containsKey("attendeeCount") && cartData.get("attendeeCount") != null) {
+                attendeeCount = Integer.parseInt(cartData.get("attendeeCount").toString());
+            }
+            System.out.println("看看有沒有變:"+attendeeCount);
+            // 更新行程報名人數
+            plan.setAttEnd(plan.getAttEnd() + attendeeCount);
+            //改錢
+//            plan.setPlanPrice(plan.getPlanPrice() * attendeeCount);
+
+//            System.out.println("價格:"+plan.getPlanPrice() * attendeeCount);
+            // 處理付款
+            if (planOrder.getPayMethod() == 0) {
+                planOrder.setRemAcct(null);
+            } else if (planOrder.getPayMethod() == 1) {
+                planOrder.setCardLast4(null);
+            }
+
+            // 計算房間總價
+            int totalRoomPrice = selectedRooms.stream()
+                    .mapToInt(room -> room.getRoomPrice() * room.getQuantity())
+                    .sum();
+
+            planOrder.setRoomPrice(totalRoomPrice);
+//            planOrder.setTotalPrice(plan.getPlanPrice() * attendeeCount+totalRoomPrice);
+            // 計算行程總價（人數 × 單價）
+            int tripTotal = plan.getPlanPrice() * attendeeCount;
+
+            // 計算總價（行程總價 + 房間總價）
+            int totalPrice = tripTotal + totalRoomPrice;
+
+            // 更新每個房型的庫存
+            for (RoomSelection roomSelection : selectedRooms) {
+                PlanRoom planRoom = planRoomService.findByRmTypeIdAndPlanId(
+                        roomSelection.getRoomTypeId(), plan.getPlanId());
+
+                if (planRoom.getRoomQty() < roomSelection.getQuantity()) {
+                    throw new RuntimeException("房間數量不足");
+                }
+
+                planRoom.setRoomQty(planRoom.getRoomQty() - roomSelection.getQuantity());
+                planRoom.setReservedRoom(planRoom.getReservedRoom() + roomSelection.getQuantity());
+                planRoomService.save(planRoom);
+            }
+            System.out.println(attendeeCount);
+            // 設置訂單關聯和人數
+            System.out.println("為啥沒變:"+plan.getPlanPrice() * attendeeCount + totalRoomPrice);
+            System.out.println("總價:"+totalPrice);
+            planOrder.setPlanPrice(tripTotal);
+            planOrder.setRoomPrice(totalRoomPrice);
+            planOrder.setPlan(plan);
+            planOrder.setMemVO(memVO);// 假設 PlanOrder 有 attendeeCount 欄位
+
+            // 保存訂單
+            PlanOrder savedOrder = planOrderService.addPlanOrder(planOrder);
+
+            // 發mail
+            try {
+                planOrderService.sendPlanOrdMail(savedOrder, selectedRooms);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+                model.addAttribute("error", "郵件發送失敗");
+            }
+
+            System.out.println("加入 model 前的 selectedRooms:");
+            if (selectedRooms != null) {
+                System.out.println("房間數量: " + selectedRooms.size());
+                selectedRooms.forEach(room -> {
+                    System.out.println("房型: " + room.getRoomTypeName());
+                });
+            }
+
+            // 清除 Redis 購物車數據
+            redisTemplate.delete(cartKey);
+
+            // 添加所有需要的資料到 model
+
+            model.addAttribute("totalprice", totalPrice);
+            model.addAttribute("tripTotal", tripTotal);
+            model.addAttribute("roomTotal", totalRoomPrice);
+            model.addAttribute("attendeeCount", attendeeCount);
+            model.addAttribute("planord", savedOrder);
+            model.addAttribute("plan", plan);
+            model.addAttribute("mem", memVO);
+            model.addAttribute("selectedRooms", selectedRooms);
+
+            return "plan/planfront/attendsucess";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "訂單提交失敗：" + e.getMessage());
+            return "redirect:/planord/detail/" + id;
+        }
+    }
+
+    //    後端------------------------------------------------------
     @GetMapping("/listall")
     public String listAll(Model model) {
-    List<PlanOrder> orders = planOrderService.findAllPlanOrders();
-    model.addAttribute("list", orders);
-    return "plan/planorder/planordlist";}
+        List<PlanOrder> orders = planOrderService.findAllPlanOrders();
+        model.addAttribute("list", orders);
+        return "plan/planorder/planordlist";
+    }
 
 
     @GetMapping("/view/{id}")
@@ -205,6 +390,30 @@ public class planOrderController {
         return "plan/planorder/view";
     }
 
+
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    public static class RoomSelectionRequest {
+        private Integer planId;
+        private List<RoomSelection> rooms;
+        private Integer totalPrice;
+        private Integer attendeeCount;
     }
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Data
+    public static class RoomSelection {
+        private Long id;
+        private Integer roomTypeId;
+        private String roomTypeName;
+        private Integer roomPrice;
+        private Integer quantity;
+        private Integer maxQuantity;
+    }
+
+}
+
 
 

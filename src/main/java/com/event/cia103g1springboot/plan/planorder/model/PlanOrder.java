@@ -39,7 +39,7 @@
             @Column(name = "roomPrice", nullable = false)
             private Integer roomPrice;
 
-            @Column(name = "totalPrice", insertable = false, updatable = false)
+            @Column(name = "totalPrice",nullable = false,insertable = false,updatable = false)
             private Integer totalPrice;
 
             @Column(name = "orderDate", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
@@ -74,17 +74,6 @@
 
 
 
-            @AssertTrue(message = "請檢查付款資訊")
-            public boolean isValidPaymentInfo() {
-                if (payMethod == 0) {  // 信用卡
-                    return cardLast4 != null && cardLast4.matches("\\d{4}");
-                } else if (payMethod == 1) {  // 匯款
-                    return remAcct != null && remAcct.length() >= 4;
-                }
-                return false;
-            }
-
-
             @Override
             public String toString() {
                 return "PlanOrder{" +
@@ -99,6 +88,4 @@
                         ", cardLast4='" + cardLast4 + '\'' +
                         '}';
             }
-
-
         }

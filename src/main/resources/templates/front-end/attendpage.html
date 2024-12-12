@@ -230,12 +230,15 @@
                      th:style="'width: ' + ${(event.evtAttend * 100 / event.evtMax)} + '%'"></div>
             </div>
         </div>
-
-
-        <div class="order-section">
-            <h3 class="section-title">報名資訊</h3><br>
-            會員ID:<sp th:text="${memVO.memId}" ></sp><br>
-            會員名稱:<sp th:text="${memVO.name}" ></sp><br>
+        <h3 class="section-title">報名資訊</h3><br>
+            <div class="form-group">
+                <label for="memID">會員編號：</label>
+                <input type="text" th:value="${memVO.memId}" id="memID" class="form-control basic_input" required>
+            </div>
+            <div class="form-group">
+                <label for="memName">會員名稱：</label>
+                <input type="text" th:value="${memVO.name}" id="memName" class="form-control basic_input" required>
+            </div>
 
             <div class="form-group">
                 <label for="evtAttend">參加人數：</label>
@@ -259,15 +262,16 @@
                 </small>
             </div>
             <!-- 驗證碼,渲染時生成的 -->
-            <div class="form-group">
-                <label>驗證碼：</label>
+        <div class="form-group">
+            <label>驗證碼：</label>
+            <div style="margin-bottom: 10px; text-align: left;">
                 <img id="captchaImage"
                      th:src="@{/captcha/generate(key=${captchaKey})}"
                      onclick="refreshCaptcha()"
-                     style="cursor:pointer">
-                <input type="text" id="captcha" name="captcha" class="form-control basic_input" required>
-                <small class="form-text text-muted">點擊圖片可重新產生驗證碼</small>
+                     style="cursor:pointer; margin-left: 11px;">
+                <small class="form-text text-muted" style="margin-left: 10px;">點擊圖片可重新產生驗證碼</small>
             </div>
+            <input type="text" id="captcha" name="captcha" class="form-control basic_input" required>
         </div>
 
 

@@ -1,0 +1,265 @@
+* {
+  box-sizing: border-box;
+}
+html{
+/*   font-size: 62.5%; 10px */
+  /* 變數的寫法 */
+  --page-width: 1200px;
+}
+body{
+  margin: 0;
+}
+
+/* 中間區域 */
+div.main_block{
+  /* border: 1px solid blue; */
+  min-height: calc(100vh - 60px - 200px - 82px);
+  font-size: 14px;
+  min-width: var(--page-width);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: left bottom;
+  padding-top: 20px;
+  padding-bottom: 50px;
+}
+
+div.main_block div.inner_block{
+  /* border: 1px solid red; */
+  width: var(--page-width);
+  margin: 0 auto;
+  font-size: 0;
+}
+
+/* 固定式二欄式 */
+div.main_block div.inner_block aside.aside, div.main_block div.inner_block main.main{
+  display: inline-block;
+  vertical-align: top;
+  font-size: 14px;
+
+  border: 1px solid gray;
+  padding: 20px;
+  background-color: hsla(0, 0%, 100%, .9);
+  border-radius: 5px;
+  box-shadow: 0 0 5px lightgray inset;
+}
+div.main_block div.inner_block aside.aside{
+  /* border: 1px solid yellow; */
+  width: 200px;
+  margin-right: 20px;
+}
+div.main_block div.inner_block aside.aside h1.title1{
+  font-size: 20px;
+  margin: 0 0 5px 0;
+  padding: 0 0 0 5px;
+}
+
+div.main_block div.inner_block main.main{
+  border: 1px solid white;
+  width: calc(100% - 200px - 20px);
+}
+.product-list { 
+           display: flex; 
+           flex-wrap: wrap; 
+           justify-content: space-evenly; /* 等間距 */  
+           gap: 20px; 
+           padding: 20px; 
+       } 
+
+       /* 使商品卡片一行四個 */
+.product-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 每列 4 個 */
+    gap: 20px; /* 元素間距 */
+    padding: 20px;
+}
+
+/* 商品卡片樣式保持 */
+.product-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* 按鈕左右排列 */
+.product-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px; /* 按鈕之間的間距 */
+}
+
+.add-to-cart, .pdtDetail {
+    flex: 1; /* 按鈕等比例擴展 */
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+}
+
+.add-to-cart:hover, .pdtDetail:hover {
+    background-color: #0056b3;
+}
+
+
+.product-item h1 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin: 10px 0;
+    white-space: nowrap; /* 禁止換行 */
+    overflow: hidden; /* 隱藏溢出內容 */
+    text-overflow: ellipsis; /* 溢出用...表示 */
+    max-width: 100%; /* 最大寬度 */
+}
+
+  .product-price {
+  	  margin-top:20px;
+      font-size: 20px;
+      color: #007bff;
+      font-weight: bold;
+      margin: 10px 0;
+  }
+
+    .product-image { 
+    max-width: 250px;
+    max-height: 200px; 
+    width: auto;  
+    height: auto; 
+}
+
+section.sec1{
+  /* border: 1px solid red; */
+  min-width: var(--page-width);
+  padding: 100px 0;
+}
+section.sec1 div.flex_container{
+  /* border: 1px solid black; */
+  display: flex;
+  width: var(--page-width);
+  margin: 0 auto;
+}
+section.sec1 div.flex_container div.items{
+  /* border: 1px solid blue; */
+}
+section.sec1 div.flex_container div.items.-left{
+  flex-basis: 300px;
+  flex-shrink: 0;
+}
+section.sec1 div.flex_container div.items.-left div.img_block{
+  border: 1px solid lightgray;
+}
+section.sec1 div.flex_container div.items.-left div.img_block > img{
+  width: 100%;
+}
+section.sec1 div.flex_container div.items.-right{
+  flex-grow: 1;
+  font-size: 16px;
+  padding-left: 50px;
+}
+section.sec1 div.flex_container div.items.-right > p {
+	font-size: 16px;
+}
+section.sec1 div.flex_container div.items.-right h1.title1{
+  margin: 0;
+  padding: 0;
+  font-size: 30px;
+  font-weight:bold;
+  color:#007bff;
+}
+section.sec1 div.flex_container div.items.-right ul.desc_list{
+  margin: 20px 0 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+section.sec1 div.flex_container div.items.-right ul.desc_list > li{
+  color: #004080;
+}
+section.sec1 div.flex_container div.items.-right ul.desc_list > li> span.sell_price{
+  font-weight: bold;
+  font-size: 24px;
+}
+
+section.sec1 div.flex_container div.items.-right form.buy_form{
+  /* border: 1px solid red; */
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #eee;
+}
+section.sec1 div.flex_container div.items.-right form.buy_form div.item_block{
+  margin-bottom: 10px;
+}
+section.sec1 div.flex_container div.items.-right form.buy_form div.item_block:last-child{
+  margin-bottom: 0;
+}
+section.sec1 div.flex_container div.items.-right form.buy_form div.item_block input.buy_count{
+  padding: 2px 0 3px;
+  vertical-align: middle;
+}
+section.sec1 div.flex_container div.items.-right form.buy_form div.item_block label.label_item,
+section.sec1 div.flex_container div.items.-right form.buy_form div.item_block span.temp{
+  display: inline-block;
+  vertical-align: middle;
+  /* border: 1px solid blue; */
+  width: 85px;
+}
+section.sec1 div.flex_container div.items.-right form.buy_form div.item_block button[type="submit"]{
+  padding: 2px 20px;
+  cursor: pointer;
+}
+
+section.sec2{
+  /* border: 1px solid blue; */
+  min-width: var(--page-width);
+  padding: 50px 0;
+}
+section:nth-child(1){
+  background: linear-gradient( rgb(128, 168, 208),white);
+}
+section:last-child{
+  background: linear-gradient(white, rgb(128, 168, 208));
+}
+
+section.sec2 div.flex_container{
+  /* border: 1px solid red; */
+  width: var(--page-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+}
+section.sec2 div.flex_container div.flex_item{
+  /* border: 1px solid green; */
+  flex-basis: 50%;
+}
+section.sec2 div.flex_container div.flex_item img{
+  width: 100%;
+  align-items: center;
+}
+/* 詢問表單 */
+section.sec_form{
+  /* border: 1px solid blue; */
+  min-width: var(--page-width);
+  padding: 50px 0;
+  background-image: linear-gradient(white, lightgray);
+}
+section.sec_form h1.title1{
+  font-size: 20px;
+  /* border: 1px solid red; */
+  margin: 0 0 50px 0;
+  text-align: center;
+}
+
+
+
+ 
+
+

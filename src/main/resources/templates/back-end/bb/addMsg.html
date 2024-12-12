@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>新增公告 - addMsg.html</title>
+    <link rel="stylesheet" th:href="@{/css/bb.css}" />
+   
+</head>
+<body>
+	<div th:insert="~{/back-end/elm/nav :: nav}"></div>
+    <div id="header">佈告欄管理</div>
+    <div id="sub-header">新增公告</div>
+
+    <div>
+        <h3>以下欄位皆為必填</h3>
+        
+    <form class="cus_form" th:action="@{insert}" method="post" th:object="${bbVO}" enctype="multipart/form-data">
+      <div >
+      	<div >
+            <label for="msgtype-sel">選擇公告類別:</label>
+            <select id="msgtype-sel" th:field="*{msgtype}" required>
+                <option value="" disabled selected/>請選擇類別</option>
+                <option value=0>行程公告</option>
+                <option value=1>活動公告</option>
+                <option value=2>商城公告</option>
+                <option value=3>其他公告</option>
+            </select>
+            <span th:if="${#fields.hasErrors('msgtype')}" th:errors="*{msgtype}" class="error" id="msgtype.errors"></span>
+        </div>
+        
+        <div>
+            <label for="msgtitle-text">公告標題:</label>
+            <input id="msgtitle-text" class="form-control" type="text" th:field="*{msgtitle}" onclick="hideContent('msgtitle.errors');" placeholder="請輸入公告標題" />
+            <span th:if="${#fields.hasErrors('msgtitle')}" th:errors="*{msgtitle}" class="error" id="msgtitle.errors"></span>
+        </div>
+        
+        <div>
+            <label for="msgcon-text">公告內容:</label>
+            <textarea id="msgcon-text" th:field="*{msgcon}" rows="4" cols="50" onclick="hideContent('msgcon.errors');" placeholder="請輸入公告內容"></textarea><br/>
+            <span th:if="${#fields.hasErrors('msgcon')}" th:errors="*{msgcon}" class="error" id="msgcon.errors"></span>
+        </div>
+        
+        <div class="form-group radio_el">
+             <label for="poststat-radio">發佈狀態:</label>
+             <div class="form-check">
+             	<input id="msgstat-radio-0" type="radio" th:field="*{poststat}" value=0 checked class="form-check-input">
+	             <label for="msgstat-radio-0" class="form-check-label">未發佈</label>
+	         </div>
+	         <div class="form-check">
+	             <input id="msgstat-radio-1" type="radio" th:field="*{poststat}" value=1 class="form-check-input">
+	             <label for="msgstat-radio-1" class="form-check-label">已發佈</label>
+             </div>
+         </div>
+         
+         <div>
+              <label for="posttime-date">發佈時間:</label>
+              <input id="posttime-date" type="datetime-local" th:field="*{posttime}" class="form-control" onclick="hideContent('posttime.errors');" />
+              <span th:if="${#fields.hasErrors('posttime')}" th:errors="*{posttime}" class="error" id="posttime.errors"></span>
+         </div>
+
+	      <button type="submit" class="btn">
+	        送出新增
+	        <span class="inner">
+	          <span class="blob"></span>
+	          <span class="blob"></span>
+	          <span class="blob"></span>
+	          <span class="blob"></span>
+	        </span>
+	      </button>
+	      </div>
+    </form> 	
+   </div>
+    
+    <div class="button-container">
+    	<div>
+    		<a th:href='select_page_bb' class="btn">
+    			<span class="inner">
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		      </span>
+		      公告查詢
+    		</a>
+    	</div>
+    	
+        <div>
+        	<a th:href='listAllMsg' class="btn">
+        		<span class="inner">
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		      </span>
+        	公告列表
+        	</a>
+        </div>
+        
+        
+    </div>
+	<div th:insert="~{/back-end/elm/footer :: footer}"></div>
+    <script type="text/javascript">
+        // 清除提示信息
+        function hideContent(d) {
+            document.getElementById(d).style.display = "none";
+        }
+    </script>
+</body>
+</html>

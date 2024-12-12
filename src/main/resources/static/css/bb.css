@@ -1,0 +1,215 @@
+@charset "UTF-8";
+   body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        #header {
+            background-color: #60b3f0;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        #sub-header {
+            background-color: #e2e6ea;
+            color: #333;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 0px;
+            position:fixed;
+            border-radius: 0px 30px 30px 0px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        label {
+            margin: 10px 0;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="datetime-local"],
+        select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 250px;
+            margin-bottom: 10px;
+        }
+
+        input[type="radio"] {
+            margin-left: 10px;
+            margin-right: 5px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+            font-size: 12px;
+        }
+
+		input[type="submit"],button[type="submit"]{
+		 padding: 8px 16px;
+		 background-color: #60b3f0;
+		 color: white;
+		 border: none;
+		 border-radius: 4px;
+		 cursor: pointer;
+		 font-weight: bold;
+		 margin:0;
+		 border-radius: 30px;
+		 border: 3px solid white;
+		 font-size:16px;
+		}
+		
+		
+		input[type="submit"]:hover,button[type="submit"]:hover {
+		    background-color: rgb(96, 179, 240);
+		}
+		
+		#search-Id{
+			margin-bottom: 20px;
+		}
+		
+		
+		ul {
+		    list-style-type: none;
+		    padding: 0;
+		    margin: 0;
+		    text-align: center;
+		}
+		
+		li {
+		    margin: 15px 0;
+		}
+		
+		h3 {
+            color: #333;
+            text-align: center;
+            margin-top: 20px;
+        }
+		
+        h4 {
+            color: #333;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 95%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+    
+        th,td {
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            white-space: nowrap; 
+            overflow: hidden;    
+        	text-overflow: ellipsis; 
+        	max-height:50px;
+        	max-width:150px;
+        }
+
+        th {
+        	text-align: center;
+        	margin-top: 20px;
+            background-color: #60b3f0;
+            color: white;
+        }
+       
+        
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+     
+        #table-list{
+        	margin-top:20px;
+        }
+        
+        .detail-container {
+            width: 80%;
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .detail-container h3 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        .detail-row span:first-child {
+            font-weight: bold;
+            color: #555;
+            text-align:right;
+            flex: 1;
+        }
+
+        .detail-row span:last-child {
+            color: #666;
+            text-align:center;
+            flex: 2;
+        }
+        
+        div.dt-layout-row{
+        margin-bottom:30px;
+        }
+
+
+		 
+
+		
+		
+		
+
+
+
+ 

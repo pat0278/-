@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>房型詳情 - listOneRT.html</title>
+
+    <!-- 引入外部資源 -->
+    <link rel="stylesheet" th:href="@{/css/bb.css}" />
+    <link rel="stylesheet" th:href="@{/css/elm.css}" />
+    <style>
+        .pdt-img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        #pdtImg th, #pdtImg td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table thead {
+            background-color: #60b3f0;
+            color: white;
+        }
+
+        .table td img {
+            border: 1px solid #ddd;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 30px;
+        }
+
+        .detail-container {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin: 20px auto;
+            width: 80%;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div id="header"><i class="fa-solid fa-hotel"></i> 房型管理</div>
+    <div id="sub-header"><i class="fa-solid fa-clipboard-list"></i> 房型詳情</div>
+
+    <div class="detail-container" th:fragment="ListOneRT-div">
+        <h3>查詢結果</h3>
+        <div class="detail-row">
+            <span>房型編號: </span><span th:text="${rtVO.roomTypeId}"></span>
+        </div>
+        <div class="detail-row">
+            <span>房型名稱: </span><span th:text="${rtVO.roomTypeName}"></span>
+        </div>
+        <div class="detail-row">
+            <span>房型描述: </span><span th:text="${rtVO.roomTypeDesc}"></span>
+        </div>
+        <div class="detail-row">
+            <span>房型總數: </span><span th:text="${rtVO.roomQty}"></span>
+        </div>
+        <div class="detail-row">
+            <span>房型售價: </span><span th:text="${rtVO.roomPrice}"></span>
+        </div>
+        <div class="detail-row">
+            <span>容納人數: </span><span th:text="${rtVO.occupancy}"></span>
+        </div>
+    </div>
+
+    <table th:include="~{/back-end/rt/update_RT_input::rImg-table}"></table>
+
+    <div class="button-container">
+        <div>
+            <a th:href="@{/rt/listAllRT}" class="btn">
+                <span class="inner">
+                    <span class="blob"></span>
+                    <span class="blob"></span>
+                    <span class="blob"></span>
+                    <span class="blob"></span>
+                </span>
+                <i class="fa-solid fa-clipboard-list"></i> 房型列表
+            </a>
+        </div>
+        
+    </div>
+
+    <div th:insert="~{/back-end/footer :: footer}"></div>
+</body>
+</html>

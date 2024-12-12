@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>商城商品詳情 - productDetail.html</title>
+
+    <!-- 引入外部資源 -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" th:href="@{/css/bb.css}" />
+    <link rel="stylesheet" th:href="@{/css/pdtFront.css}" />
+    <style>
+        .product-details .product-image {
+            width: 100%;
+            max-height: 450px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .product-details .price {
+            color: #ff5722;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .product-details .btn {
+            background: #60b3f0;
+            border-radius: 30px;
+            color: #fff;
+        }
+        .product-details .btn:hover {
+            background: rgb(96, 179, 240);
+        }
+        .product-thumbnails img {
+            width: 80%;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 5px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .product-thumbnails img:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+	<div id="header"><i class="fa-solid fa-gift"></i> 商城</div>
+    <div id="sub-header"><i class="fa-solid fa-list"></i> 商品詳情</div>
+    <!-- 商品詳情區 -->
+    <div class="container py-5 product-details">
+        <div class="row">
+            <!-- 左側商品圖片 -->
+            <div class="col-lg-6" th:fragment="pdtimgs-div">
+                <img class="product-image" 
+                     th:src="@{/product/DBGifReader_pdtlist} + '?pdtId=' + ${pdtVO.pdtId}" 
+                     alt="商品圖片">
+                <div class="d-flex justify-content-center mt-3 product-thumbnails" th:each="pdtImgVO : ${pdtImgList}" >
+                    <img th:src="@{/product/DBGifReader} + '?pdtImgId=' + ${pdtImgVO.pdtImgId}" 
+                         alt="商品附加圖片">
+                </div>
+            </div>
+
+            <!-- 右側商品資訊 -->
+            <div class="col-lg-6">
+                <h1 th:text="${pdtVO.pdtName}" class="mb-3"></h1>
+                <p class="price mb-4">
+                    <i class="fas fa-tag"></i>
+                    <span th:text="'NT$ ' + ${pdtVO.pdtPrice}"></span>
+                </p>
+                <p class="mb-4">
+                    <i class="fas fa-info-circle"></i>
+                    <span th:text="${pdtVO.pdtDesc}"></span>
+                </p>
+                <form class="cus_form mt-4" th:action="@{/cart}" method="post">
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label"><i class="fas fa-box"></i> 購買數量</label>
+                        <input type="number" id="quantity" name="quantity" class="form-control" value="1" min="1">
+                    </div>
+                    <button type="submit" class="btn btn-lg">
+                        <i class="fas fa-shopping-cart"></i> 加入購物車
+                    	 <span class="inner">
+					          <span class="blob"></span>
+					          <span class="blob"></span>
+					          <span class="blob"></span>
+					          <span class="blob"></span>
+					        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+	<div th:replace="~{back-end/footer :: f}"></div>
+    <!-- 引入 JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

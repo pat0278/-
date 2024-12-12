@@ -1,0 +1,34 @@
+
+<!-- 導覽列 -->
+<nav>
+	<a id="logo_area" href="/">
+		<div class="img_con">
+			<img src="https://picsum.photos/100" alt="" />
+		</div>
+		<div class="vertical-line"></div>
+		<h3>鄰星嗨嗨</h3>
+	</a>
+
+	<ul>
+		<li><a href="">行程預定</a></li>
+		<li><a href="">房型價格</a></li>
+		<li><a href="">活動預約</a></li>
+		<li><a href="">商城</a></li>
+		<li><a href="">討論區</a></li>
+		<li><a href="">公告</a></li>
+		<li style="color: chocolate; font-size: 1.75rem; font-weight: bold;"
+			th:if="${session.auth}" th:text="${session.auth.name+', 你好'}"></li>
+	</ul>
+
+	<button class="hamburger hamburger--collapse" type="button">
+		<span class="hamburger-box"> <span class="hamburger-inner"></span>
+		</span>
+
+		<div class="ham_list showList">
+			<a th:href="@{/mem/register}" th:if="${session.auth == null}">註冊會員</a> 
+			<a th:href="@{/mem/login}" th:if="${session.auth == null}">會員登入</a> 
+			<a th:href="@{/mem/logout}" th:if="${session.auth}">登出</a> 
+			<a th:href="@{/mem/profile}">會員中心</a>
+		</div>
+	</button>
+</nav>
