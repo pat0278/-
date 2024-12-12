@@ -29,7 +29,7 @@ public class EvtFrontEndController {
     public String listActiveEvents(Model model) {
         List<EvtVO> events = evtService.findByEvtStatOrderByEvtDateAsc2(1,3);
         model.addAttribute("events", events);
-        return "front-end/listpage";
+        return "front-end/evt/listpage";
     }
 
     //根據活動id拿照片跟活動內容
@@ -42,7 +42,7 @@ public class EvtFrontEndController {
 
         model.addAttribute("evtImgs", evtImgs);
         model.addAttribute("evt", event);
-        return "front-end/eventdetail";
+        return "front-end/evt/eventdetail";
     }
     
 }

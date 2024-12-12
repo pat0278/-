@@ -19,8 +19,8 @@ public class Webconfig implements WebMvcConfigurer {
         registry.addViewController("/").setViewName("index");
         registry.addViewController("/listpage").setViewName("front-end/listpage");
         registry.addViewController("/attend").setViewName("front-end/attendpage");
-        registry.addViewController("/sucessandfail").setViewName("back-end/sucessandfail");
-        registry.addViewController("/sucessattend").setViewName("back-end/attendsucess");
+        registry.addViewController("/sucessandfail").setViewName("back-end/evt/sucessandfail");
+//        registry.addViewController("/sucessattend").setViewName("back-end/attendsucess");
         registry.addViewController("/planroom/add").setViewName("plan/planroom/addpage");
 //        registry.addViewController("/product/productlist").setViewName("front-end/product/productlist");
 
