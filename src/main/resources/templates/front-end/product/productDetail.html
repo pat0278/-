@@ -83,6 +83,7 @@
     </style>
 </head>
 <body>
+	<div th:insert="~{/front-end/nav :: nav}"></div>
 	<div id="header"><i class="fa-solid fa-gift"></i> 商城</div>
     <div id="sub-header"><i class="fa-solid fa-list"></i> 商品詳情</div>
     <!-- 商品詳情區 -->
@@ -142,7 +143,7 @@
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 	  <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 	  <script type="text/javascript" th:src="@{/css/slick/slick.min.js}"></script>
-
+	<script type="text/javascript" th:src="@{/js/nav.js}"></script>
 	<script>
     $(document).ready(function(){
       $('.my-class').slick({
