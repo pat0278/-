@@ -29,12 +29,6 @@ form.cus_form .form-group {
 	display: none;
 }
 
-span.errorMsg {
-	font-size: 0.85rem;
-	color: red;
-	display: block;
-}
-
 div.error_field span {
 	display: block;
 	text-align: center;
@@ -50,8 +44,8 @@ div.below_block span {
 	margin: 0 10px;
 }
 
-form {
-	margin-top: 50px;
+.captcha {
+	margin-bottom: 15px;
 }
 </style>
 </head>
@@ -62,7 +56,7 @@ form {
 
 		<div th:if="${errorMsgs!=null && !errorMsgs.isEmpty()}"
 			class="error_field">
-			<span th:each="err :${errorMsgs}" th:text="${err}"></span>
+			<span th:each="err :${errorMsgs}" th:text="${err}" ></span>
 		</div>
 
 		<div class="form-group">
@@ -76,6 +70,16 @@ form {
 				class="fa-solid fa-eye-slash eye"></i>
 		</div>
 
+		<div class="form-group captcha_block">
+			<label for="name">驗證碼(不分大小寫)</label> <input type="text"
+				class="form-control captcha" name="captcha" /> <img alt="驗證碼"
+				th:src="@{/mem/getCaptcha}"
+				onClick="this.src='/mem/getCaptcha?'+Math.random()">
+			<p>點擊圖片可刷新驗證碼</p>
+		</div>
+
+
+
 		<button type="submit" class="btn">
 			Login <span class="inner"> <span class="blob"></span> <span
 				class="blob"></span> <span class="blob"></span> <span class="blob"></span>
@@ -83,7 +87,7 @@ form {
 		</button>
 
 		<div class="below_block">
-			<a href="forgetpwd">忘記密碼</a> <span>|</span> <a
+			<a th:href="@{/mem/forgetpwd}">忘記密碼</a> <span>|</span> <a
 				th:href="@{/mem/register}">會員註冊</a>
 		</div>
 	</form>

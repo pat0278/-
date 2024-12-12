@@ -39,6 +39,10 @@ public class MemController {
 
 	@GetMapping("/register")
 	public String register(ModelMap model) {
+		if (session.getAttribute("auth") != null) {
+			return "front-end/mem/prevent";
+		}
+
 		MemVO memVO = new MemVO();
 		memVO.setSex(1);
 		memVO.setMemType(1);
@@ -95,6 +99,10 @@ public class MemController {
 
 	@GetMapping("/login")
 	public String loginPage(ModelMap model) {
+		if (session.getAttribute("auth") != null) {
+			return "front-end/mem/prevent";
+		}
+
 		MemVO memVO = new MemVO();
 		model.addAttribute("memVO", memVO);
 		return "front-end/mem/login";
@@ -102,9 +110,12 @@ public class MemController {
 
 	@PostMapping("/login")
 	public String login(@Validated(MemVO.LoginGroup.class) MemVO memVO, BindingResult result,
-			@RequestParam("memAcct") String acct, @RequestParam("memPwd") String pwd, ModelMap model) {
+			@RequestParam("memAcct") String acct, @RequestParam("memPwd") String pwd,
+			@RequestParam("captcha") String captchaInput, ModelMap model) {
 		// 驗證資料
 		List<String> errorMsgs = new ArrayList<String>();
+		String captcha = (String) session.getAttribute("captcha");
+		captchaInput = captchaInput.trim();
 
 		if (result.hasErrors()) {
 			result.getFieldErrors().forEach(err -> errorMsgs.add(err.getDefaultMessage()));
@@ -117,6 +128,16 @@ public class MemController {
 			errorMsgs.add(checkRes);
 		}
 
+		// 處理驗證碼是否正確
+		if (captchaInput.trim().isEmpty()) {
+			errorMsgs.add("驗證碼請勿空白");
+			model.addAttribute("errorMsgs", errorMsgs);
+			return "front-end/mem/login";
+		}
+		if (captchaInput == null || !captcha.equalsIgnoreCase(captchaInput)) {
+			errorMsgs.add("驗證碼輸入錯誤");
+		}
+
 		if (!errorMsgs.isEmpty()) {
 			model.addAttribute("errorMsgs", errorMsgs);
 			return "front-end/mem/login";
@@ -125,11 +146,12 @@ public class MemController {
 		// 驗證無誤重導向，找出會員資料及設定auth
 		MemVO mem = memSvc.findOneMem(acct); // 找到該會員的資料
 
+		session.removeAttribute("captcha");
 		session.setAttribute("auth", mem);
 		session.setAttribute("sex", mem.getGenderText());
 		String location = (String) session.getAttribute("location");
 		if (location != null) {
-			session.removeAttribute(location);
+			session.removeAttribute("location");
 			return "redirect:" + location;
 		}
 
@@ -187,7 +209,7 @@ public class MemController {
 	}
 
 	@GetMapping("/logout")
-	public String logout(ModelMap model,RedirectAttributes redirectAttributes) {
+	public String logout(ModelMap model, RedirectAttributes redirectAttributes) {
 		session.removeAttribute("auth");
 		redirectAttributes.addFlashAttribute("msg", "登出成功");
 		return "redirect:/";
@@ -201,6 +223,7 @@ public class MemController {
 	@PostMapping("forgetPwd")
 	public String forgetPwdHandler(@RequestParam("memAcct") String memAcct, HttpServletRequest request,
 			ModelMap model) {
+		memAcct = memAcct.trim();
 
 		boolean hasUser = memSvc.checkAcct(memAcct.trim());
 		if (!hasUser) {
@@ -211,7 +234,7 @@ public class MemController {
 		MemVO mem = memSvc.findOneMem(memAcct);
 		String email = mem.getEmail(); // 用使用者輸入的帳號去找到資料庫的email
 		request.setAttribute("email", email);
-
+		// 存id找我要改的會員
 		session.setAttribute("modify_id", mem.getMemId());
 		return "forward:/mem/modifyPwdMail";
 	}
@@ -221,17 +244,28 @@ public class MemController {
 		return "front-end/mem/modifyPwd";
 	}
 
-	// 錯誤處理待完成
 	@PostMapping("/modifyPwd")
-	public String modofyPwdHandler(@RequestParam("memPwd1") String memPwd, ModelMap model) {
+	public String modofyPwdHandler(@Validated(MemVO.ModPwd.class) MemVO memVO, BindingResult result,
+			@RequestParam("memPwd") String memPwd, ModelMap model) {
+		List<String> errorMsgs = new ArrayList<String>();
+
+		if (result.hasErrors()) {
+			result.getFieldErrors().forEach(err -> errorMsgs.add(err.getDefaultMessage()));
+
+			model.addAttribute("errorMsgs", errorMsgs);
+			return "front-end/mem/modifyPwd";
+		}
 
 //		拿session裡面的id找到要改密碼的會員
 		Integer modify_id = (Integer) session.getAttribute("modify_id");
 		MemVO mem = (MemVO) memSvc.getMem(modify_id);
+		System.out.println(mem.getName());
+
 		mem.setMemPwd(memPwd);
 		memSvc.update(mem);
 
 		session.removeAttribute("modify_id");
+
 		return "front-end/mem/login";
 	}
 
