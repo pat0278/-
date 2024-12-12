@@ -131,9 +131,12 @@ button {
 	border: none;
 	color: white;
 	font-size: 14px;
-	border-radius: 8px;
 	cursor: pointer;
 	transition: background-color 0.3s;
+}
+
+.pro_btn {
+	border-radius: 8px;
 }
 
 main .content .top_info button {

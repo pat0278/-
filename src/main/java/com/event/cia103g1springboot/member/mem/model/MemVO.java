@@ -33,6 +33,8 @@ public class MemVO implements java.io.Serializable {
 
 	public interface LoginGroup {
 	}
+	public interface ModPwd{
+	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,10 +59,10 @@ public class MemVO implements java.io.Serializable {
 	@Pattern(regexp = "^[a-zA-Z\\d]+$", message = "帳號僅能由大小寫英文字母、數字組成，不能含有特殊符號")
 	private String memAcct;
 
-	@Column(name = "mempwd", updatable = false)
+	@Column(name = "mempwd")
 	@NotEmpty(message = "密碼不可空白", groups = LoginGroup.class)
-	@Size(min = 3, max = 20, message = "密碼長度需在3-30字之間")
-	@Pattern(regexp = "^(?=.*[A-Z])[A-Za-z\\d]+$", message = "密碼僅能由大小寫英文+數字組成且至少須有一個大寫字母")
+	@Size(min = 3, max = 20, message = "密碼長度需在3-30字之間" , groups = ModPwd.class)
+	@Pattern(regexp = "^(?=.*[A-Z])[A-Za-z\\d]+$", message = "密碼僅能由大小寫英文+數字組成且至少須有一個大寫字母", groups = ModPwd.class)
 	private String memPwd;
 
 	@Column(name = "email")
