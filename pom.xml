@@ -251,22 +251,7 @@
             <version>13.0</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>ecpay</groupId>
-            <artifactId>ecpay-sdk</artifactId>
-            <version>1.0.0</version>
-            <scope>system</scope>
-            <!-- 使用實際的 jar 檔名 -->
-            <systemPath>${project.basedir}/src/main/resources/lib/javax.servlet-3.0.0.v201112011016.jar</systemPath>
-        </dependency>
 
-        <dependency>
-            <groupId>ecpay</groupId>
-            <artifactId>logistic-sdk</artifactId>
-            <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/log4j.jar</systemPath>
-        </dependency>
 
 
         <!-- ========================================================================================== -->
