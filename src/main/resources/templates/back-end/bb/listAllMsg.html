@@ -25,18 +25,14 @@
     <link rel="stylesheet" th:href="@{/css/bb.css}" />
      <link rel="stylesheet" th:href="@{/css/pdtFront.css}" />
 	<style>
-        body {
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-        }
-
-
         table.dataTable thead th {
             background-color: #60b3f0;
-            color: #fff;
+            color:black;
             text-align: center; /* 水平置中 */
 		    vertical-align: middle; /* 垂直置中 */
         }
+        
+        
 
         table.dataTable tbody tr:hover {
             background-color: #f1f1f1;
@@ -69,7 +65,7 @@
         }
         
 
-         #msg td {
+         #msg td th {
 		    text-align: center; /* 水平置中 */
 		    vertical-align: middle; /* 垂直置中 */
 		    color:black;
@@ -155,17 +151,6 @@
     <!-- 底部按鈕 -->
     <div class="button-container">
         <div class="button-container">
-    	<div>
-    		<a th:href="@{/}" class="btn">
-	    		<span class="inner">
-			        <span class="blob"></span>
-			        <span class="blob"></span>
-			        <span class="blob"></span>
-			        <span class="blob"></span>
-			      </span>
-	    		功能總覽
-    		</a>
-    	</div>
          <div>
     		<a th:href="@{/bb/select_page_bb}" class="btn">
 	    		<span class="inner">
