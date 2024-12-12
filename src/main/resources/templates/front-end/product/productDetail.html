@@ -51,6 +51,28 @@
         .product-thumbnails img:hover {
             transform: scale(1.1);
         }
+        
+        /* 購物車圖示 */
+        .cart-icon {
+		position: fixed; 
+	    top: 100; 
+	    right: 0; 
+	    cursor: pointer;
+	    z-index: 1000; /* 確保位於其他元素之上 */
+	    padding: 10px; 
+	    background-color: rgba(255, 255, 255, 0.8); /* 背景增加透明效果 */
+	    border-radius: 5px; 
+	    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+		}
+		
+		.cart-icon i {
+		    font-size: 24px;
+		    color: #333; 
+		}
+		
+		.cart-icon a {
+		    text-decoration: none; /* 移除下劃線 */
+		}
     </style>
 </head>
 <body>
@@ -81,12 +103,17 @@
                     <i class="fas fa-info-circle"></i>
                     <span th:text="${pdtVO.pdtDesc}"></span>
                 </p>
-                <form class="cus_form mt-4" th:action="@{/cart}" method="post">
-                    <div class="mb-3">
+                <!-- 提交商品表單 -->
+                <form class="cus_form mt-4 add-to-cart-form" data-url="/shop/addToCart" method="post">
+                <!-- 隱藏欄位，提交商品信息 -->
+	                <input type="hidden" name="pdtId" th:value="${pdtVO.pdtId}">
+	                <input type="hidden" name="pdtName" th:value="${pdtVO.pdtName}">
+	                <input type="hidden" name="pdtPrice" th:value="${pdtVO.pdtPrice}">
+                    <div class="mb-3 quantity-control">
                         <label for="quantity" class="form-label"><i class="fas fa-box"></i> 購買數量</label>
-                        <input type="number" id="quantity" name="quantity" class="form-control" value="1" min="1">
+                        <input type="number" id="quantity" class="quantity-input" name="orderQty" value="1" min="1" max="99" oninput="validateQuantity(this)">
                     </div>
-                    <button type="submit" class="btn btn-lg">
+                    <button type="submit" class="btn btn-lg cart-btn">
                         <i class="fas fa-shopping-cart"></i> 加入購物車
                     	 <span class="inner">
 					          <span class="blob"></span>
@@ -96,12 +123,69 @@
 					        </span>
                     </button>
                 </form>
+                
             </div>
         </div>
     </div>
+    
+   	<!--購物車連結 -->
+	<div class="cart-icon">
+		<a th:href="@{/shop/shoppingCart}">
+			<i class="fas fa-shopping-cart"></i></a>
+   	</div>
+	   	
 	<div th:replace="~{back-end/footer :: f}"></div>
     <!-- 引入 JavaScript -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+	<script>
+	//數量框輸入限制
+    function validateQuantity(input) {
+        const min = parseInt(input.getAttribute('min')) || 1;
+        const max = parseInt(input.getAttribute('max')) || 99;
+        let value = parseInt(input.value);
+
+        if (isNaN(value) || value < min) {
+            alert(`數量不能小於 ${min}`);
+            input.value = min; // 重置為最小值
+        } else if (value > max) {
+            alert(`數量不能大於 ${max}`);
+            input.value = max; // 重置為最大值
+        }
+    }
+	
+    // 綁定加入購物車按鈕點擊事件
+    document.addEventListener("DOMContentLoaded", function () {
+        const forms = document.querySelectorAll('.add-to-cart-form');
+
+        forms.forEach(form => {
+            const button = form.querySelector('.cart-btn');
+            button.addEventListener('click', function (event) {
+                event.preventDefault(); // 阻止預設提交行為
+
+                // 獲取表單的 URL 和數據
+                const url = form.getAttribute('data-url');
+                const formData = new FormData(form);
+
+                // 使用 Fetch 提交表單
+                fetch(url, {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.ok) {
+                        // 顯示成功通知
+                        alert('加入購物車成功');
+                    } else {
+                        alert('加入購物車失敗，請稍後再試！');
+                    }
+                }).catch(error => {
+                    console.error('錯誤:', error);
+                    alert('加入購物車時發生錯誤！');
+                });
+            });
+        });
+    });
+	</script>
 </body>
 </html>

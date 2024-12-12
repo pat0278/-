@@ -68,6 +68,11 @@ public class PdtService {
 	public List<PdtVO> getSalePdt(){
 		return repository.getSalePdt();
 	}
+	
+	//購物車總金額
+	public Integer calculateTotal(List<CartVO> cart) {
+	    return (int) cart.stream().mapToDouble(CartVO::getSubtotal).sum();
+	}
 
 
 }

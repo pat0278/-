@@ -162,6 +162,42 @@
             </tbody>
         </table>
     </div>
+    
+        <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+
+    <script>
+     
+      // DataTable 初始化
+      try {
+          $(".myTable").DataTable({
+              paging: true,
+              ordering: true,
+              pageLength: 10,
+              lengthMenu: [10, 15, 20],
+              searching: true,
+              language: {
+                  info: "顯示第 _START_ 至 _END_ 筆資料，共 _TOTAL_ 筆",
+                  infoEmpty: "無資料可顯示",
+                  infoFiltered: "",
+                  zeroRecords: "請確認查詢條件",
+                  lengthMenu: "每頁顯示 _MENU_ 筆資料",
+                  paginate: {
+                      first: "第一頁",
+                      previous: "上一頁",
+                      next: "下一頁",
+                      last: "最後一頁"
+                  }
+              }
+          });
+      } catch (error) {
+          console.error("DataTable 初始化錯誤:", error);
+      };
+    </script>
 
 
 </body>
