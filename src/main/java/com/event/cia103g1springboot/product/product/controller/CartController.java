@@ -1,8 +1,11 @@
 package com.event.cia103g1springboot.product.product.controller;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -20,6 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.event.cia103g1springboot.com.example.ECPayDemo.OrderService;
+import com.event.cia103g1springboot.ecpay.payment.integration.AllInOne;
+import com.event.cia103g1springboot.ecpay.payment.integration.domain.AioCheckOutALL;
 import com.event.cia103g1springboot.member.mem.model.MemVO;
 import com.event.cia103g1springboot.product.pdtorderitem.model.ProductOrderItemService;
 import com.event.cia103g1springboot.product.pdtorderitem.model.ProductOrderItemVO;
@@ -43,6 +49,10 @@ public class CartController {
 	
 	@Autowired
 	PdtService productSvc;
+	
+	//綠界
+	@Autowired
+	OrderService orderService;
 	
 	//========================== shoppingPage ==========================
 	@GetMapping("/shoppingPage")
@@ -266,6 +276,7 @@ public class CartController {
 	}
 	
 	@PostMapping("insert")
+	@ResponseBody
 	public String insert
 		(@Valid ProductOrderVO productOrderVO, BindingResult result, 
 				ModelMap model, 
@@ -284,7 +295,6 @@ public class CartController {
 	    System.out.println("自增的訂單 ID: " + pdtOrderId);
 	    
 	    /*************************** 3.新增訂單明細 *****************************************/
-//		ProductOrderItemVO ProductOrderItem = new ProductOrderItemVO();
 		List<CartVO> cart = (List<CartVO>) session.getAttribute("cart");
 		if (cart != null && !cart.isEmpty()) {
 		    for (CartVO item : cart) {
@@ -298,9 +308,31 @@ public class CartController {
 		    	System.out.println("訂單明細新增成功");
 		    }
 		    session.removeAttribute("cart");  //購物車移除
-		    session.removeAttribute("total");
 		}
-		return "redirect:/product/productlist";  //新增完成重導至購物頁面
+		
+		/*************************** 綁定綠界 *****************************************/
+		String uuId = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 20);
+		AllInOne all = new AllInOne("");
+
+		AioCheckOutALL obj = new AioCheckOutALL();
+		obj.setMerchantTradeNo(uuId);
+		
+		String currentTime = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
+		obj.setMerchantTradeDate(currentTime);
+		
+		String stringTotal = (String) session.getAttribute("total");
+		obj.setTotalAmount(stringTotal);
+		
+		obj.setTradeDesc("test Description");
+		obj.setItemName("TestItem");
+		obj.setReturnURL("<http://211.23.128.214:5000>");
+		obj.setNeedExtraPaidInfo("N");
+		String form = all.aioCheckOut(obj, null);
+		
+		session.removeAttribute("total");
+		
+		
+		return form;  //新增完成進綠界
 	}
 	
 }

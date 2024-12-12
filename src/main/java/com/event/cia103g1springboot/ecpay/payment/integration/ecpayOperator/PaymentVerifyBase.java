@@ -15,7 +15,7 @@ import com.event.cia103g1springboot.ecpay.payment.integration.exception.EcpayExc
 
 
 public class PaymentVerifyBase{
-	protected String confPath = "/ecpay/payment/integration/config/EcpayPayment.xml";
+	protected String confPath = "/com/event/cia103g1springboot/ecpay/payment/integration/config/EcpayPayment.xml";
 	protected Document doc;
 	public PaymentVerifyBase(){
 		URL fileURL = this.getClass().getResource(confPath);
