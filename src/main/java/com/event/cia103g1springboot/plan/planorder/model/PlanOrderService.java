@@ -57,10 +57,14 @@ public class PlanOrderService {
         context.setVariable("memberName", order.getMemVO().getName());
         context.setVariable("planName", order.getPlan().getPlanType().getPlanName());
         context.setVariable("rooms", rooms);  // 傳遞所有房型資訊
+        context.setVariable("tripTotal",order.getPlanPrice());  //
         context.setVariable("payMethod", order.getPayMethod());
+        context.setVariable("PlanOrderId", order.getPlanOrderId());
         context.setVariable("totalPrice", totalPrice);
+        context.setVariable("orderdate", order.getOrderDate());
         context.setVariable("startDate", order.getPlan().getStartDate());
-        context.setVariable("orderDate", order.getOrderDate());
+        context.setVariable("endDate", order.getPlan().getEndDate());
+        context.setVariable("totalRoomPrice", totalRoomPrice);
 
         String mailContent = templateEngine.process("plan/planfront/planemail", context);
 

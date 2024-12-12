@@ -322,8 +322,6 @@ public class planOrderController {
             }
             System.out.println(attendeeCount);
             // 設置訂單關聯和人數
-            System.out.println("為啥沒變:"+plan.getPlanPrice() * attendeeCount + totalRoomPrice);
-            System.out.println("總價:"+totalPrice);
             planOrder.setPlanPrice(tripTotal);
             planOrder.setRoomPrice(totalRoomPrice);
             planOrder.setPlan(plan);
