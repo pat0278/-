@@ -209,7 +209,9 @@ public class MemController {
 	}
 
 	@GetMapping("/logout")
+
 	public String logout(ModelMap model, RedirectAttributes redirectAttributes) {
+
 		session.removeAttribute("auth");
 		redirectAttributes.addFlashAttribute("msg", "登出成功");
 		return "redirect:/";
@@ -260,10 +262,8 @@ public class MemController {
 		Integer modify_id = (Integer) session.getAttribute("modify_id");
 		MemVO mem = (MemVO) memSvc.getMem(modify_id);
 		System.out.println(mem.getName());
-
 		mem.setMemPwd(memPwd);
 		memSvc.update(mem);
-
 		session.removeAttribute("modify_id");
 
 		return "front-end/mem/login";

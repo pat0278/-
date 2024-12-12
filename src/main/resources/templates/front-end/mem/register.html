@@ -9,6 +9,7 @@
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/hamburgers/1.1.3/hamburgers.min.css" />
 <style type="text/css">
+
 h2 {
 	text-align: center;
 	margin: 0;
@@ -227,6 +228,7 @@ span.errorMsg {
 	<div th:if=${reg_code_error} th:value=${reg_code_error}
 		class="reg_error" style="display: none;"></div>
 
+	<div th:replace="~{back-end/footer :: f}"></div>
 
 	<div class="spinner">
 		<div>
@@ -236,7 +238,6 @@ span.errorMsg {
 	</div>
 
 	<div th:replace="~{back-end/footer :: f}"></div>
-
 	<script src="https://code.jquery.com/jquery-3.7.1.min.js"
 		integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
 		crossorigin="anonymous"></script>
