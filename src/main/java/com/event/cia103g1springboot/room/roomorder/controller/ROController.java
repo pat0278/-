@@ -2,12 +2,14 @@ package com.event.cia103g1springboot.room.roomorder.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
@@ -45,6 +47,15 @@ public class ROController {
 		return "back-end/roomOrder/addRO";
 	}
 	
+	@GetMapping("/listAllRO")
+	public String listAllRO(Model model) {
+		return "back-end/roomOrder/listAllRO";
+	}
+	@GetMapping("/select_page_RO")
+	public String select_page_RO(Model model) {
+		return "back-end/roomOrder/select_page_RO";
+	}
+	
 	@PostMapping("insertRO")
 	public String insertRO (@Valid ROVO roVO ,BindingResult result , ModelMap model)throws IOException{
 
@@ -57,6 +68,29 @@ public class ROController {
 		model.addAttribute("success","-(新增成功)");
 		return "back-end/roomOrder/listAllRO";
 	}
+	
+//	@PostMapping("insertROByPO")
+//	public String insertROByPO (@Valid PlanOrder order, Map<Object, Object> roomData,BindingResult result,ModelMap model)throws IOException{ 
+//		ROVO roVO = new ROVO();
+//		model.addAttribute("roVO",roVO);
+//		if(result.hasErrors()) {
+//			model.addAttribute("errorMessage","房型訂單明細新增失敗");			
+//			return "redirect:/planord/detail/";
+//		}
+//		
+//    	PlanOrder newPO = poSvc.getOnePlanOrder(order.getPlanOrderId());
+//    	RTVO rtVO = rtSvc.getOneRT(Integer.parseInt(roomData.get("roomTypeId").toString()));
+//    	roVO.setPlanOrder(newPO);
+//    	roVO.setOrderQty(Integer.parseInt(roomData.get("roomQty").toString()));
+//    	roVO.setRtVO(rtVO);
+//    	roVO.setRoomPrice(Integer.parseInt(roomData.get("roomPrice").toString()));
+//    	roVO.setOrderQty(Integer.parseInt(roomData.get("roomQty").toString()));
+//		roSvc.addRO(roVO);
+//		List<ROVO> list = roSvc.getAllRO();
+//		model.addAttribute("roListData",list);
+//		model.addAttribute("success","-(新增成功)");
+//		return "back-end/roomOrder/listAllRO";
+//	}
 	
 	@PostMapping("getRO_For_Update")
 	public String getRO_For_Update (@RequestParam("roomOrderId")String roomOrderId,ModelMap model) {
