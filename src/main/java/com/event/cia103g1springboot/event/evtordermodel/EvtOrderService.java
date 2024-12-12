@@ -52,10 +52,4 @@ public class EvtOrderService {
     }
 
 
-    public Page<EvtOrderVO> findAllByEvtOrderStat(Integer status, int page) {
-        PageRequest pageRequest = PageRequest.of(page, 5, Sort.by("evtOrderId").descending());
-        return evtOrderRepository.findByEvtOrderStat(status, pageRequest);
-    }
-
-
 }

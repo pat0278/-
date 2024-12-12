@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>查詢公告-select_page_bb.html</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hamburgers/1.1.3/hamburgers.min.css" />
 	<link rel="stylesheet" th:href="@{/css/bb.css}" />
-	<link rel="stylesheet" th:href="@{/css/new_elm.css}" />
 	
 </head>
 <body>
-	<div th:insert="~{/front-end/nav :: nav}"></div>
+	<div th:insert="~{/back-end/elm/nav :: nav}"></div>
     <div id="header">佈告欄管理</div>
     <div id="sub-header">公告查詢</div>
 
@@ -84,6 +82,18 @@
 	</div>
 
     <div class="button-container">
+    	<div>
+    		<a th:href='@{/}' class="btn">
+    			<span class="inner">
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		        <span class="blob"></span>
+		      </span>
+		      功能總覽
+    		</a>
+    	</div>
+        
         <div>
     		<a th:href='addMsg' class="btn">
     			<span class="inner">
@@ -96,7 +106,6 @@
     		</a>
     	</div>
     </div>
-    <div th:insert="~{/back-end/footer :: footer}"></div>
-    <script type="text/javascript" th:src="@{/js/nav.js}"></script>
+    <div th:insert="~{/back-end/elm/footer :: footer}"></div>
 </body>
 </html>

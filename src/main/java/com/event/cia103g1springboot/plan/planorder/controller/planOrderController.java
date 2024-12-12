@@ -255,6 +255,18 @@ public class planOrderController {
                     new TypeReference<List<RoomSelection>>() {});
 
 
+            System.out.println("解析後的房間資料：");
+            if (selectedRooms != null && !selectedRooms.isEmpty()) {
+                selectedRooms.forEach(room -> {
+                    System.out.println("房型ID: " + room.getRoomTypeId() +
+                            ", 名稱: " + room.getRoomTypeName() +
+                            ", 價格: " + room.getRoomPrice() +
+                            ", 數量: " + room.getQuantity());
+                });
+            } else {
+                System.out.println("沒有房間資料！");
+            }
+
             // 拿會員跟行程先寫死
             MemVO memVO = memService.findOneMem("benson000");
             Plan plan = planService.findPlanById(id);
@@ -268,6 +280,7 @@ public class planOrderController {
             if (cartData.containsKey("attendeeCount") && cartData.get("attendeeCount") != null) {
                 attendeeCount = Integer.parseInt(cartData.get("attendeeCount").toString());
             }
+            System.out.println("看看有沒有變:"+attendeeCount);
             // 更新行程報名人數
             plan.setAttEnd(plan.getAttEnd() + attendeeCount);
             //改錢
@@ -302,15 +315,19 @@ public class planOrderController {
                 if (planRoom.getRoomQty() < roomSelection.getQuantity()) {
                     throw new RuntimeException("房間數量不足");
                 }
+
                 planRoom.setRoomQty(planRoom.getRoomQty() - roomSelection.getQuantity());
                 planRoom.setReservedRoom(planRoom.getReservedRoom() + roomSelection.getQuantity());
                 planRoomService.save(planRoom);
             }
+            System.out.println(attendeeCount);
             // 設置訂單關聯和人數
+            System.out.println("為啥沒變:"+plan.getPlanPrice() * attendeeCount + totalRoomPrice);
+            System.out.println("總價:"+totalPrice);
             planOrder.setPlanPrice(tripTotal);
             planOrder.setRoomPrice(totalRoomPrice);
             planOrder.setPlan(plan);
-            planOrder.setMemVO(memVO);
+            planOrder.setMemVO(memVO);// 假設 PlanOrder 有 attendeeCount 欄位
 
             // 保存訂單
             PlanOrder savedOrder = planOrderService.addPlanOrder(planOrder);
@@ -321,6 +338,14 @@ public class planOrderController {
             } catch (MessagingException e) {
                 e.printStackTrace();
                 model.addAttribute("error", "郵件發送失敗");
+            }
+
+            System.out.println("加入 model 前的 selectedRooms:");
+            if (selectedRooms != null) {
+                System.out.println("房間數量: " + selectedRooms.size());
+                selectedRooms.forEach(room -> {
+                    System.out.println("房型: " + room.getRoomTypeName());
+                });
             }
 
             // 清除 Redis 購物車數據

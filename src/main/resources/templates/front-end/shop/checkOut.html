@@ -192,6 +192,42 @@
         nav.style.boxShadow = "none";
       }
     });
+    
+//     fetch('http://localhost:8080/ecpayCheckout', {
+//         method: 'POST'
+//     })
+//     .then(response => response.text())
+//     .then(data => {
+//         console.log(data);  // 顯示返回的表單或訊息
+//     })
+//     .catch(error => console.error('Error:', error));
+
+	fetch('http://localhost:8080/ecpayCheckout', {
+	    method: 'POST'
+	})
+	    .then(response => {
+	        if (!response.ok) {
+	            throw new Error('Network response was not ok');
+	        }
+	        return response.text(); // 假設後端返回的是 HTML form
+	    })
+	    .then(htmlForm => {
+        // 創建一個新的 DOM 元素來接收返回的 HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlForm;
+
+        // 提取表單，添加到當前頁面並提交
+        const form = tempDiv.querySelector('form');
+        if (form) {
+            document.body.appendChild(form);
+            form.submit();
+        } else {
+            throw new Error('No form found in response');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
     </script>
     
     
