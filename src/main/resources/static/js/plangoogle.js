@@ -5,7 +5,9 @@ let tokenClient;
 let gapiInitialized = false;
 let gisInitialized = false;
 
+// 當 DOM 載入完成後初始化 Google API
 document.addEventListener('DOMContentLoaded', function() {
+    // 檢查是否在訂單成功頁面（通過檢查特定元素）
     if (document.getElementById('calendarButton')) {
         initializeGoogleApi();
     }
@@ -13,16 +15,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function initializeGoogleApi() {
     try {
+        // 初始化 GAPI
         await new Promise((resolve) => gapi.load('client', resolve));
         await gapi.client.init({
             apiKey: API_KEY,
             discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest']
         });
 
+        // 初始化 OAuth 客戶端
         tokenClient = google.accounts.oauth2.initTokenClient({
             client_id: CLIENT_ID,
             scope: 'https://www.googleapis.com/auth/calendar.events',
-            callback: ''
+            callback: '' // 將在需要時動態設置
         });
 
         gapiInitialized = true;
@@ -33,6 +37,7 @@ async function initializeGoogleApi() {
     }
 }
 
+// 加入 Google 日曆的功能
 async function addToGoogleCalendar() {
     const btn = document.getElementById('calendarButton');
     const originalContent = btn.innerHTML;
@@ -44,26 +49,23 @@ async function addToGoogleCalendar() {
             throw new Error('API 尚未初始化完成，請重新整理頁面');
         }
 
-        // 使用 data 屬性獲取資訊
-        const eventName = document.querySelector('[data-event-name]')?.dataset.eventName;
-        const startDate = document.querySelector('[data-start-date]')?.dataset.startDate;
-        const orderId = document.querySelector('[data-order-id]')?.dataset.orderId;
+        const eventName = document.getElementById('eventName').value;
+        const eventDate = document.getElementById('eventDate').value;
+        const orderId = document.getElementById('orderId').value;
 
-        console.log('Event Details:', { eventName, startDate, orderId }); // 調試用
-
-        if (!eventName || !startDate || !orderId) {
-            throw new Error('無法取得行程資訊，請確認所有資料都已正確載入');
+        if (!eventName || !eventDate || !orderId) {
+            throw new Error('無法取得行程資訊');
         }
 
         const event = {
             'summary': eventName,
             'description': `訂單編號: ${orderId}`,
             'start': {
-                'date': startDate,
+                'date': eventDate,
                 'timeZone': 'Asia/Taipei'
             },
             'end': {
-                'date': new Date(new Date(startDate).getTime() + 24*60*60*1000).toISOString().split('T')[0],
+                'date': new Date(new Date(eventDate).getTime() + 24*60*60*1000).toISOString().split('T')[0],
                 'timeZone': 'Asia/Taipei'
             },
             'reminders': {
@@ -74,6 +76,7 @@ async function addToGoogleCalendar() {
             }
         };
 
+        // 使用 Promise 處理 OAuth 流程
         await new Promise((resolve, reject) => {
             tokenClient.callback = async (resp) => {
                 if (resp.error !== undefined) {
