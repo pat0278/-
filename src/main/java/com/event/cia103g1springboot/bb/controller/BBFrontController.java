@@ -25,20 +25,20 @@ import com.event.cia103g1springboot.bb.model.BBVO;
 @Controller
 @RequestMapping("/bulletinBoard")
 public class BBFrontController {
-	
+
 	@Autowired
 	BBService bbSvc;
 	@GetMapping("/bbList")
 	public String bbList(Model model) {
 		return "front-end/bulletinBoard/bbList";
 	}
-	
+
 	@ModelAttribute("bbPostList")
 	protected List<BBVO> referenceListData_bbPost(Model model){
 		List<BBVO> list = bbSvc.getPostMsg();
 		return list;
 	}
-	
+
 	@PostMapping("listPostMsg_ByCompositeQuery")
 	public String listPostMsg(HttpServletRequest req, Model model) {
 		try{Map<String, String[]> map = req.getParameterMap();
@@ -52,7 +52,7 @@ public class BBFrontController {
 		return "front-end/bulletinBoard/bbList";
 	}
 	}
-	
+
 	@PostMapping("/pinMsg")
 	public String pinMsg(@RequestParam("msgid") String msgId,ModelMap model) {
 		BBVO bbVO = bbSvc.getOneMsg(Integer.valueOf(msgId));
@@ -62,7 +62,7 @@ public class BBFrontController {
 		model.addAttribute("bbPostList",list);
 		return "front-end/bulletinBoard/bbList";
 	}
-	
+
 	@PostMapping("/unpinMsg")
 	public String unpinMsg(@RequestParam("msgid") String msgId,ModelMap model) {
 		BBVO bbVO = bbSvc.getOneMsg(Integer.valueOf(msgId));
@@ -72,7 +72,7 @@ public class BBFrontController {
 		model.addAttribute("bbPostList",list);
 		return "front-end/bulletinBoard/bbList";
 	}
-	
+
 //	@RequestMapping(value = "/saveToSession", method = RequestMethod.POST)
 //	public String myMsg(HttpServletRequest req,@RequestParam("msgid") String msgId) {
 //		HttpSession session = req.getSession();
@@ -85,5 +85,5 @@ public class BBFrontController {
 //		session.setAttribute("myMsg", myMsg);
 //		return "redirect:/myMsg";
 //	}
-	
+
 }
