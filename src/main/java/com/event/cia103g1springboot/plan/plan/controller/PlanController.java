@@ -143,20 +143,7 @@ public class PlanController {
 
 
 
-//    @GetMapping
-//    public List<Plan> getAllPlans() {
-//        return planService.getAllPlans();
-//    }
 
-
-
-
-
-
-//    @DeleteMapping("/{planId}")
-//    public void deletePlanById(@PathVariable int planId) {
-//        planService.deletePlanById(planId);
-//    }
 
 
 
