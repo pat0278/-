@@ -1,64 +1,67 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>訂單修改 updatePdtOrder.html</title>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>結帳頁面 checkOut.html</title>
+    
     <!-- 使用included-fragment.html網頁的全部 -->
     <head th:insert="~{/included-fragment}"></head>
-    
 
-    <style>
+	<style>
 	.error {
 		color: blue;
 		font-style: bold;
 	}
 	</style>
-
 </head>
 <body>
+	<!------------------------------- 導覽列 ------------------------------->
+    <nav>
+      <a id="logo_area" href="">
+        <div class="img_con">
+          <img src="https://picsum.photos/100" alt="" />
+        </div>
+        <div class="vertical-line"></div>
+        <h3>鄰星嗨嗨</h3>
+      </a>
 
-    <!------------------------------- content ------------------------------->
-	<div class="container-fluid mt-5">
-        <h1 class="text-center mb-4">訂單修改</h1>
-        
-        <form th:action="@{/pdtorder/update}" th:object="${productOrderVO}" method="post" id="updateForm" class="cus_form">
-        	
-		    <div class="row">
-			    <div class="col-md-6">
-			        <h5>會員編號：<span th:text="*{memVO.memId}"></span></h5>
-			        <input type="hidden" th:field="*{memVO.memId}">
-			    </div>
-			    <div class="col-md-6">
-			        <h5>訂單編號：<span th:text="*{pdtOrderId}"></span></h5>
-			        <input type="hidden" th:field="*{pdtOrderId}">
-			    </div>
-			    <div class="col-md-6">
-			        <h5>訂單總金額：<span th:text="*{orderAmt}"></span></h5>
-			        <input type="hidden" th:field="*{orderAmt}">
-			    </div>
-			    <div class="col-md-6">
-			        <h5>訂單成立時間：<span th:text="*{#dates.format(orderDate, 'yyyy-MM-dd HH:mm:ss')}"></span></h5>
-<!-- 			        <input type="hidden" th:field="*{orderDate}"> -->
-			    </div>
-			</div><br>
-					        	
-		    <div class="row">
-		        <div class="col-md-6">
-	                <h4>選擇訂單狀態:</h4>
-	                <select th:field="*{orderStat}" class="form-control">
-	                    <option th:each="map : ${session.orderStatMap}" 
-	                            th:value="${map.key}" 
-	                            th:selected="${map.key == orderStat}" 
-	                            th:text="${map.value}">
-	                    </option>
-	                </select>
-		        </div>
-		    </div><br>
+      <ul>
+        <li><a href="">行程預定</a></li>
+        <li><a href="">房型價格</a></li>
+        <li><a href="">活動預約</a></li>
+        <li><a href="">商城</a></li>
+        <li><a href="">討論區</a></li>
+        <li><a href="">公告</a></li>
+        <!-- <li style="color: chocolate; font-size: 1.75rem">小吳, 您好</li> -->
+        <!-- 平常隱藏，登入時才打開 -->
+      </ul>
 
+      <button class="hamburger hamburger--collapse" type="button">
+        <span class="hamburger-box">
+          <span class="hamburger-inner"></span>
+        </span>
+
+        <div class="ham_list showList">
+          <a href="https://www.yahoo.com.tw" target="_blank">註冊會員</a>
+          <a href="https://www.yahoo.com.tw" target="_blank">會員登入</a>
+          <a href="https://www.yahoo.com.tw" target="_blank">會員中心</a>
+          <!-- <a href="https://www.yahoo.com.tw" target="_blank">登出</a> -->
+        </div>
+      </button>
+    </nav>
+    
+    
+	<!------------------------------- content ------------------------------->
+	<div class="container mt-5">
+	<h1 class="text-center mb-4">結帳</h1>
+	
+        <form th:action="@{insert}" method="post" th:object="${productOrderVO}" class="cus_form">
+        	<div>
+        		<input type="text" th:field="*{memId}"> 假設會員編號
+        	</div><br>
         	
-        	 <div class="row">
+        	  <div class="row">
 		        <!-- 左側：付款方式 -->
 		        <div class="col-md-6">
 		            <div class="mb-4">
@@ -93,7 +96,8 @@
 		            </div>
 		        </div>
 		    </div>
-            
+    
+            <!-- 收件人資訊 -->
             <div class="mb-4">
                 <h4>收件人資訊</h4>
                 <p>*如果選擇「船上取貨」但未領取，包裹將以宅配方式送達此地址。</p>
@@ -110,44 +114,49 @@
                     </div>
                 </div>
             </div>
-            
+            <!-- 地址 -->
             <div class="mb-4">
                 <h4>配送地址</h4>
-                <label for="recipientAddress" class="form-label">收件人地址</label>
+                <label for="recipientAddress" class="form-label">地址</label>
                 <input type="text" class="form-control" id="recipientAddress" th:field="*{recAddr}" required>
                 <span  th:if="${#fields.hasErrors('recAddr')}" th:errors="*{recAddr}" class="error" id="recAddr.errors"></span>
             </div>
             
-            <div class="text-center mb-4">
-		        <a href="javascript:history.back()" class="btn">回到上一頁
-		       		<span class="inner">
+           
+            <!-- 訂單備註 -->
+            <div class="mb-4">
+                <h4>訂單備註</h4>
+                <textarea class="form-control" name="orderNote" rows="3" placeholder="請填寫特殊需求 (選填)" style="resize: none"></textarea>
+            </div>
+            <!-- 確認訂單 -->
+            <div class="text-center">
+            	<a th:href="@{/shop/shoppingPage}" class="btn">取消
+	            	<span class="inner">
 			          <span class="blob"></span>
 			          <span class="blob"></span>
 			          <span class="blob"></span>
 			          <span class="blob"></span>
 			        </span>
 		        </a>
-                <button type="submit" class="btn" onclick="confirmUpdate()">確認修改
-              		  <span class="inner">
+                <button type="submit" class="btn">確認訂單
+                	<span class="inner">
 			          <span class="blob"></span>
 			          <span class="blob"></span>
 			          <span class="blob"></span>
 			          <span class="blob"></span>
-			        </span>
+		        	</span>
                 </button>
             </div>
-            
         </form>
-    </div>
+        
+	</div>
+	
+	<!------------------------------- footer ------------------------------->
+	<footer>
+      <sup>&copy;</sup>本網站僅供tibame專題展示用，並無進行任何商業行為
+    </footer>
     
-
-    <script>
-    function confirmUpdate() {
-        if (confirm("您確定要修改嗎？")) {
-            // 確認後提交表單
-            document.getElementById("updateForm").submit();
-        }
-    }
-	</script>
+    
+    
 </body>
 </html>
