@@ -28,37 +28,45 @@
 	<link rel="stylesheet" type="text/css" th:href="@{/css/slick/slick-theme.css}"/>
     <style>
         .product-details .product-image {
-            width: 100%;
-            max-height: 450px;
-            object-fit: cover;
-            border-radius: 8px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        .product-details .price {
-            color: #ff5722;
-            font-weight: bold;
-            font-size: 1.5rem;
-        }
-        .product-details .btn {
-            background: #60b3f0;
-            border-radius: 30px;
-            color: #fff;
-        }
-        .product-details .btn:hover {
-            background: rgb(96, 179, 240);
-        }
-        .product-thumbnails img {
-            width: 80%;
-            object-fit: cover;
-            border-radius: 8px;
-            margin: 5px;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        .product-thumbnails img:hover {
-            transform: scale(1.1);
-        }
-        
+		width: 100%;
+		max-height: 450px;
+		object-fit: cover;
+		border-radius: 8px;
+		box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+	}
+	
+	.myImg{
+		width: 100%;
+		max-height: 450px;
+	}
+	.product-details .price {
+		color: #ff5722;
+		font-weight: bold;
+		font-size: 1.5rem;
+	}
+	
+	.product-details .btn {
+		background: #60b3f0;
+		border-radius: 30px;
+		color: #fff;
+	}
+	
+	.product-details .btn:hover {
+		background: rgb(96, 179, 240);
+	}
+	
+	.product-thumbnails img {
+		width: 80%;
+		object-fit: cover;
+		border-radius: 8px;
+		margin: 5px;
+		cursor: pointer;
+		transition: transform 0.3s;
+	}
+	
+	.product-thumbnails img:hover {
+		transform: scale(1.1);
+	}
         /* 購物車圖示 */
         .cart-icon {
 		position: fixed; 
@@ -90,11 +98,16 @@
     <div class="container py-5 product-details">
         <div class="row">
             <!-- 左側商品圖片 -->
-            <div class="col-lg-6">
-            	<div class="my-class">
-				  <div class="slick-box" th:each="pdtImgVO : ${pdtImgList}"><img class="product-image" th:src="@{/product/DBGifReader} + '?pdtImgId=' + ${pdtImgVO.pdtImgId}"/></div>
+            <div class="col-lg-6" >
+				<div class="my-class">
+					<div class="d-flex justify-content-center mt-3 product-thumbnails slick-box"
+						th:each="pdtImgVO : ${pdtImgList}">
+						<img class="myImg"
+							th:src="@{/product/DBGifReader} + '?pdtImgId=' + ${pdtImgVO.pdtImgId}"
+							alt="商品附加圖片">
+					</div>
 				</div>
-            </div>
+			</div>
 
             <!-- 右側商品資訊 -->
             <div class="col-lg-6">
