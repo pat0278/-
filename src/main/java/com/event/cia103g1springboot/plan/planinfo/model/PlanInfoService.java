@@ -19,10 +19,18 @@ public class PlanInfoService {
     public List<PlanInfo> findByPlanTypeId(String planTypeId) {
         return planInfoRepository.findByPlanTypeId(planTypeId);
     }
-
+    public PlanInfo findByPlanTypeIdAndPlanDay(String planTypeId, int planDay) {
+        return planInfoRepository.findByPlanTypeIdAndPlanDay(planTypeId, planDay);
+    }
     public List<PlanInfo> getAllPlanInfos() {
         return planInfoRepository.findAll();
     }
-
+    // 保存行程內容
+    public void save(PlanInfo planInfo) {
+        planInfoRepository.save(planInfo);
+    }
+    public void delete(PlanInfo planInfo) {
+        planInfoRepository.delete(planInfo);
+    }
 
 }

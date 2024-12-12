@@ -14,11 +14,18 @@
       referrerpolicy="no-referrer"
     />
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
       rel="stylesheet"
+      href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/hamburgers/1.1.3/hamburgers.min.css"
     />
     <link rel="stylesheet" th:href="@{/css/bb.css}" />
+    <link rel="stylesheet" th:href="@{/css/new_elm.css}" />
     <link rel="stylesheet" th:href="@{/css/pdtFront.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/slick/slick.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/slick/slick-theme.css}"/>
     <style>
         .product-details .product-image {
             width: 100%;
@@ -51,23 +58,42 @@
         .product-thumbnails img:hover {
             transform: scale(1.1);
         }
+        
+        /* 購物車圖示 */
+        .cart-icon {
+		position: fixed; 
+	    top: 100; 
+	    right: 0; 
+	    cursor: pointer;
+	    z-index: 1000; /* 確保位於其他元素之上 */
+	    padding: 10px; 
+	    background-color: rgba(255, 255, 255, 0.8); /* 背景增加透明效果 */
+	    border-radius: 5px; 
+	    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+		}
+		
+		.cart-icon i {
+		    font-size: 24px;
+		    color: #333; 
+		}
+		
+		.cart-icon a {
+		    text-decoration: none; /* 移除下劃線 */
+		}
     </style>
 </head>
 <body>
+	<div th:insert="~{/front-end/nav :: nav}"></div>
 	<div id="header"><i class="fa-solid fa-gift"></i> 商城</div>
     <div id="sub-header"><i class="fa-solid fa-list"></i> 商品詳情</div>
     <!-- 商品詳情區 -->
     <div class="container py-5 product-details">
         <div class="row">
             <!-- 左側商品圖片 -->
-            <div class="col-lg-6" th:fragment="pdtimgs-div">
-                <img class="product-image" 
-                     th:src="@{/product/DBGifReader_pdtlist} + '?pdtId=' + ${pdtVO.pdtId}" 
-                     alt="商品圖片">
-                <div class="d-flex justify-content-center mt-3 product-thumbnails" th:each="pdtImgVO : ${pdtImgList}" >
-                    <img th:src="@{/product/DBGifReader} + '?pdtImgId=' + ${pdtImgVO.pdtImgId}" 
-                         alt="商品附加圖片">
-                </div>
+            <div class="col-lg-6">
+            	<div class="my-class">
+				  <div class="slick-box" th:each="pdtImgVO : ${pdtImgList}"><img class="product-image" th:src="@{/product/DBGifReader} + '?pdtImgId=' + ${pdtImgVO.pdtImgId}"/></div>
+				</div>
             </div>
 
             <!-- 右側商品資訊 -->
@@ -81,12 +107,17 @@
                     <i class="fas fa-info-circle"></i>
                     <span th:text="${pdtVO.pdtDesc}"></span>
                 </p>
-                <form class="cus_form mt-4" th:action="@{/cart}" method="post">
-                    <div class="mb-3">
+                <!-- 提交商品表單 -->
+                <form class="cus_form mt-4 add-to-cart-form" data-url="/shop/addToCart" method="post">
+                <!-- 隱藏欄位，提交商品信息 -->
+	                <input type="hidden" name="pdtId" th:value="${pdtVO.pdtId}">
+	                <input type="hidden" name="pdtName" th:value="${pdtVO.pdtName}">
+	                <input type="hidden" name="pdtPrice" th:value="${pdtVO.pdtPrice}">
+                    <div class="mb-3 quantity-control">
                         <label for="quantity" class="form-label"><i class="fas fa-box"></i> 購買數量</label>
-                        <input type="number" id="quantity" name="quantity" class="form-control" value="1" min="1">
+                        <input type="number" id="quantity" class="quantity-input" name="orderQty" value="1" min="1" max="99" oninput="validateQuantity(this)">
                     </div>
-                    <button type="submit" class="btn btn-lg">
+                    <button type="submit" class="btn btn-lg cart-btn">
                         <i class="fas fa-shopping-cart"></i> 加入購物車
                     	 <span class="inner">
 					          <span class="blob"></span>
@@ -96,12 +127,79 @@
 					        </span>
                     </button>
                 </form>
+                
             </div>
         </div>
     </div>
-	<div th:replace="~{back-end/footer :: f}"></div>
+    
+   	<!--購物車連結 -->
+	<div class="cart-icon">
+		<a th:href="@{/shop/shoppingCart}">
+			<i class="fas fa-shopping-cart"></i></a>
+   	</div>
+	   	
+	<div th:replace="~{back-end/footer :: footer}"></div>
     <!-- 引入 JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+	  <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+	  <script type="text/javascript" th:src="@{/css/slick/slick.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/nav.js}"></script>
+	<script>
+    $(document).ready(function(){
+      $('.my-class').slick({
+    	  slidesToShow: 1,
+    	  slidesToScroll: 1,
+    	  autoplay: true,
+    	  autoplaySpeed: 2000,
+      });
+    });  
+	
+	//數量框輸入限制
+    function validateQuantity(input) {
+        const min = parseInt(input.getAttribute('min')) || 1;
+        const max = parseInt(input.getAttribute('max')) || 99;
+        let value = parseInt(input.value);
+
+        if (isNaN(value) || value < min) {
+            alert(`數量不能小於 ${min}`);
+            input.value = min; // 重置為最小值
+        } else if (value > max) {
+            alert(`數量不能大於 ${max}`);
+            input.value = max; // 重置為最大值
+        }
+    }
+	
+    // 綁定加入購物車按鈕點擊事件
+    document.addEventListener("DOMContentLoaded", function () {
+        const forms = document.querySelectorAll('.add-to-cart-form');
+
+        forms.forEach(form => {
+            const button = form.querySelector('.cart-btn');
+            button.addEventListener('click', function (event) {
+                event.preventDefault(); // 阻止預設提交行為
+
+                // 獲取表單的 URL 和數據
+                const url = form.getAttribute('data-url');
+                const formData = new FormData(form);
+
+                // 使用 Fetch 提交表單
+                fetch(url, {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.ok) {
+                        // 顯示成功通知
+                        alert('加入購物車成功');
+                    } else {
+                        alert('加入購物車失敗，請稍後再試！');
+                    }
+                }).catch(error => {
+                    console.error('錯誤:', error);
+                    alert('加入購物車時發生錯誤！');
+                });
+            });
+        });
+    });
+	</script>
 </body>
 </html>

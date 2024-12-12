@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.event.cia103g1springboot.member.mem.model.MemService;
 import com.event.cia103g1springboot.member.mem.model.MemVO;
@@ -38,11 +39,15 @@ public class MemController {
 
 	@GetMapping("/register")
 	public String register(ModelMap model) {
+		if (session.getAttribute("auth") != null) {
+			return "front-end/mem/prevent";
+		}
+
 		MemVO memVO = new MemVO();
 		memVO.setSex(1);
 		memVO.setMemType(1);
 		model.addAttribute("memVO", memVO);
-		return "frontend/mem/register";
+		return "front-end/mem/register";
 	}
 
 	@PostMapping("/register")
@@ -73,12 +78,12 @@ public class MemController {
 		}
 
 		if (result.hasErrors()) { // 如果result內有任何錯，或part圖片本身是空的就回去原頁面
-			return "frontend/mem/register";
+			return "front-end/mem/register";
 		}
 
 		if (!reg_code.equals(code)) {
 			model.addAttribute("reg_code_error", "信箱驗證碼輸入錯誤，請再次確認");
-			return "frontend/mem/register";
+			return "front-end/mem/register";
 		} else {
 			session.removeAttribute("code");
 		}
@@ -88,27 +93,34 @@ public class MemController {
 		memSvc.registerOneMem(memVO);
 
 		/*************************** 3.新增完成,準備轉交 **************/
-		model.addAttribute("success", "帳號註冊成功");
-		return "frontend/mem/login";
+		model.addAttribute("msg", "帳號註冊成功");
+		return "front-end/mem/login";
 	}
 
 	@GetMapping("/login")
 	public String loginPage(ModelMap model) {
+		if (session.getAttribute("auth") != null) {
+			return "front-end/mem/prevent";
+		}
+
 		MemVO memVO = new MemVO();
 		model.addAttribute("memVO", memVO);
-		return "frontend/mem/login";
+		return "front-end/mem/login";
 	}
 
 	@PostMapping("/login")
 	public String login(@Validated(MemVO.LoginGroup.class) MemVO memVO, BindingResult result,
-			@RequestParam("memAcct") String acct, @RequestParam("memPwd") String pwd, ModelMap model) {
+			@RequestParam("memAcct") String acct, @RequestParam("memPwd") String pwd,
+			@RequestParam("captcha") String captchaInput, ModelMap model) {
 		// 驗證資料
 		List<String> errorMsgs = new ArrayList<String>();
+		String captcha = (String) session.getAttribute("captcha");
+		captchaInput = captchaInput.trim();
 
 		if (result.hasErrors()) {
 			result.getFieldErrors().forEach(err -> errorMsgs.add(err.getDefaultMessage()));
 			model.addAttribute("errorMsgs", errorMsgs);
-			return "frontend/mem/login";
+			return "front-end/mem/login";
 		}
 
 		String checkRes = memSvc.checkUser(acct, pwd);
@@ -116,23 +128,34 @@ public class MemController {
 			errorMsgs.add(checkRes);
 		}
 
+		// 處理驗證碼是否正確
+		if (captchaInput.trim().isEmpty()) {
+			errorMsgs.add("驗證碼請勿空白");
+			model.addAttribute("errorMsgs", errorMsgs);
+			return "front-end/mem/login";
+		}
+		if (captchaInput == null || !captcha.equalsIgnoreCase(captchaInput)) {
+			errorMsgs.add("驗證碼輸入錯誤");
+		}
+
 		if (!errorMsgs.isEmpty()) {
 			model.addAttribute("errorMsgs", errorMsgs);
-			return "frontend/mem/login";
+			return "front-end/mem/login";
 		}
 
 		// 驗證無誤重導向，找出會員資料及設定auth
 		MemVO mem = memSvc.findOneMem(acct); // 找到該會員的資料
 
+		session.removeAttribute("captcha");
 		session.setAttribute("auth", mem);
 		session.setAttribute("sex", mem.getGenderText());
 		String location = (String) session.getAttribute("location");
 		if (location != null) {
-			session.removeAttribute(location);
+			session.removeAttribute("location");
 			return "redirect:" + location;
 		}
 
-		return "frontend/mem/profile";
+		return "front-end/mem/profile";
 	}
 
 	@GetMapping("/profile")
@@ -140,7 +163,7 @@ public class MemController {
 
 		@SuppressWarnings("unchecked")
 		MemVO mem = (MemVO) session.getAttribute("auth");
-		return "frontend/mem/profile";
+		return "front-end/mem/profile";
 	}
 
 	@PostMapping("/modify_profile")
@@ -151,7 +174,7 @@ public class MemController {
 //		mem.setMemImg(null);
 		model.addAttribute("memVO", mem);
 
-		return "frontend/mem/profile";
+		return "front-end/mem/profile";
 	}
 
 	@PostMapping("/update")
@@ -175,63 +198,75 @@ public class MemController {
 
 		if (result.hasErrors()) {
 			model.addAttribute("modify", true);
-			return "frontend/mem/profile";
+			return "front-end/mem/profile";
 		}
 
 		memSvc.update(memVO);
 		session.setAttribute("auth", memVO);
 		session.setAttribute("sex", memVO.getGenderText());
 
-		return "frontend/mem/profile";
+		return "front-end/mem/profile";
 	}
 
 	@GetMapping("/logout")
-	public String logout(ModelMap model) {
+
+	public String logout(ModelMap model, RedirectAttributes redirectAttributes) {
+
 		session.removeAttribute("auth");
-		model.addAttribute("logout", "登出成功");
-		return "index";
+		redirectAttributes.addFlashAttribute("msg", "登出成功");
+		return "redirect:/";
 	}
 
 	@GetMapping("/forgetpwd")
 	public String getforgetPwd() {
-		return "frontend/mem/forgetpwd";
+		return "front-end/mem/forgetpwd";
 	}
 
 	@PostMapping("forgetPwd")
 	public String forgetPwdHandler(@RequestParam("memAcct") String memAcct, HttpServletRequest request,
 			ModelMap model) {
+		memAcct = memAcct.trim();
 
 		boolean hasUser = memSvc.checkAcct(memAcct.trim());
 		if (!hasUser) {
 			model.addAttribute("noAcctError", "查無使用者");
-			return "frontend/mem/forgetpwd";
+			return "front-end/mem/forgetpwd";
 		}
 
 		MemVO mem = memSvc.findOneMem(memAcct);
 		String email = mem.getEmail(); // 用使用者輸入的帳號去找到資料庫的email
 		request.setAttribute("email", email);
-
+		// 存id找我要改的會員
 		session.setAttribute("modify_id", mem.getMemId());
 		return "forward:/mem/modifyPwdMail";
 	}
 
 	@GetMapping("/modifyPwd")
 	public String getModifyPwd() {
-		return "frontend/mem/modifyPwd";
+		return "front-end/mem/modifyPwd";
 	}
 
-	// 錯誤處理待完成
 	@PostMapping("/modifyPwd")
-	public String modofyPwdHandler(@RequestParam("memPwd1") String memPwd, ModelMap model) {
+	public String modofyPwdHandler(@Validated(MemVO.ModPwd.class) MemVO memVO, BindingResult result,
+			@RequestParam("memPwd") String memPwd, ModelMap model) {
+		List<String> errorMsgs = new ArrayList<String>();
+
+		if (result.hasErrors()) {
+			result.getFieldErrors().forEach(err -> errorMsgs.add(err.getDefaultMessage()));
+
+			model.addAttribute("errorMsgs", errorMsgs);
+			return "front-end/mem/modifyPwd";
+		}
 
 //		拿session裡面的id找到要改密碼的會員
 		Integer modify_id = (Integer) session.getAttribute("modify_id");
 		MemVO mem = (MemVO) memSvc.getMem(modify_id);
+		System.out.println(mem.getName());
 		mem.setMemPwd(memPwd);
 		memSvc.update(mem);
-
 		session.removeAttribute("modify_id");
-		return "frontend/mem/login";
+
+		return "front-end/mem/login";
 	}
 
 	@ModelAttribute("memVO") // 用於補充未填充的數據

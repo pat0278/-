@@ -39,6 +39,7 @@
   <div class="title-underline"></div>
 </div>
 
+<<<<<<< Upstream, based on branch 'master' of https://github.com/dan00815/CIA103-G1.git
 <table id="planOrderTable" class="table myTable">
   <thead>
   <tr>
@@ -71,6 +72,41 @@
   </tr>
   </tbody>
 </table>
+=======
+	<table id="planOrderTable" class="table myTable">
+		<thead>
+			<tr>
+				<th>訂單編號</th>
+				<th>會員</th>
+				<th>行程價格</th>
+				<th>房間價格</th>
+				<th>總價格</th>
+				<th>訂單日期</th>
+				<th>訂單狀態</th>
+				<th>付款方式</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="order : ${list}" th:object="${order}">
+				<td th:text="*{planOrderId}"></td>
+				<td th:text="*{memVO.name}"></td>
+				<td th:text="*{planPrice}"></td>
+				<td th:text="*{roomPrice}"></td>
+				<td th:text="*{totalPrice}"></td>
+				<td
+					th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td>
+				<td
+					th:text="${order.orderStat == 0 ? '未付款' : order.orderStat == 1 ? '已付款' : '已取消'}"></td>
+				<td
+					th:text="${order.payMethod == 0 ? '信用卡' : order.payMethod == 1 ? '轉帳' : '其他'}"></td>
+				<td><a th:href="@{/planord/view/} + *{planOrderId}"
+					class="btn btn-primary btn-sm"> <i class="fas fa-eye"></i> 查看</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+>>>>>>> 6feb3e9 roomtype bb finish
 
 <div th:replace="~{back-end/footer :: f}"></div>
 

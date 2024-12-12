@@ -22,6 +22,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/hamburgers/1.1.3/hamburgers.min.css"
     />
     <link rel="stylesheet" th:href="@{/css/bb.css}" />
+    <link rel="stylesheet" th:href="@{/css/new_elm.css}" />
     <link rel="stylesheet" th:href="@{/css/pdtFront.css}" />
     <link rel="stylesheet" type="text/css" th:href="@{/css/slick/slick.css}"/>
 	<link rel="stylesheet" type="text/css" th:href="@{/css/slick/slick-theme.css}"/>
@@ -151,9 +152,32 @@
         	width:100%;
         }
         
+		/* 購物車圖示 */
+        .cart-icon {
+		position: fixed; 
+	    top: 100; 
+	    right: 0; 
+	    cursor: pointer;
+	    z-index: 1000; /* 確保位於其他元素之上 */
+	    padding: 10px; 
+	    background-color: rgba(255, 255, 255, 0.8); /* 背景增加透明效果 */
+	    border-radius: 5px; 
+	    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+		}
+		
+		.cart-icon i {
+		    font-size: 24px;
+		    color: #333; 
+		}
+		
+		.cart-icon a {
+		    text-decoration: none; /* 移除下劃線 */
+		}
+        
     </style>
 </head>
 <body>
+	<div th:insert="~{/front-end/nav :: nav}"></div>
     <div id="header"><i class="fa-solid fa-gift"></i> 商城</div>
     <div id="sub-header"><i class="fa-solid fa-list"></i> 商品列表</div>
     <div class="my-class">
@@ -163,6 +187,13 @@
 	  <div class="slick-box"><img th:src="@{/images/04.jpg}"/></div>
 	  <div class="slick-box"><img th:src="@{/images/05.jpg}"/></div>
 	</div>
+	
+	<!--購物車連結 -->
+	<div class="cart-icon">
+		<a th:href="@{/shop/shoppingCart}">
+			<i class="fas fa-shopping-cart"></i></a>
+   	</div>
+    	
     <div class="main_block">
         <aside class="aside">
             <form method="post" th:action="@{listSalePdt_ByCompositeQuery}" class="search cus_form">
@@ -187,8 +218,13 @@
 	                    <img th:src="@{/product/DBGifReader_pdtlist} + '?pdtId=' + ${pdtVO.pdtId}" alt="商品圖片" />
 	                    <div class="product-price" th:text="'NT$ ' + ${pdtVO.pdtPrice}"></div>
 	                    <div class="product-buttons">
-	                        <form th:action="@{/cart.do}" method="post">
-	                            <input type="hidden" name="pdtId" th:value="${pdtVO.pdtId}">
+	                    
+	                        <form class="add-to-cart-form" data-url="/shop/addToCart" method="post">
+	                            <!-- 隱藏欄位，提交商品信息 -->
+				                <input type="hidden" name="pdtId" th:value="${pdtVO.pdtId}">
+				                <input type="hidden" name="pdtName" th:value="${pdtVO.pdtName}">
+				                <input type="hidden" name="pdtPrice" th:value="${pdtVO.pdtPrice}">
+				                <input type="hidden" class="quantity-input" name="orderQty" value="1">
 	                            <button type="submit" class="btn-lg">
 			                        <i class="fas fa-shopping-cart"></i> 加入購物車
 			                    	 <span class="inner">
@@ -199,6 +235,7 @@
 								        </span>
 			                    </button>
 	                        </form>
+	                        
 	                    </div>              
                 	</a>
                 </div>
@@ -210,6 +247,7 @@
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 	  <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 	  <script type="text/javascript" th:src="@{/css/slick/slick.min.js}"></script>
+	  <script type="text/javascript" th:src="@{/js/nav.js}"></script>
 	
 	  <script type="text/javascript">
 	    $(document).ready(function(){
@@ -219,8 +257,41 @@
 	    	  autoplay: true,
 	    	  autoplaySpeed: 2000,
 	      });
-	    });
+	    });  
+	  </script>
+	  <script>
+	    // 綁定加入購物車按鈕點擊事件
+	    document.addEventListener("DOMContentLoaded", function () {
+	        const forms = document.querySelectorAll('.add-to-cart-form');
 
+	        forms.forEach(form => {
+	            const button = form.querySelector('.btn-lg');
+	            button.addEventListener('click', function (event) {
+	                event.preventDefault(); // 阻止預設提交行為
+
+	                // 獲取表單的 URL 和數據
+	                const url = form.getAttribute('data-url');
+	                const formData = new FormData(form);
+
+	                // 使用 Fetch 提交表單
+	                fetch(url, {
+	                    method: 'POST',
+	                    body: formData
+	                }).then(response => {
+	                    if (response.ok) {
+	                        // 顯示成功通知
+	                        alert('加入購物車成功');
+	                    } else {
+	                        alert('加入購物車失敗，請稍後再試！');
+	                    }
+	                }).catch(error => {
+	                    console.error('錯誤:', error);
+	                    alert('加入購物車時發生錯誤！');
+	                });
+	            });
+	        });
+	    });
+	  
 	  </script>
 </body>
 </html>

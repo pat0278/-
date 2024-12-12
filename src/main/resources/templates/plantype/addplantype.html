@@ -27,9 +27,9 @@
       <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
     </div>
 
-    <!-- 行程類型 ID -->
+    <!-- 行程類別 ID -->
     <div class="mb-3">
-      <label for="planTypeId" class="form-label">行程類型 ID</label>
+      <label for="planTypeId" class="form-label">行程類別</label>
       <input type="text" class="form-control" id="planTypeId" name="planTypeId" required>
     </div>
     <!-- 行程名稱 -->
@@ -47,11 +47,11 @@
 </div>
 
 <div class="container table-container mt-5">
-  <h3 class="text-center mb-4">現有行程類型</h3>
+  <h3 class="text-center mb-4">現有行程類別</h3>
   <table class="table table-bordered table-striped">
     <thead class="table-dark">
     <tr>
-      <th>行程類型 ID</th>
+      <th>行程類別</th>
       <th>行程名稱</th>
       <th>行程天數</th>
     </tr>

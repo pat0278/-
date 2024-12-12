@@ -49,12 +49,34 @@ public class PlanTypeService {
         if (planName.contains("日遊")) {
             String prefix = planName.split("日遊")[0];
             int day = 0;
+            int temp = 0; // 用於處理個位數
+            boolean hasTen = false; // 標記是否遇到「十」
 
             for (char c : prefix.toCharArray()) {
                 if (chineseNumberMap.containsKey(c)) {
-                    day = day * 10 + chineseNumberMap.get(c); // 支持十位數
+                    int value = chineseNumberMap.get(c);
+                    if (value == 10) {
+                        // 遇到「十」
+                        if (temp == 0) {
+                            // 「十」前沒有數字，視為「一十」
+                            day += 10;
+                        } else {
+                            // 「十」前有數字，將其視為十位數
+                            day += temp * 10;
+                        }
+                        hasTen = true;
+                        temp = 0; // 清空暫存數值
+                    } else {
+                        temp = value; // 暫存數字
+                    }
                 }
             }
+
+            // 最後處理個位數
+            if (temp > 0) {
+                day += temp;
+            }
+
             return day;
         }
 

@@ -2,34 +2,54 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>鄰星嗨嗨:行程訂單成立通知</title>
+    <style>
+        .room-item {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .price-summary {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+    </style>
 </head>
-<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+<body>
+<h2>鄰星嗨嗨 - 訂單確認通知</h2>
 
-<div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-    <h2 style="color: #0080ff;">行程訂單成立通知</h2>
+<p>親愛的 <span th:text="${memberName}"></span> 您好：</p>
 
-    <div style="background-color: #f8f9fa; border-radius: 10px; padding: 20px; margin: 20px 0;">
-        <p>親愛的 <span th:text="${memberName}"></span> 您好：</p>
-        <p>您的行程訂單已成功建立，以下是訂單詳情：</p>
-        <ul style="list-style: none; padding: 0;">
-            <li style="margin: 10px 0;">行程名稱：<span th:text="${planName}"></span></li>
-            <li style="margin: 10px 0;">房型名稱：<span th:text="${roomType}"></span></li>
-            <li style="margin: 10px 0;">
-                付款方式：<span th:text="${payMethod == 0 ? '轉帳' : '信用卡'}"></span>
-            </li>
-            <li style="margin: 10px 0;">訂單金額：<span th:text="${totalPrice} + ' 元'"></span></li>
-            <li style="margin: 10px 0;">行程開始日期：<span th:text="${#temporals.format(startDate, 'yyyy-MM-dd')}"></span></li>
-            <li style="margin: 10px 0;">訂單建立時間：<span th:text="${#temporals.format(orderDate, 'yyyy-MM-dd HH:mm')}"></span></li>
-        </ul>
-    </div>
+<p>感謝您預訂我們的行程，以下是您的訂單詳情：</p>
 
-    <p style="color: #666;">如有任何問題，請隨時與我們聯絡。</p>
-    <div style="text-align: center; margin-top: 20px;">
-        <img src="cid:footer" width="100%" alt="Footer"/>
-    </div>
-
-    <div th:replace="~{back-end/footer :: f}"></div>
+<div class="order-info">
+    <p>訂單編號：<span th:text="${orderId}"></span></p>
+    <p>訂單日期：<span th:text="${#temporals.format(orderDate, 'yyyy-MM-dd HH:mm')}"></span></p>
+    <p>行程名稱：<span th:text="${planName}"></span></p>
+    <p>行程日期：<span th:text="${#temporals.format(startDate, 'yyyy-MM-dd')}"></span> 至
+        <span th:text="${#temporals.format(endDate, 'yyyy-MM-dd')}"></span></p>
 </div>
+
+<h3>已預訂房型：</h3>
+<div th:each="room : ${rooms}" class="room-item">
+    <p>房型：<span th:text="${room.roomTypeName}"></span></p>
+    <p>數量：<span th:text="${room.quantity}"></span> 間</p>
+    <p>單價：<span th:text="${room.roomPrice}"></span> 元/晚</p>
+    <p>小計：<span th:text="${room.quantity * room.roomPrice}"></span> 元</p>
+</div>
+
+<div class="price-summary">
+    <p>行程費用：<span th:text="${planPrice}"></span> 元</p>
+    <p>住宿費用：<span th:text="${totalRoomPrice}"></span> 元</p>
+    <p>總計金額：<span th:text="${totalPrice}"></span> 元</p>
+    <p>付款方式：<span th:text="${payMethod == 0 ? '信用卡' : '銀行轉帳'}"></span></p>
+</div>
+
+<p>如有任何問題，請隨時與我們聯繫。</p>
+<p>祝您旅途愉快！</p>
+
+<img src="cid:footer" alt="footer" style="width: 100%; max-width: 600px;">
 </body>
 </html>

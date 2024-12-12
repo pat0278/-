@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class MailController {
 		Context context = new Context();
 		context.setVariable("code", randNum);
 
-		String mailContent = templateEngine.process("frontend/mem/registerMail", context);
+		String mailContent = templateEngine.process("front-end/mem/registerMail", context);
 
 		MimeMessage message = mailSender.createMimeMessage();
 		// 第二個參數 "multipart=true"表示可以內嵌圖片或副件
@@ -61,22 +62,21 @@ public class MailController {
 
 		session.setAttribute("code", randNum);
 
-		return "frontend/mem/register";
+		return "front-end/mem/register";
 	}
 
-	
 	@Transactional
 	@PostMapping("modifyPwdMail")
-	public String modifyPwd(@RequestAttribute("email") String email, ModelMap model)
+	public String modifyPwd(@RequestAttribute("email") String email, HttpServletRequest request, ModelMap model)
 			throws MessagingException, UnsupportedEncodingException {
 
 		Context context = new Context();
-		context.setVariable("back_url", "http://localhost:8080/mem/modifyPwd");
+		String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + "/";
+		context.setVariable("back_url", baseUrl + "mem/modifyPwd");
 
-		String mailContent = templateEngine.process("frontend/mem/modifyPwdMail", context);
+		String mailContent = templateEngine.process("front-end/mem/modifyPwdMail", context);
 
 		MimeMessage message = mailSender.createMimeMessage();
-		// 第二個參數 "multipart=true"表示可以內嵌圖片或副件
 		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 		helper.setTo(email);
 		helper.setSubject("密碼修改通知信");
@@ -86,12 +86,7 @@ public class MailController {
 
 		model.addAttribute("mailSend", true);
 		System.out.println("密碼修改信寄成功");
-		return "frontend/mem/forgetpwd";
+		return "front-end/mem/forgetpwd";
 	}
 
-//	@ModelAttribute("memVO")
-//	MemVO getMemVO() {
-//		MemVO mem = new MemVO();
-//		return mem;
-//	}
 }

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Register</title>
+<link rel="stylesheet" href="../static/css/elm.css" />
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/hamburgers/1.1.3/hamburgers.min.css" />
+<style type="text/css">
+
+h2 {
+	text-align: center;
+	margin: 0;
+	padding: 0;
+	margin-top: 15px;
+}
+
+span.errorMsg {
+	font-size: 0.85rem;
+	color: red;
+	display: block;
+	margin: 8px 0;
+}
+
+.form-group i.eye {
+	cursor: pointer;
+	position: absolute;
+	top: 35px;
+	right: 3%;
+}
+
+.fa-eye {
+	display: none;
+}
+
+.mail_btn {
+	border: 1px solid red;
+	border-radius: 10px;
+	padding: 5px 15px;
+}
+
+.reg_mail_input {
+	margin-left: 30px;
+	width: 15%;
+}
+
+.addrArea {
+	display: flex;
+	align-items: center;
+	margin: 6px 0;
+}
+
+.addrArea input {
+	width: 10%;
+}
+
+.addrArea label {
+	flex: 0 1 50px;
+}
+
+.addrArea select {
+	flex: 1.5 1;
+	margin-right: 10px;
+}
+
+.addrArea input {
+	margin-left: 50px;
+	flex: 1 1 150px;
+	margin: 0 10px;
+}
+
+.spinner {
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 30;
+	background: rgba(0, 0, 0, 0.5);
+	display: none;
+}
+
+.spinner div {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+}
+
+.spinner div img {
+	width: 150px;
+}
+</style>
+</head>
+<body>
+	<div th:replace="~{front-end/nav}"></div>
+	<h2>加入會員</h2>
+	<form method="POST" enctype="multipart/form-data"
+		th:action="@{register}" th:object="${memVO}" class="cus_form">
+
+		<div class="form-group">
+			<label for="name">會員名稱</label> <input type="text"
+				class="form-control" th:field="*{name}" /> <span class="errorMsg"
+				th:if="${#fields.hasErrors('name')}" th:errors="*{name}"> </span>
+		</div>
+
+		<div class="form-group">
+			<label for="birth">生日</label> <input type="date" class="form-control"
+				th:field="*{birth}" /> <span class="errorMsg"
+				th:if="${#fields.hasErrors('birth')}" th:errors="*{birth}"></span>
+		</div>
+
+		<div class="form-group radio_el">
+			<label>性別</label>
+
+			<div class="form-check">
+				<input class="form-check-input" type="radio" th:field="*{sex}"
+					id="male" name="sex" value="1" /> <label class="form-check-label"
+					for="male"> 男 </label>
+			</div>
+
+			<div class="form-check">
+				<input class="form-check-input" type="radio" th:field="*{sex}"
+					id="female" name="sex" value="2" /> <label
+					class="form-check-label" for="female"> 女 </label>
+			</div>
+
+			<div class="form-check">
+				<input class="form-check-input" type="radio" th:field="*{sex}"
+					id="other" name="sex" value="3" /> <label class="form-check-label"
+					for="other"> 其他 </label>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="memAcct">帳號</label> <input type="text"
+				class="form-control" th:field="*{memAcct}" /> <span
+				class="errorMsg" th:if="${#fields.hasErrors('memAcct')}"
+				th:errors="*{memAcct}"></span>
+		</div>
+
+		<div class="form-group">
+			<label for="memPwd">密碼</label> <input type="password"
+				class="form-control" th:field="*{memPwd}" /> <i
+				class="fa-solid fa-eye eye"></i> <i
+				class="fa-solid fa-eye-slash eye"></i> <span class="errorMsg"
+				th:if="${#fields.hasErrors('memPwd')}" th:errors="*{memPwd}"></span>
+		</div>
+
+		<div class="form-group">
+			<label for="email">Email (請填寫可正常收信之電子郵件)</label> <input type="email"
+				class="form-control email_field" th:field="*{email}" /> <span
+				class="errorMsg" th:if="${#fields.hasErrors('email')}"
+				th:errors="*{email}"></span>
+		</div>
+
+		<div style="display: flex">
+			<button class="mail_btn" type="button">寄發認證信</button>
+			<input type="text" class="form-control reg_mail_input"
+				name="reg_code" maxlength="6" />
+		</div>
+
+
+		<div class="form-group">
+			<label for="tel">電話</label> <input type="text" class="form-control"
+				th:field="*{tel}" /> <span class="errorMsg"
+				th:if="${#fields.hasErrors('tel')}" th:errors="*{tel}"></span>
+		</div>
+
+		<div class="form-group">
+			<label for="addr">地址</label>
+
+			<div class="addrArea">
+				<label for="district">縣市:</label> <select id="city"
+					onchange="loadArea()" class="form-select" name="city">
+					<option value="">請選擇</option>
+				</select> <label for="area" style="flex: 0 1 80px;">鄉鎮市區:</label> <select
+					id="area" onchange="loadRoad()" class="form-select" name="area">
+					<option value="">請選擇</option>
+				</select>
+			</div>
+
+			<div class="addrArea">
+				<label for="road">路名:</label> <select id="road" class="form-select"
+					name="road">
+					<option value="">請選擇</option>
+				</select> <input type="text" class="form-control" th:field="*{addr}" />
+			</div>
+			<span class="errorMsg" th:if="${#fields.hasErrors('addr')}"
+				th:errors="*{addr}"></span>
+		</div>
+
+		<div class="form-group radio_el">
+			<label>會員類型</label>
+
+			<div class="form-check">
+				<input class="form-check-input" type="radio" th:field="*{memType}"
+					id="normal" name="memType" value="1" /> <label
+					class="form-check-label" for="normal"> 一般會員 </label>
+			</div>
+
+			<div class="form-check">
+				<input class="form-check-input" type="radio" th:field="*{memType}"
+					id="com" name="memType" value="2" /> <label
+					class="form-check-label" for="com"> 公司 </label>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label>會員照片</label> <label class="upload_el" for="uploadImg">
+				<i class="fa-regular fa-image"></i> choose photo
+			</label> <input style="display: none" type="file" id="uploadImg"
+				accept="image/*" th:field="*{memImg}" aria-describedby="imgBlock" />
+		</div>
+		<div class="img_prev">
+			<ul class="prev_ul_el"></ul>
+		</div>
+
+		<button type="submit" class="btn">
+			Submit <span class="inner"> <span class="blob"></span> <span
+				class="blob"></span> <span class="blob"></span> <span class="blob"></span>
+			</span>
+		</button>
+	</form>
+
+	<div th:if=${reg_code_error} th:value=${reg_code_error}
+		class="reg_error" style="display: none;"></div>
+
+	<div th:replace="~{back-end/footer :: f}"></div>
+
+	<div class="spinner">
+		<div>
+			<img alt="" th:src="@{/images/mailspinner.gif}" style="width: 150px;">
+		</div>
+
+	</div>
+
+	<div th:replace="~{back-end/footer :: f}"></div>
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+		integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+		crossorigin="anonymous"></script>
+	<script type="text/javascript" th:src="@{/js/nav.js}"></script>
+	<script type="text/javascript" th:src="@{/js/uplaodImg.js}"></script>
+	<script type="text/javascript" th:src="@{/js/changeAddr.js}"></script>
+
+
+	<script th:if=${reg_code_error}>
+		alert("驗證碼輸入錯誤，請再次確認")
+	</script>
+
+	<script type="text/javascript">
+		const today = new Date();
+		const yyyy = today.getFullYear();
+		const mm = String(today.getMonth() + 1).padStart(2, '0');
+		const dd = String(today.getDate()).padStart(2, '0');
+		const formattedToday = `${yyyy}-${mm}-${dd}`;
+
+		// 設置 input[type="date"] 的 max 屬性
+		const dateInput = document.querySelector('#birth');
+		dateInput.setAttribute('max', formattedToday);
+
+		const look_el = document.querySelector(".fa-eye");
+		const no_look_el = document.querySelector(".fa-eye-slash");
+		const pwd_input = document.querySelector("#memPwd");
+
+		look_el.addEventListener("click", function() {
+			no_look_el.style.display = "block";
+			this.style.display = "none";
+
+			pwd_input.type = "password";
+		});
+
+		no_look_el.addEventListener("click", function() {
+			look_el.style.display = "block";
+			this.style.display = "none";
+
+			pwd_input.type = "text";
+		});
+
+		//發信AJAX
+		$(".mail_btn").click(async function() {
+			const email = $(".email_field").val();
+
+			if (email.trim() == "") {
+				alert("請輸入正確的Email");
+				return;
+			}
+			regMailEft();
+			document.querySelector(".spinner").style.display="block";
+
+			$.ajax({
+				type : "POST",
+				url : "mail",
+				data: {email},
+				success : (response) => {
+					// 顯示發送成功的消息
+					alert("驗證信已送出，請至指定信箱查看")
+					
+				},
+				error : () => {
+					// 顯示錯誤消息
+					alert("發信失敗，請稍後再試");
+				},
+				
+				complete: () => {
+					//取消過場
+					 document.querySelector(".spinner").style.display="none";
+				}
+			})
+			
+
+		})
+		
+		function regMailEft() {
+				const mailbtn = document.querySelector(".mail_btn");
+				mailbtn.disabled = true;
+				mailbtn.innerText = "發送中....";
+				
+				let count = 30;
+				
+				const interval = setInterval(() => {
+					count--;
+					mailbtn.innerText = count + "秒後可再次寄送驗證碼";
+					
+			        if (count <= 0) {
+			        	clearInterval(interval);
+			        	mailbtn.innerText ="寄發認證信";
+			        	mailbtn.disabled = false;
+			        }
+			      }, 1000);
+			}
+		
+		
+	</script>
+</body>
+</html>

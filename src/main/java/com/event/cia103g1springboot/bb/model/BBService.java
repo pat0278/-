@@ -10,14 +10,19 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.event.cia103g1springboot.hibernate.util.CompositeQuery.HibernateUtil_CompositeQuery_BB_Front;
+
 import hibernate.util.CompositeQuery.HibernateUtil_CompositeQuery_BB;
+
 
 @Service("bbService")
 public class BBService{
 
 	@Autowired
 	BBRepository repository;
-
+	
+	@Autowired
+	private SessionFactory sessionFactory;
 	
 	public void addMsg(BBVO bbVO) {
 		repository.save(bbVO);
@@ -41,11 +46,16 @@ public class BBService{
 	public List<BBVO> getAll(){
 		return repository.getAllMsg();
 	}
+	
 
-//	要自己打開~~
-//	public List<BBVO> getAll(Map<String, String[]> map){
-//		return HibernateUtil_CompositeQuery_BB.getAllC(map,sessionFactory.openSession());
-//	}
+	public List<com.bb.model.BBVO> getAll(Map<String, String[]> map){
+		return HibernateUtil_CompositeQuery_BB.getAllC(map,sessionFactory.openSession());
+	}
+	
+	public List<BBVO> getAllFront(Map<String, String[]> map){
+		return HibernateUtil_CompositeQuery_BB_Front.getAllC(map,sessionFactory.openSession());
+	}
+
 	
 	public List<BBVO> getPostMsg(){
 		return repository.getPostMsg();

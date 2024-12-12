@@ -20,6 +20,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -81,13 +83,14 @@ public class PlanController {
     @GetMapping("/planfront")
     public String frontlistall(Model model) {
         List<Plan> plans = planService.getAllPlans();
-        model.addAttribute("plans", plans);
+        List<Plan> filterPlans = plans.stream()
+                .filter(plan -> plan.getAttMax()>0)
+                .collect(Collectors.toList());
+        model.addAttribute("plans", filterPlans);
         return "plan/planfront/planfrontlist";
     }
 
-
-
-
+//
 
     @PostMapping("/edit")
     public String saveEditedPlan(@ModelAttribute Plan plan, @RequestParam("planTypeId") String planTypeId, Model model) {
@@ -96,19 +99,30 @@ public class PlanController {
             if (!planTypeService.existsByPlanTypeId(planTypeId)) {
                 model.addAttribute("error", "修改行程失敗，行程類型 ID 無效。");
                 model.addAttribute("planTypes", planTypeService.getAllPlanTypes());
-                return "plans/editplan";
+                model.addAttribute("plan", plan);
+                return "plan/editplan";
+            }
+
+            // 檢查最大參加人數是否小於目前參加人數
+            if (plan.getAttMax() < plan.getAttEnd()) {
+                model.addAttribute("error", "修改失敗：最大人數不得低於目前人數！");
+                model.addAttribute("planTypes", planTypeService.getAllPlanTypes());
+                model.addAttribute("plan", plan); // 保留使用者輸入的資料
+                return "plan/editplan";
             }
 
             // 更新行程類型
             PlanType planType = planTypeService.findPlanTypeById(planTypeId);
             plan.setPlanType(planType);
 
-            // 保存修改後的行程
+            // 儲存修改後的行程
             planService.savePlan(plan);
             model.addAttribute("message", "行程已成功修改！");
         } catch (Exception e) {
             model.addAttribute("error", "行程修改失敗：" + e.getMessage());
-            return "plans/editplan";
+            model.addAttribute("planTypes", planTypeService.getAllPlanTypes());
+            model.addAttribute("plan", plan);
+            return "plan/editplan";
         }
         return "redirect:/plans/query"; // 修改成功後返回到行程列表頁面
     }
@@ -128,21 +142,8 @@ public class PlanController {
 
 
 
+//
 
-//    @GetMapping
-//    public List<Plan> getAllPlans() {
-//        return planService.getAllPlans();
-//    }
-
-
-
-
-
-
-//    @DeleteMapping("/{planId}")
-//    public void deletePlanById(@PathVariable int planId) {
-//        planService.deletePlanById(planId);
-//    }
 
 
 

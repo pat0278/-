@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>購物車 shoppingCart.html</title>
+    
+    <!-- 使用included-fragment.html網頁的全部 -->
+    <head th:insert="~{/included-fragment}"></head>
+
+	<style>
+
+		.cart-table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+		
+		.cart-table th, .cart-table td {
+			padding: 10px;
+			text-align: center;
+			border-bottom: 1px solid #ddd;
+		}
+		
+ 		.cart-table th { 
+			background-color: #f4f4f4; 
+ 		} 
+		
+		.quantity-control {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 5px;
+		}
+		
+		.quantity-control button {
+			background-color: #0080ff;
+			color: #fff;
+			border: none;
+			border-radius: 3px;
+			cursor: pointer;
+			width: 30px;
+    		height: 30px;
+		}
+		
+		.quantity-control button:hover {
+			background-color: #0056b3;
+		}
+		
+		.quantity-input {
+			width: 40px;
+			text-align: center;
+			border: 1px solid #ddd;
+			border-radius: 3px;
+		}
+		
+		.remove-btn {
+			background-color: #dc3545;
+			color: #fff;
+			border: none;
+			border-radius: 3px;
+			padding: 5px 10px;
+			cursor: pointer;
+		}
+		
+		.remove-btn:hover {
+			background-color: #c82333;
+		}
+		
+		.cart-summary {
+			margin-top: 20px;
+			text-align: right;
+			font-size: 18px;
+		}
+		
+		
+		
+
+	</style>
+</head>
+<body>
+
+	<!------------------------------- 導覽列 ------------------------------->
+    <nav>
+      <a id="logo_area" href="">
+        <div class="img_con">
+          <img src="https://picsum.photos/100" alt="" />
+        </div>
+        <div class="vertical-line"></div>
+        <h3>鄰星嗨嗨</h3>
+      </a>
+
+      <ul>
+        <li><a href="">行程預定</a></li>
+        <li><a href="">房型價格</a></li>
+        <li><a href="">活動預約</a></li>
+        <li><a href="">商城</a></li>
+        <li><a href="">討論區</a></li>
+        <li><a href="">公告</a></li>
+        <!-- <li style="color: chocolate; font-size: 1.75rem">小吳, 您好</li> -->
+        <!-- 平常隱藏，登入時才打開 -->
+      </ul>
+
+      <button class="hamburger hamburger--collapse" type="button">
+        <span class="hamburger-box">
+          <span class="hamburger-inner"></span>
+        </span>
+
+        <div class="ham_list showList">
+          <a href="https://www.yahoo.com.tw" target="_blank">註冊會員</a>
+          <a href="https://www.yahoo.com.tw" target="_blank">會員登入</a>
+          <a href="https://www.yahoo.com.tw" target="_blank">會員中心</a>
+          <!-- <a href="https://www.yahoo.com.tw" target="_blank">登出</a> -->
+        </div>
+      </button>
+    </nav>
+    
+    
+	<!------------------------------- content ------------------------------->
+	<div class="container-fluid mt-5">
+		<h1 class="text-center mb-4">購物車</h1>
+
+		<table class="cart-table">
+            <thead>
+                <tr>
+                	<th>商品圖片</th>
+                    <th>商品名稱</th>
+                    <th>單價</th>
+                    <th>數量</th>
+                    <th>小計</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="cart : ${cartListData}">
+                	<td th:text="${cart.pdtId}" style="display: none;"></td>
+<!--                 	<td><img src="https://via.placeholder.com/100" alt="Product Image" class="img-fluid"></td> -->
+					<td><img th:src="@{/product/DBGifReader_pdtlist} + '?pdtId=' + ${cart.pdtId}" alt="商品圖片" width="100" height="100"/></td>
+                    <td><a class="product-item" th:href="@{/product/productDetail}+'?pdtId='+${cart.pdtId}" th:text="${cart.pdtName}"></a></td>
+                    <td th:text="${'NT$' + cart.pdtPrice}"></td>
+                    <td>
+                    	<!-- (隱藏)提交商品表單 -->
+                    	<form class="update-cart-form" data-url="/shop/updateCart" method="post">
+	                        <input type="hidden" name="pdtId" th:value="${cart.pdtId}">
+			                <input type="hidden" name="pdtName" th:value="${cart.pdtName}">
+			                <input type="hidden" name="pdtPrice" th:value="${cart.pdtPrice}">
+			                <!-- 數量加減控制區域 -->
+						    <div class="quantity-control">
+						        <button type="button" class="btn-minus" onclick="updateQuantity(this, -1)">-</button>
+						        <input type="number" class="quantity-input" name="orderQty" th:value="${cart.orderQty}" min="1" max="99" onkeydown="handleEnterKey(event)" onblur="handleBlur(event)">
+						        <button type="button" class="btn-plus" onclick="updateQuantity(this, 1)">+</button>
+						    </div>
+                         </form>
+                    </td>
+                    <td th:text="${cart.subtotal}"></td>
+                    <td>
+					    <a href="javascript:void(0);" class="btn-sm"  title="刪除" onclick="removeItem(this)" th:attr="data-pdt-id=${cart.pdtId}, data-url=@{/shop/deleteCart}">
+					       <i class="fas fa-trash"></i>
+		    			</a>	
+					</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="cart-summary">
+        	總計：<span id="total-price" th:text="'NT$' + ${session.total}">NT$0</span>
+        </div>
+        <div class="text-center mb-4">
+	        <a th:href="@{/product/productlist}" class="btn">繼續購物
+		        <span class="inner">
+		          <span class="blob"></span>
+		          <span class="blob"></span>
+		          <span class="blob"></span>
+		          <span class="blob"></span>
+		        </span>
+	        </a>
+	        <a th:href="@{/shop/checkOut}" class="btn">前往結帳(跳轉登入後)
+	        	<span class="inner">
+		          <span class="blob"></span>
+		          <span class="blob"></span>
+		          <span class="blob"></span>
+		          <span class="blob"></span>
+		        </span>
+	        </a>
+		</div>
+	</div>
+	
+	<!------------------------------- footer ------------------------------->
+    <footer>
+      <sup>&copy;</sup>本網站僅供tibame專題展示用，並無進行任何商業行為
+    </footer>
+    
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	<script>
+	    // 數量框輸入限制
+	    function validateQuantity(input) {
+	        const min = parseInt(input.getAttribute('min')) || 1;
+	        const max = parseInt(input.getAttribute('max')) || 99;
+	        let value = parseInt(input.value) || min;
+	
+	        // 自動校正輸入範圍
+	        if (value < min) value = min;
+	        if (value > max) value = max;
+	        input.value = value;
+	    }
+	    
+		// 更新數量
+	    function updateQuantity(button, change) {
+	        const form = button.closest('.update-cart-form'); // 找到該按鈕的表單
+	        const input = form.querySelector('.quantity-input'); 
+	        const url = form.getAttribute('data-url'); // 取得表單的 URL
+	
+	        // 更新數量框
+	        let currentValue = parseInt(input.value) || 1;
+	        const min = parseInt(input.getAttribute('min')) || 1;
+	        const max = parseInt(input.getAttribute('max')) || 99;
+	        const newValue = currentValue + change;
+	        
+	        // 限制範圍
+	        if (newValue >= min && newValue <= max) {
+	            input.value = newValue; 
+	            
+	            // 提交更新到後端
+	            const formData = new FormData(form);
+	            fetch(url, {
+	                method: 'POST',
+	                body: formData
+	            })
+	                .then(response => {
+	                    if (response.ok) {
+	                    	alert('購物車已更新');
+	                        location.reload(); // 刷新頁面以更新總計等數據
+	                    } else {
+	                        alert('購物車更新失敗，請稍後再試！');
+	                    }
+	                })
+	                .catch(error => {
+	                    console.error('錯誤:', error);
+	                    alert('更新購物車時發生錯誤！');
+	                });
+	        }
+	        
+	        if (newValue === 0){
+	        	const formData = new FormData(form);
+	        	formData.set('orderQty', 0); //設置數量為 0 代表移除商品
+
+		        // 發送請求
+		        fetch(url, {
+		            method: 'POST',
+		            body: formData
+		        })
+		            .then(response => {
+		                if (response.ok) {
+		                    alert('商品已移除');
+		                    location.reload(); // 刷新頁面更新購物車
+		                } else {
+		                    alert('移除失敗，請稍後再試');
+		                }
+		            })
+		            .catch(error => {
+		                console.error('錯誤:', error);
+		                alert('移除過程中發生錯誤');
+		            });
+	        }
+	        
+	    }
+		
+		
+		function handleEnterKey(event) {
+		    if (event.key === "Enter") {
+		        event.preventDefault(); // 阻止預設行為
+// 		        processQuantityUpdate(event.target);
+		    }
+		}
+		
+		function handleBlur(event) {
+		    processQuantityUpdate(event.target);
+		}
+		
+		function processQuantityUpdate(input) {
+		    const form = input.closest('.update-cart-form');
+		    const min = parseInt(input.getAttribute('min')) || 1;
+		    const max = parseInt(input.getAttribute('max')) || 99;
+		    let currentValue = parseInt(input.value);
+		
+		    // 修正非法輸入
+		    if (isNaN(currentValue) || currentValue < min) {
+		        currentValue = min;
+		    } else if (currentValue > max) {
+		        currentValue = max;
+		    }
+		    input.value = currentValue;
+		
+		    // 發送 Fetch 請求
+		    sendUpdateRequest(form, currentValue);
+		}
+
+	    function sendUpdateRequest(form, quantity) {
+	        const url = form.getAttribute('data-url');
+	        const formData = new FormData(form);
+	        formData.set('orderQty', quantity);
+
+	        fetch(url, {
+	            method: 'POST',
+	            body: formData,
+	        })
+	            .then(response => {
+	                if (response.ok) {
+	                	alert('購物車已更新');
+                        location.reload(); // 刷新頁面以更新總計等數據
+	                } else {
+	                    throw new Error('更新失敗');
+	                }
+	            })
+	            .catch(error => {
+	                console.error('錯誤:', error);
+	                alert('數量更新失敗');
+	            });
+	    }
+
+	    function removeItem(element) {
+	        // 從按鈕獲取商品編號和刪除請求的 URL
+	        const pdtId = element.getAttribute('data-pdt-id');
+	        const url = element.getAttribute('data-url');
+
+	        if (!pdtId || !url) {
+	            alert('刪除失敗，無法獲取商品信息！');
+	            return;
+	        }
+
+	        // 建立請求參數
+	        const requestData = new URLSearchParams({ pdtId: pdtId });
+
+	        // 發送刪除請求
+	        fetch(url, {
+	            method: 'POST',
+	            headers: {
+	                'Content-Type': 'application/x-www-form-urlencoded',
+	            },
+	            body: requestData.toString(),
+	        })
+	            .then(response => {
+	                if (response.ok) {
+	                	alert('商品已刪除');
+		                // 移除該行商品
+		                const row = element.closest('tr');
+		                if (row) {
+		                    row.remove();
+		                }
+		                location.reload();
+	                } else {
+	                    throw new Error('刪除商品失敗');
+	                }
+	            })
+	    }
+	    
+
+
+      const ham_list = document.querySelector(".ham_list");
+      const nav = document.querySelector("nav");
+
+      //漢堡選單控制
+      document
+        .querySelector(".hamburger")
+        .addEventListener("click", function () {
+          this.classList.toggle("is-active");
+        });
+
+      ham_list.addEventListener("click", function (e) {
+        e.stopPropagation();
+      });
+
+      $(".hamburger").on("click", function () {
+        $(".ham_list").toggleClass("showList");
+      });
+
+      // 監控滾輪事件，讓導覽列變透明
+      window.addEventListener("scroll", (e) => {
+        if (this.scrollY !== 0) {
+          nav.style.backgroundColor = "rgba(173, 216, 230, 0.8)";
+          nav.style.boxShadow = "0px 8px 10px lightgray";
+        } else {
+          nav.style.backgroundColor = "lightblue";
+          nav.style.boxShadow = "none";
+        }
+      });
+      
+    </script>
+    
+    
+</body>
+</html>
